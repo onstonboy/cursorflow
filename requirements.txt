@@ -1,0 +1,12 @@
+# Prompt Generator Tool Requirements
+# This tool uses only Python standard library, no external dependencies required
+
+# Python 3.7+ required
+# Standard library modules used:
+# - argparse
+# - pathlib
+# - re
+# - sys
+# - datetime
+# - typing
+

@@ -1,0 +1,1151 @@
+---
+agent: agent
+---
+
+# Complete Feature Development Workflow: From Requirement to Implementation
+
+This document provides a comprehensive, end-to-end workflow for AI to transform user requirements into a complete, ready-to-implement feature specification with full research, UI/UX design, and implementation planning.
+
+## CRITICAL: Required Prompt Files Reference
+
+**⚠️ AI MUST REFERENCE THESE PROMPT FILES FOR ACCURATE ANALYSIS**
+
+**IMPORTANT:** After Step 0 verification, tech-specific prompt files will be available in `./.cursor/commands/specify/`. These files take precedence over common files.
+
+Before executing this workflow, you MUST have access to and reference these prompt files:
+
+1. **Research & Analysis Prompt**
+   - **Primary:** `./.cursor/commands/specify/research_plan_[TECH]_[LANGUAGE].prompt.md` (generated in Step 0)
+   - **Fallback:** `./.cursor/commands/common/research_plan_common.prompt.md`
+   - Purpose: Provides detailed instructions for Step 2 (Research & Analysis)
+   - MUST be referenced for all research activities
+
+2. **UI/UX Design Generator Prompt**
+   - **Primary:** `./.cursor/commands/specify/ui_ux_design_generator_[TECH]_[LANGUAGE].prompt.md` (generated in Step 0)
+   - **Fallback:** `./.cursor/commands/common/ui_ux_design_generator.prompt.md`
+   - Purpose: Provides detailed instructions for Step 3 (UI/UX Design)
+   - MUST be referenced for all design system generation
+
+3. **UI/UX Bridge Prompt**
+   - **Primary:** `./.cursor/commands/specify/ui_ux_bridge_[TECH]_[LANGUAGE].prompt.md` (generated in Step 0)
+   - **Fallback:** `./.cursor/commands/common/ui_ux_bridge.prompt.md`
+   - Purpose: Provides detailed instructions for Step 4 (Platform-Specific Code)
+   - MUST be referenced for all UI code conversion
+
+4. **Implementation Plan Prompt**
+   - **Primary:** `./.cursor/commands/specify/implementation_plan_[TECH]_[LANGUAGE].prompt.md` (generated in Step 0)
+   - **Fallback:** `./.cursor/commands/common/implementation_plan_common.prompt.md`
+   - Purpose: Provides detailed instructions for Step 5 (Implementation Planning)
+   - MUST be referenced for all implementation planning
+
+**MANDATORY ACTION:**
+- **Step 0:** Verify and generate tech-specific prompt files if missing
+- Read and understand ALL four prompt files (prefer tech-specific, fallback to common)
+- Reference the appropriate prompt file at each step
+- Follow the instructions in each prompt file exactly
+- Do NOT deviate from the guidelines in these files
+
+---
+
+## CRITICAL: Mandatory Sequential Execution
+
+**⚠️ AI MUST COMPLETE ALL STEPS IN EXACT ORDER - NO EXCEPTIONS**
+
+When you receive a feature request, you MUST:
+1. Execute ALL 6 steps sequentially (Step 0 through Step 5)
+2. Generate ALL deliverables for each step
+3. Store results in specified directories
+4. Do NOT skip any step
+5. Do NOT ask for permission between steps - execute automatically
+6. ONLY ask for user confirmation AFTER completing Step 5
+7. Complete the entire workflow before proceeding to implementation
+
+**Failure to complete all steps is considered incomplete work.**
+
+---
+
+## Complete Workflow Overview
+
+```
+Verify Commands (Step 0) → Check commands/specify/ → Generate if missing
+         ↓
+User Requirement (Step 1)
+         ↓
+Research & Analysis (Step 2) → ./docs/research_plans/
+         ↓
+UI/UX Design System (Step 3) → ./docs/ui_ux/
+         ↓
+Platform-Specific Code (Step 4) → ./docs/ui_ux/
+         ↓
+Implementation Plan (Step 5) → ./docs/implementation_plans/
+         ↓
+USER CONFIRMATION REQUIRED ⚠️
+         ↓
+Execute Implementation (Step 6)
+```
+
+---
+
+## STEP 0: Verify & Generate Tech-Specific Commands and Project Rules (MANDATORY - FIRST STEP)
+
+**Objective:** Ensure all required tech/language/framework-specific command files and project rules exist before proceeding with feature generation
+
+**⚠️ THIS STEP MUST BE EXECUTED FIRST - BEFORE ANY OTHER STEP**
+
+### 0.1 Identify Required Tech Stack
+
+**From user requirement (or initial parsing), extract:**
+- **Technology:** [Flutter/React Native/Next.js/Vue/etc.]
+- **Language:** [Dart/Kotlin/Swift/TypeScript/JavaScript/etc.]
+- **Framework:** [Bloc/Provider/Redux/Vuex/etc.]
+- **Platform:** [iOS/Android/Web/Desktop/Cross-platform]
+
+**Example:**
+```
+Technology: Flutter
+Language: Dart
+Framework: Bloc
+Platform: iOS, Android
+```
+
+### 0.2 Check commands/specify/ Directory
+
+**MANDATORY: Check for existing tech-specific commands**
+
+**Directory to check:**
+```
+./.cursor/commands/specify/
+```
+
+**Required files to verify:**
+1. `research_plan_[TECH]_[LANGUAGE].prompt.md` (e.g., `research_plan_flutter_dart.prompt.md`)
+2. `ui_ux_design_generator_[TECH]_[LANGUAGE].prompt.md` (e.g., `ui_ux_design_generator_flutter_dart.prompt.md`)
+3. `ui_ux_bridge_[TECH]_[LANGUAGE].prompt.md` (e.g., `ui_ux_bridge_flutter_dart.prompt.md`)
+4. `implementation_plan_[TECH]_[LANGUAGE].prompt.md` (e.g., `implementation_plan_flutter_dart.prompt.md`)
+
+**Check process:**
+1. List all files in `./.cursor/commands/specify/`
+2. Identify which required files exist
+3. Identify which required files are missing
+
+### 0.3 Generate Missing Command Files
+
+**IF any required files are missing:**
+
+**Source files to reference:**
+```
+./.cursor/commands/common/
+├── research_plan_common.prompt.md
+├── ui_ux_design_generator.prompt.md
+├── ui_ux_bridge.prompt.md
+└── implementation_plan_common.prompt.md
+```
+
+**Generation process:**
+1. Read the corresponding common command file
+2. Adapt it for the specific tech/language/framework
+3. Generate tech-specific version with:
+   - Technology-specific syntax
+   - Language-specific patterns
+   - Framework-specific conventions
+   - Platform-specific considerations
+
+**File naming convention:**
+```
+[TYPE]_[TECH]_[LANGUAGE].prompt.md
+```
+
+**Examples:**
+- `research_plan_flutter_dart.prompt.md`
+- `ui_ux_design_generator_nextjs_typescript.prompt.md`
+- `ui_ux_bridge_react_native_typescript.prompt.md`
+- `implementation_plan_vue_javascript.prompt.md`
+
+### 0.4 Save Generated Files
+
+**⚠️ MANDATORY: Save generated files to:**
+```
+./.cursor/commands/specify/[FILENAME].prompt.md
+```
+
+**Directory Structure After Step 0:**
+```
+./.cursor/commands/
+├── common/
+│   ├── research_plan_common.prompt.md
+│   ├── ui_ux_design_generator.prompt.md
+│   ├── ui_ux_bridge.prompt.md
+│   └── implementation_plan_common.prompt.md
+└── specify/
+    ├── research_plan_[TECH]_[LANGUAGE].prompt.md
+    ├── ui_ux_design_generator_[TECH]_[LANGUAGE].prompt.md
+    ├── ui_ux_bridge_[TECH]_[LANGUAGE].prompt.md
+    └── implementation_plan_[TECH]_[LANGUAGE].prompt.md
+```
+
+### 0.6 Check rules/specify/ Directory for Project Rules
+
+**MANDATORY: Check for existing tech-specific project rules**
+
+**Directory to check:**
+```
+./.cursor/rules/specify/
+```
+
+**Required file to verify:**
+1. `project-rule_[TECH]_[LANGUAGE].mdc` (e.g., `project-rule_flutter_dart.mdc`)
+
+**Check process:**
+1. List all files in `./.cursor/rules/specify/`
+2. Identify if the required project rule file exists
+3. Identify if the project rule file is missing
+
+### 0.7 Generate Missing Project Rule File
+
+**IF the required project rule file is missing:**
+
+**Source file to reference:**
+```
+./.cursor/rules/common/project-rule.mdc
+```
+
+**Generation process:**
+1. Read the common project rule file from `./.cursor/rules/common/project-rule.mdc`
+2. Adapt it for the specific tech/language/framework
+3. Generate tech-specific version with:
+   - Technology-specific syntax examples
+   - Language-specific patterns and conventions
+   - Framework-specific state management patterns
+   - Platform-specific UI/UX guidelines
+   - Technology-specific code examples
+
+**File naming convention:**
+```
+project-rule_[TECH]_[LANGUAGE].mdc
+```
+
+**Examples:**
+- `project-rule_flutter_dart.mdc`
+- `project-rule_nextjs_typescript.mdc`
+- `project-rule_react_native_typescript.mdc`
+- `project-rule_vue_javascript.mdc`
+
+### 0.8 Save Generated Project Rule File
+
+**⚠️ MANDATORY: Save generated project rule file to:**
+```
+./.cursor/rules/specify/project-rule_[TECH]_[LANGUAGE].mdc
+```
+
+**Updated Directory Structure After Step 0:**
+```
+./.cursor/
+├── commands/
+│   ├── common/
+│   │   ├── research_plan_common.prompt.md
+│   │   ├── ui_ux_design_generator.prompt.md
+│   │   ├── ui_ux_bridge.prompt.md
+│   │   └── implementation_plan_common.prompt.md
+│   └── specify/
+│       ├── research_plan_[TECH]_[LANGUAGE].prompt.md
+│       ├── ui_ux_design_generator_[TECH]_[LANGUAGE].prompt.md
+│       ├── ui_ux_bridge_[TECH]_[LANGUAGE].prompt.md
+│       └── implementation_plan_[TECH]_[LANGUAGE].prompt.md
+└── rules/
+    ├── common/
+    │   └── project-rule.mdc
+    └── specify/
+        └── project-rule_[TECH]_[LANGUAGE].mdc
+```
+
+### 0.9 Verification Checklist
+
+**Before proceeding to Step 1, verify:**
+- ✅ All 4 required tech-specific command files exist in `./.cursor/commands/specify/`
+- ✅ Project rule file exists in `./.cursor/rules/specify/`
+- ✅ All files are properly named according to tech/language/framework
+- ✅ Files contain technology-specific adaptations
+- ✅ Files reference correct syntax and patterns for the tech stack
+
+**IF verification fails:**
+- Regenerate missing files
+- Ensure proper tech-specific adaptations
+- Verify file locations
+
+**Deliverable:**
+- ✅ Complete set of tech-specific command files in `./.cursor/commands/specify/`
+- ✅ Tech-specific project rule file in `./.cursor/rules/specify/`
+- ✅ Verification report confirming all files exist
+
+**Action:** Store tech stack information, file locations, and project rule location in memory for use in subsequent steps.
+
+---
+
+## STEP 1: Receive & Analyze User Requirement (MANDATORY)
+
+**Objective:** Extract and document complete user requirements
+
+### 1.1 Capture User Input
+
+**User provides:**
+- Feature description
+- Target platform(s): Web/Mobile (iOS/Android)/Desktop/Cross-platform
+- Design style preferences (if any)
+- Technology stack preferences (if any)
+- Timeline constraints (if any)
+- Any specific requirements
+
+**Example Input:**
+```
+"I want to build a shoe shopping e-commerce app for iOS and Android 
+with a modern glass morphism design style. Users should be able to 
+browse shoes, filter by categories, add to cart, and checkout."
+```
+
+### 1.2 Parse Requirements
+
+**Extract:**
+- **Primary Goal:** [What the user wants to achieve]
+- **Platform(s):** [iOS/Android/Web/Desktop/Flutter/React Native/etc.]
+- **Design Style:** [Glass morphism/Material/Minimal/Custom/None specified]
+- **Core Features:** [List all mentioned features]
+- **Tech Stack:** [Flutter/React Native/Native/etc.]
+- **Language:** [Dart/Kotlin/Swift/TypeScript/etc.]
+- **Constraints:** [Timeline/Budget/Technical limitations]
+
+### 1.3 Clarify Ambiguities (if needed)
+
+**If critical information is missing:**
+- Ask ONE clarification question
+- Provide default assumptions if no response
+- Document assumptions clearly
+
+**Deliverable:**
+```markdown
+# Feature Requirement Summary
+
+**Date:** [Current date]
+**Project:** [Feature name]
+**Platforms:** [Target platforms]
+**Tech Stack:** [Technology choices]
+**Design Style:** [Design approach]
+
+## Core Requirements
+[Detailed list]
+
+## Assumptions
+[Any assumptions made]
+
+## Constraints
+[Known limitations]
+```
+
+**Action:** Store this summary in memory for use in subsequent steps.
+
+---
+
+## STEP 2: Execute Research & Analysis Plan (MANDATORY)
+
+**Objective:** Perform comprehensive feature research following tech-specific research plan prompt
+
+**⚠️ MANDATORY: READ AND REFERENCE THE RESEARCH PLAN PROMPT FILE**
+
+**File Path (from Step 0):**
+- **Primary:** `./.cursor/commands/specify/research_plan_[TECH]_[LANGUAGE].prompt.md`
+- **Fallback:** `./.cursor/commands/common/research_plan_common.prompt.md`
+
+Before proceeding, you MUST:
+1. Read the complete tech-specific research plan prompt file (generated in Step 0)
+2. If tech-specific file doesn't exist, use common file as fallback
+3. Understand all 7 steps and their requirements
+4. Follow the instructions exactly as specified in that file
+5. Generate all deliverables as defined in that file
+
+**⚠️ EXECUTE ALL 7 STEPS FROM THE RESEARCH PLAN PROMPT FILE**
+
+### 2.1 Reference Document
+Follow the research plan prompt file exactly:
+- Step 1: Analyze Given Requirements
+- Step 2: List All Related Technologies & Concepts
+- Step 3: Identify 2-3 Different Approaches
+- Step 4: Conclude Final Approach
+- Step 5: Write Details & Flow Diagrams
+- Step 6: Describe in Human-Friendly Language
+- Step 7: Create Implementation Plan
+
+### 2.2 Generate Complete Research Document
+
+**File naming convention:**
+```
+[FEATURE_NAME]_RESEARCH_PLAN_[DATE].md
+```
+
+**Example:**
+```
+SHOE_SHOP_ECOMMERCE_RESEARCH_PLAN_2025-12-03.md
+```
+
+### 2.3 Output Location
+
+**⚠️ MANDATORY: Save research plan to:**
+```
+./docs/research_plans/[FEATURE_NAME]_RESEARCH_PLAN_[DATE].md
+```
+
+**Deliverable:**
+Complete research document with:
+- ✅ Requirements Analysis Summary
+- ✅ Technology & Concept Inventory
+- ✅ 2-3 Implementation Approaches (fully documented)
+- ✅ Final Approach Selection (with rationale)
+- ✅ Complete Technical Specification (with diagrams)
+- ✅ Human-Friendly Explanation
+- ✅ Implementation Plan (high-level overview)
+
+**Directory Structure After Step 2:**
+```
+./docs/
+└── research_plans/
+    └── [FEATURE_NAME]_RESEARCH_PLAN_[DATE].md
+```
+
+---
+
+## STEP 3: Generate UI/UX Design System (MANDATORY)
+
+**Objective:** Create comprehensive UI/UX specifications following tech-specific UI/UX design generator prompt
+
+**⚠️ MANDATORY: READ AND REFERENCE THE UI/UX DESIGN GENERATOR PROMPT FILE**
+
+**File Path (from Step 0):**
+- **Primary:** `./.cursor/commands/specify/ui_ux_design_generator_[TECH]_[LANGUAGE].prompt.md`
+- **Fallback:** `./.cursor/commands/common/ui_ux_design_generator.prompt.md`
+
+Before proceeding, you MUST:
+1. Read the complete tech-specific UI/UX design generator prompt file (generated in Step 0)
+2. If tech-specific file doesn't exist, use common file as fallback
+3. Understand all 6 steps and their requirements
+4. Follow the instructions exactly as specified in that file
+5. Generate all deliverables as defined in that file
+
+**⚠️ EXECUTE ALL 6 STEPS FROM THE UI/UX DESIGN GENERATOR PROMPT FILE**
+
+### 3.1 Reference Document
+Follow the UI/UX design generator prompt file exactly:
+- Step 1: Analyze User Requirements
+- Step 2: Define Design Atomic Components
+- Step 3: Define Molecular Components
+- Step 4: Define Organism Components
+- Step 5: Define Templates & Layouts
+- Step 6: Generate Animation & Interaction Patterns
+
+### 3.2 Use Research Plan Results
+
+**Input from Step 2:**
+- Use selected approach from research plan
+- Reference platform requirements
+- Apply design style preferences
+- Consider technical constraints
+
+### 3.3 Generate Complete Design System
+
+**File naming convention:**
+```
+[FEATURE_NAME]_UI_UX_DESIGN_SYSTEM_[DATE].md
+```
+
+**Example:**
+```
+SHOE_SHOP_ECOMMERCE_UI_UX_DESIGN_SYSTEM_2025-12-03.md
+```
+
+### 3.4 Output Location
+
+**⚠️ MANDATORY: Save UI/UX design system to:**
+```
+./docs/ui_ux/[FEATURE_NAME]_UI_UX_DESIGN_SYSTEM_[DATE].md
+```
+
+**Deliverable:**
+Complete design system with:
+- ✅ Design Tokens (Colors, Typography, Spacing, Shadows)
+- ✅ Atomic Components (Buttons, Inputs, etc.)
+- ✅ Molecular Components (Cards, Forms, etc.)
+- ✅ Organism Components (Navigation, Modals, etc.)
+- ✅ Page Templates & Layouts
+- ✅ Animation & Interaction Patterns
+- ✅ Responsive Design Rules
+- ✅ Accessibility Guidelines
+
+**Directory Structure After Step 3:**
+```
+./docs/
+├── research_plans/
+│   └── [FEATURE_NAME]_RESEARCH_PLAN_[DATE].md
+└── ui_ux/
+    └── [FEATURE_NAME]_UI_UX_DESIGN_SYSTEM_[DATE].md
+```
+
+---
+
+## STEP 4: Generate Platform-Specific UI Code (MANDATORY)
+
+**Objective:** Convert UI/UX design to platform-specific code following tech-specific UI/UX bridge prompt
+
+**⚠️ MANDATORY: READ AND REFERENCE THE UI/UX BRIDGE PROMPT FILE**
+
+**File Path (from Step 0):**
+- **Primary:** `./.cursor/commands/specify/ui_ux_bridge_[TECH]_[LANGUAGE].prompt.md`
+- **Fallback:** `./.cursor/commands/common/ui_ux_bridge.prompt.md`
+
+Before proceeding, you MUST:
+1. Read the complete tech-specific UI/UX bridge prompt file (generated in Step 0)
+2. If tech-specific file doesn't exist, use common file as fallback
+3. Understand all 3 phases and their requirements
+4. Follow the instructions exactly as specified in that file
+5. Generate all deliverables as defined in that file
+
+**⚠️ EXECUTE ALL 3 PHASES FROM THE UI/UX BRIDGE PROMPT FILE**
+
+### 4.1 Reference Document
+Follow the UI/UX bridge prompt file exactly:
+- Phase 1: Design Analysis & Semantic HTML Structure
+- Phase 2: CSS Implementation (Intermediate Format)
+- Phase 3: Platform-Specific Conversion
+
+### 4.2 Use Previous Results
+
+**Input from Step 3:**
+- Use complete design system specification
+- Reference all design tokens
+- Apply all component specifications
+- Follow animation guidelines
+
+**Input from Step 2:**
+- Use selected platform from research plan
+- Apply technical constraints
+- Follow architecture decisions
+
+### 4.3 Generate Complete UI Implementation
+
+**File naming convention:**
+```
+[FEATURE_NAME]_UI_IMPLEMENTATION_[PLATFORM]_[DATE].md
+```
+
+**Example:**
+```
+SHOE_SHOP_ECOMMERCE_UI_IMPLEMENTATION_FLUTTER_2025-12-03.md
+```
+
+### 4.4 Output Location
+
+**⚠️ MANDATORY: Save UI implementation to:**
+```
+./docs/ui_ux/[FEATURE_NAME]_UI_IMPLEMENTATION_[PLATFORM]_[DATE].md
+```
+
+**Deliverable:**
+Complete platform-specific UI code with:
+- ✅ Semantic HTML Structure (intermediate format)
+- ✅ Complete CSS with Design Tokens
+- ✅ JavaScript for Interactivity (if needed)
+- ✅ Platform-Specific Code (Flutter/Kotlin/Swift/etc.)
+- ✅ Component Mapping Documentation
+- ✅ Conversion Quality Checklist
+- ✅ Usage Examples
+
+**Additional Files:**
+If generating actual code files, also create:
+```
+./docs/ui_ux/code_samples/[PLATFORM]/
+```
+
+**Directory Structure After Step 4:**
+```
+./docs/
+├── research_plans/
+│   └── [FEATURE_NAME]_RESEARCH_PLAN_[DATE].md
+└── ui_ux/
+    ├── [FEATURE_NAME]_UI_UX_DESIGN_SYSTEM_[DATE].md
+    ├── [FEATURE_NAME]_UI_IMPLEMENTATION_[PLATFORM]_[DATE].md
+    └── code_samples/
+        └── [PLATFORM]/
+            ├── index.html
+            ├── styles.css
+            ├── script.js
+            └── [platform_specific_files]
+```
+
+---
+
+## STEP 5: Generate Complete Implementation Plan (MANDATORY)
+
+**Objective:** Create detailed implementation plan following tech-specific implementation plan prompt
+
+**⚠️ MANDATORY: READ AND REFERENCE THE IMPLEMENTATION PLAN PROMPT FILE**
+
+**File Path (from Step 0):**
+- **Primary:** `./.cursor/commands/specify/implementation_plan_[TECH]_[LANGUAGE].prompt.md`
+- **Fallback:** `./.cursor/commands/common/implementation_plan_common.prompt.md`
+
+Before proceeding, you MUST:
+1. Read the complete tech-specific implementation plan prompt file (generated in Step 0)
+2. If tech-specific file doesn't exist, use common file as fallback
+3. Understand all 8 planning sections and their requirements
+4. Follow the instructions exactly as specified in that file
+5. Generate all deliverables as defined in that file
+
+**⚠️ EXECUTE ALL SECTIONS FROM THE IMPLEMENTATION PLAN PROMPT FILE**
+
+### 5.1 Reference Document
+Follow the implementation plan prompt file exactly:
+1. Requirements Analysis
+2. Architecture Design
+3. Dependencies & Infrastructure
+4. Data Flow & Business Logic
+5. Error Handling Strategy
+6. Code Analysis & Validation
+7. Implementation Checklist
+8. Code Generation Requirements
+
+### 5.2 Synthesize All Previous Results
+
+**Input from Step 2 (Research Plan):**
+- Selected implementation approach
+- Architecture decisions
+- Technology choices
+- Data flow specifications
+- Error handling strategies
+
+**Input from Step 3 (UI/UX Design):**
+- Design system tokens
+- Component specifications
+- Page templates
+- Animation requirements
+
+**Input from Step 4 (UI Implementation):**
+- Platform-specific UI code
+- Component mapping
+- Widget/View structure
+
+### 5.3 Generate Complete Implementation Plan
+
+**File naming convention:**
+```
+[FEATURE_NAME]_IMPLEMENTATION_PLAN_[DATE].md
+```
+
+**Example:**
+```
+SHOE_SHOP_ECOMMERCE_IMPLEMENTATION_PLAN_2025-12-03.md
+```
+
+### 5.4 Split into Child Plans
+
+**MANDATORY: Create 6 child plans as specified in `research_plan.prompt.md` Step 7.7:**
+
+**Reference:** See Step 7.7 in research_plan.prompt.md for detailed child plan specifications.
+
+1. **Setup & Infrastructure**
+   - File: `[FEATURE_NAME]_IMPLEMENTATION_PLAN_01_SETUP_[DATE].md`
+
+2. **Core Layer**
+   - File: `[FEATURE_NAME]_IMPLEMENTATION_PLAN_02_CORE_[DATE].md`
+
+3. **Domain Layer**
+   - File: `[FEATURE_NAME]_IMPLEMENTATION_PLAN_03_DOMAIN_[DATE].md`
+
+4. **Data Layer**
+   - File: `[FEATURE_NAME]_IMPLEMENTATION_PLAN_04_DATA_[DATE].md`
+
+5. **Presentation Layer**
+   - File: `[FEATURE_NAME]_IMPLEMENTATION_PLAN_05_PRESENTATION_[DATE].md`
+
+6. **Integration & Validation**
+   - File: `[FEATURE_NAME]_IMPLEMENTATION_PLAN_06_INTEGRATION_[DATE].md`
+
+### 5.5 Output Location
+
+**⚠️ MANDATORY: Save all implementation plans to:**
+```
+./docs/implementation_plans/[FEATURE_NAME]/
+```
+
+**Structure:**
+```
+./docs/implementation_plans/[FEATURE_NAME]/
+├── [FEATURE_NAME]_IMPLEMENTATION_PLAN_[DATE].md (Main plan)
+├── [FEATURE_NAME]_IMPLEMENTATION_PLAN_01_SETUP_[DATE].md
+├── [FEATURE_NAME]_IMPLEMENTATION_PLAN_02_CORE_[DATE].md
+├── [FEATURE_NAME]_IMPLEMENTATION_PLAN_03_DOMAIN_[DATE].md
+├── [FEATURE_NAME]_IMPLEMENTATION_PLAN_04_DATA_[DATE].md
+├── [FEATURE_NAME]_IMPLEMENTATION_PLAN_05_PRESENTATION_[DATE].md
+└── [FEATURE_NAME]_IMPLEMENTATION_PLAN_06_INTEGRATION_[DATE].md
+```
+
+**Deliverable:**
+Complete implementation plans with:
+- ✅ Main Implementation Plan (comprehensive overview)
+- ✅ 6 Child Plans (detailed task breakdowns)
+- ✅ Complete architecture specifications
+- ✅ File structure mapping
+- ✅ Code templates for all components
+- ✅ Dependency lists
+- ✅ Validation checklists
+- ✅ Timeline and milestones
+
+**Directory Structure After Step 5:**
+```
+./docs/
+├── research_plans/
+│   └── [FEATURE_NAME]_RESEARCH_PLAN_[DATE].md
+├── ui_ux/
+│   ├── [FEATURE_NAME]_UI_UX_DESIGN_SYSTEM_[DATE].md
+│   ├── [FEATURE_NAME]_UI_IMPLEMENTATION_[PLATFORM]_[DATE].md
+│   └── code_samples/
+│       └── [PLATFORM]/
+└── implementation_plans/
+    └── [FEATURE_NAME]/
+        ├── [FEATURE_NAME]_IMPLEMENTATION_PLAN_[DATE].md
+        ├── [FEATURE_NAME]_IMPLEMENTATION_PLAN_01_SETUP_[DATE].md
+        ├── [FEATURE_NAME]_IMPLEMENTATION_PLAN_02_CORE_[DATE].md
+        ├── [FEATURE_NAME]_IMPLEMENTATION_PLAN_03_DOMAIN_[DATE].md
+        ├── [FEATURE_NAME]_IMPLEMENTATION_PLAN_04_DATA_[DATE].md
+        ├── [FEATURE_NAME]_IMPLEMENTATION_PLAN_05_PRESENTATION_[DATE].md
+        └── [FEATURE_NAME]_IMPLEMENTATION_PLAN_06_INTEGRATION_[DATE].md
+```
+
+---
+
+## ⚠️ MANDATORY USER CONFIRMATION CHECKPOINT ⚠️
+
+**BEFORE PROCEEDING TO STEP 6, AI MUST:**
+
+### Generate Workflow Completion Summary
+
+```markdown
+# Feature Development Workflow - Completion Summary
+
+**Feature:** [Feature Name]
+**Date:** [Date]
+**Status:** ✅ Planning Complete - Awaiting Implementation Approval
+
+---
+
+## Workflow Execution Summary
+
+### ✅ Step 0: Command & Project Rule Verification
+**Status:** Completed
+**Output:** Tech-specific command files and project rule verified/generated
+**Command Files Location:** `./.cursor/commands/specify/`
+**Project Rule Location:** `./.cursor/rules/specify/`
+**Tech Stack:** [Technology/Language/Framework]
+
+### ✅ Step 1: Requirement Analysis
+**Status:** Completed
+**Output:** Requirements documented
+
+### ✅ Step 2: Research & Analysis
+**Status:** Completed
+**Output:** Research plan generated
+**Location:** `./docs/research_plans/[FEATURE_NAME]_RESEARCH_PLAN_[DATE].md`
+**Selected Approach:** [Approach name and brief rationale]
+
+### ✅ Step 3: UI/UX Design System
+**Status:** Completed
+**Output:** Complete design system with [X] components
+**Location:** `./docs/ui_ux/[FEATURE_NAME]_UI_UX_DESIGN_SYSTEM_[DATE].md`
+**Design Style:** [Style name]
+
+### ✅ Step 4: Platform-Specific UI Code
+**Status:** Completed
+**Output:** [Platform] implementation with code samples
+**Location:** `./docs/ui_ux/[FEATURE_NAME]_UI_IMPLEMENTATION_[PLATFORM]_[DATE].md`
+**Platform:** [Platform name]
+
+### ✅ Step 5: Implementation Plans
+**Status:** Completed
+**Output:** 1 main plan + 6 child plans
+**Location:** `./docs/implementation_plans/[FEATURE_NAME]/`
+
+**Plans Generated:**
+1. ✅ Main Implementation Plan
+2. ✅ Setup & Infrastructure Plan
+3. ✅ Core Layer Plan
+4. ✅ Domain Layer Plan
+5. ✅ Data Layer Plan
+6. ✅ Presentation Layer Plan
+7. ✅ Integration & Validation Plan
+
+---
+
+## Implementation Overview
+
+### Estimated Effort
+- **Total Files to Create:** [Number]
+- **Estimated Duration:** [X days/weeks]
+- **Complexity:** [Low/Medium/High]
+
+### Architecture Summary
+- **Layers:** Domain, Data, Presentation
+- **State Management:** [Bloc/Cubit]
+- **Platform:** [Platform]
+- **Language:** [Language]
+
+### Key Components
+- **Entities:** [Number]
+- **Use Cases:** [Number]
+- **Repositories:** [Number]
+- **UI Screens:** [Number]
+- **Widgets:** [Number]
+
+### Dependencies
+**New packages to add:** [Number]
+- [Package 1]: [Version]
+- [Package 2]: [Version]
+- [Additional packages...]
+
+---
+
+## Generated Documentation
+
+### Research Documentation
+📄 `./docs/research_plans/[FEATURE_NAME]_RESEARCH_PLAN_[DATE].md`
+- Requirements analysis
+- Technology evaluation
+- Approach comparison
+- Technical specifications
+- Flow diagrams
+
+### UI/UX Documentation
+📄 `./docs/ui_ux/[FEATURE_NAME]_UI_UX_DESIGN_SYSTEM_[DATE].md`
+- Complete design system
+- Component library
+- Design tokens
+- Animation guidelines
+
+📄 `./docs/ui_ux/[FEATURE_NAME]_UI_IMPLEMENTATION_[PLATFORM]_[DATE].md`
+- Platform-specific UI code
+- Component mapping
+- Code samples
+
+### Implementation Documentation
+📄 `./docs/implementation_plans/[FEATURE_NAME]/`
+- Main implementation plan
+- 6 detailed child plans
+- Code templates
+- Validation checklists
+
+---
+
+## Next Steps
+
+### Implementation Execution Order
+If approved, implementation will proceed in this order:
+1. **Setup & Infrastructure** (Day 1)
+2. **Core Layer** (Day 1)
+3. **Domain Layer** (Day 2)
+4. **Data Layer** (Day 3-4)
+5. **Presentation Layer** (Day 5-6)
+6. **Integration & Validation** (Day 7)
+
+### Definition of Done
+- [ ] All code follows project standards
+- [ ] Clean Architecture layers properly separated
+- [ ] All acceptance criteria met
+- [ ] Error handling implemented
+- [ ] Code analysis passes (flutter analyze)
+- [ ] UI matches design specifications
+- [ ] All tests pass (if applicable)
+- [ ] Documentation updated
+
+---
+
+## ⚠️ USER CONFIRMATION REQUIRED
+
+Please review the generated documentation and confirm:
+
+**Do you want to proceed with implementation?**
+
+👉 **YES** - I will execute all 6 implementation plans in order
+👉 **NO** - Please specify what needs to be adjusted
+👉 **REVIEW** - I need to review the plans first (specify which files)
+
+**Reply with:**
+- "YES" or "PROCEED" to start implementation
+- "NO" or "ADJUST [details]" to request changes
+- "REVIEW [plan name]" to discuss specific plans
+```
+
+### Present Summary to User
+
+**AI MUST:**
+1. Generate the complete summary above
+2. Display it to the user
+3. **WAIT for explicit user confirmation**
+4. Do NOT proceed to Step 6 without user approval
+
+**Valid user responses:**
+- ✅ "YES" / "PROCEED" / "GO AHEAD" / "START IMPLEMENTATION"
+- ❌ "NO" / "WAIT" / "STOP"
+- 🔄 "REVIEW [specific plan]" / "ADJUST [details]" / "CHANGE [something]"
+
+---
+
+## STEP 6: Execute Implementation (ONLY AFTER USER APPROVAL)
+
+**⚠️ THIS STEP REQUIRES USER CONFIRMATION FROM STEP 5**
+
+**DO NOT EXECUTE WITHOUT USER SAYING "YES" OR "PROCEED"**
+
+### 6.1 Verify User Approval
+
+**IF user said YES:**
+- Proceed with implementation execution
+
+**IF user said NO or WAIT:**
+- Stop and ask what needs adjustment
+- Go back to relevant step to make changes
+- Regenerate affected documentation
+
+**IF user said REVIEW:**
+- Provide detailed explanation of requested plan
+- Answer questions
+- Wait for confirmation
+
+### 6.2 Execute All Implementation Plans
+
+**Reference document:** execute_implementation_plan.instructions.md
+
+**Follow exact execution order:**
+1. Execute Plan 01: Setup & Infrastructure
+2. Execute Plan 02: Core Layer
+3. Execute Plan 03: Domain Layer
+4. Execute Plan 04: Data Layer
+5. Execute Plan 05: Presentation Layer
+6. Execute Plan 06: Integration & Validation
+
+**For each plan:**
+- Read complete plan
+- Execute all tasks
+- Create all files
+- Implement all code
+- Validate completion
+- Mark plan as complete
+
+### 6.3 Track Implementation Progress
+
+**Create progress tracking file:**
+```
+./docs/implementation_plans/[FEATURE_NAME]/IMPLEMENTATION_PROGRESS.md
+```
+
+**Track:**
+- Current plan being executed
+- Completed tasks
+- Files created
+- Issues encountered
+- Next steps
+
+### 6.4 Final Validation
+
+**After completing all plans:**
+- Run `flutter analyze`
+- Fix all errors and warnings
+- Verify all files created
+- Test on device/emulator
+- Document any issues
+- Generate completion report
+
+---
+
+## Directory Structure - Final State
+
+After completing entire workflow:
+
+```
+./docs/
+├── research_plans/
+│   └── [FEATURE_NAME]_RESEARCH_PLAN_[DATE].md
+├── ui_ux/
+│   ├── [FEATURE_NAME]_UI_UX_DESIGN_SYSTEM_[DATE].md
+│   ├── [FEATURE_NAME]_UI_IMPLEMENTATION_[PLATFORM]_[DATE].md
+│   └── code_samples/
+│       └── [PLATFORM]/
+│           ├── index.html
+│           ├── styles.css
+│           ├── script.js
+│           └── [platform_files].dart
+├── implementation_plans/
+│   └── [FEATURE_NAME]/
+│       ├── [FEATURE_NAME]_IMPLEMENTATION_PLAN_[DATE].md
+│       ├── [FEATURE_NAME]_IMPLEMENTATION_PLAN_01_SETUP_[DATE].md
+│       ├── [FEATURE_NAME]_IMPLEMENTATION_PLAN_02_CORE_[DATE].md
+│       ├── [FEATURE_NAME]_IMPLEMENTATION_PLAN_03_DOMAIN_[DATE].md
+│       ├── [FEATURE_NAME]_IMPLEMENTATION_PLAN_04_DATA_[DATE].md
+│       ├── [FEATURE_NAME]_IMPLEMENTATION_PLAN_05_PRESENTATION_[DATE].md
+│       ├── [FEATURE_NAME]_IMPLEMENTATION_PLAN_06_INTEGRATION_[DATE].md
+│       ├── IMPLEMENTATION_PROGRESS.md
+│       └── IMPLEMENTATION_COMPLETION_REPORT.md
+└── others/
+    └── [any additional documentation]
+```
+
+---
+
+## Best Practices
+
+### Do:
+✅ Execute all steps in order (0→1→2→3→4→5→CONFIRM→6)
+✅ Verify and generate tech-specific commands FIRST (Step 0)
+✅ Store all outputs in specified directories
+✅ Use consistent naming conventions
+✅ Generate complete documentation at each step
+✅ Wait for user confirmation before implementation
+✅ Track progress throughout execution
+✅ Validate at each step
+✅ Generate comprehensive reports
+✅ Prefer tech-specific prompts over common ones
+
+### Don't:
+❌ Skip any step in the workflow (especially Step 0)
+❌ Proceed to Step 1 without verifying commands
+❌ Proceed to implementation without user approval
+❌ Store files in wrong directories
+❌ Use inconsistent naming
+❌ Generate incomplete documentation
+❌ Forget to create child plans
+❌ Skip validation steps
+❌ Use generic prompts when tech-specific ones should exist
+
+---
+
+## Troubleshooting
+
+### Issue: User requirement is too vague
+**Solution:** Ask ONE clarification question, then proceed with reasonable assumptions documented clearly
+
+### Issue: Design style not specified
+**Solution:** Use modern Material Design as default, document assumption in Step 1
+
+### Issue: Platform not specified
+**Solution:** Ask user to specify platform before proceeding to Step 4
+
+### Issue: User wants to adjust plans after Step 5
+**Solution:** Go back to relevant step, regenerate affected documentation, present updated summary
+
+### Issue: Implementation encounters errors
+**Solution:** Document in IMPLEMENTATION_PROGRESS.md, attempt fixes, escalate if critical
+
+---
+
+## Quick Reference
+
+### File Naming Patterns
+```
+Research:       [FEATURE_NAME]_RESEARCH_PLAN_[DATE].md
+UI/UX Design:   [FEATURE_NAME]_UI_UX_DESIGN_SYSTEM_[DATE].md
+UI Code:        [FEATURE_NAME]_UI_IMPLEMENTATION_[PLATFORM]_[DATE].md
+Main Plan:      [FEATURE_NAME]_IMPLEMENTATION_PLAN_[DATE].md
+Child Plans:    [FEATURE_NAME]_IMPLEMENTATION_PLAN_0[1-6]_[PHASE]_[DATE].md
+```
+
+### Directory Paths
+```
+Research Plans:         ./docs/research_plans/
+UI/UX Documentation:    ./docs/ui_ux/
+UI Code Samples:        ./docs/ui_ux/code_samples/[PLATFORM]/
+Implementation Plans:   ./docs/implementation_plans/[FEATURE_NAME]/
+Other Documentation:    ./docs/others/
+```
+
+### Checkpoint
+```
+Step 0: Verify and generate tech-specific commands and project rules (execute automatically)
+Steps 1-5: Execute automatically
+After Step 5: STOP and ask user confirmation
+Step 6: Execute ONLY if user approves
+```
+
+---
+
+## FINAL REMINDER FOR AI
+
+**MANDATORY PROMPT FILE REFERENCES (from Step 0):**
+- Step 0: Verify and generate tech-specific files in:
+  - `./.cursor/commands/specify/` (command files)
+  - `./.cursor/rules/specify/` (project rule)
+- Step 2: `./.cursor/commands/specify/research_plan_[TECH]_[LANGUAGE].prompt.md` (or common fallback)
+- Step 3: `./.cursor/commands/specify/ui_ux_design_generator_[TECH]_[LANGUAGE].prompt.md` (or common fallback)
+- Step 4: `./.cursor/commands/specify/ui_ux_bridge_[TECH]_[LANGUAGE].prompt.md` (or common fallback)
+- Step 5: `./.cursor/commands/specify/implementation_plan_[TECH]_[LANGUAGE].prompt.md` (or common fallback)
+- Project Rule: `./.cursor/rules/specify/project-rule_[TECH]_[LANGUAGE].mdc` (or common fallback: `./.cursor/rules/common/project-rule.mdc`)
+
+**When you receive a feature request, you MUST:**
+
+✅ **Step 0:** Verify tech-specific commands and project rule exist:
+   - Commands in `./.cursor/commands/specify/` → Generate missing files from `./.cursor/commands/common/`
+   - Project rule in `./.cursor/rules/specify/` → Generate missing file from `./.cursor/rules/common/`
+✅ **Step 1:** Parse and document user requirements
+✅ **Step 2:** Execute complete research plan (following tech-specific research plan prompt) → Save to `./docs/research_plans/`
+✅ **Step 3:** Generate complete UI/UX design (following tech-specific UI/UX design generator prompt) → Save to `./docs/ui_ux/`
+✅ **Step 4:** Create platform-specific UI code (following tech-specific UI/UX bridge prompt) → Save to `./docs/ui_ux/`
+✅ **Step 5:** Generate all implementation plans (following tech-specific implementation plan prompt - 1 main + 6 child) → Save to `./docs/implementation_plans/[FEATURE_NAME]/`
+✅ **STOP:** Present completion summary and **WAIT FOR USER CONFIRMATION**
+✅ **Step 6:** Execute implementation ONLY if user approves
+
+**DO NOT:**
+❌ Skip any step (0-5 must complete before asking user)
+❌ Proceed to Step 1 without verifying/generating tech-specific commands and project rule
+❌ Proceed to Step 6 without user saying "YES" or "PROCEED"
+❌ Store files in wrong locations
+❌ Generate incomplete documentation
+❌ Skip child plan generation
+❌ Use generic prompts/rules when tech-specific ones should be generated
+
+**REMEMBER:**
+- Step 0 is MANDATORY and must execute FIRST
+- Step 0 must verify BOTH command files AND project rules
+- Steps 0-5 are AUTOMATIC (no user confirmation needed)
+- USER CONFIRMATION is MANDATORY before Step 6
+- All documentation must be complete and stored correctly
+- Implementation execution only happens after user approval
+- Always prefer tech-specific prompts and rules over common ones
+
+**WORKFLOW = Verify Commands & Rules → Parse → Research → Design → Code → Plan → **CONFIRM** → Implement**
+
+---
+
+## Example Execution
+
+**User Input:**
+```
+"Build a shoe shop e-commerce app for Flutter with glass morphism design"
+```
+
+**AI Execution:**
+1. ✅ **Step 0:** Verify commands and project rule for Flutter/Dart
+   - Check `./.cursor/commands/specify/` → Generate missing files from `./.cursor/commands/common/`
+     - Generate: `research_plan_flutter_dart.prompt.md`
+     - Generate: `ui_ux_design_generator_flutter_dart.prompt.md`
+     - Generate: `ui_ux_bridge_flutter_dart.prompt.md`
+     - Generate: `implementation_plan_flutter_dart.prompt.md`
+   - Check `./.cursor/rules/specify/` → Generate missing file from `./.cursor/rules/common/`
+     - Generate: `project-rule_flutter_dart.mdc`
+2. ✅ **Step 1:** Parse requirements
+3. ✅ **Step 2:** Generate research plan → `./docs/research_plans/SHOE_SHOP_RESEARCH_PLAN_2025-12-03.md`
+4. ✅ **Step 3:** Generate UI/UX design → `./docs/ui_ux/SHOE_SHOP_UI_UX_DESIGN_SYSTEM_2025-12-03.md`
+5. ✅ **Step 4:** Generate Flutter UI code → `./docs/ui_ux/SHOE_SHOP_UI_IMPLEMENTATION_FLUTTER_2025-12-03.md`
+6. ✅ **Step 5:** Generate 7 implementation plans → `./docs/implementation_plans/SHOE_SHOP/`
+7. ⏸️ **PRESENT SUMMARY AND ASK: "Do you want to proceed with implementation?"**
+8. ⏸️ **WAIT FOR USER RESPONSE**
+9. ✅ (If user confirms) Execute all 6 implementation plans in order
+
+---
+
+```
+Break down the next task into smaller pieces and update the file in small chucks. Continue with each section until complete.
+```
+
+**End of Workflow Instructions**
