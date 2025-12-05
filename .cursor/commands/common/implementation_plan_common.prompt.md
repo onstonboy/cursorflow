@@ -6,170 +6,657 @@ agent: agent
 
 This document provides a structured approach for AI to analyze, plan, and implement features following the project's architecture standards. Use this guide to ensure comprehensive planning before implementation.
 
+## CRITICAL: Comprehensive Detail Requirements
+
+**⚠️ ALL IMPLEMENTATION PLANS MUST BE DETAILED AND COMPREHENSIVE - NO SIMPLIFICATIONS**
+
+When creating implementation plans, you MUST:
+
+1. **Expand Every Section:** Every section must have comprehensive subsections with detailed explanations, examples, and justifications
+2. **Provide Complete Specifications:** Every component must have complete specifications (properties, methods, relationships, dependencies)
+3. **Document All Decisions:** Every architectural decision must be documented with rationale
+4. **Include All Edge Cases:** All edge cases, error scenarios, and failure modes must be planned
+5. **Specify All Dependencies:** All dependencies must be listed with versions and justifications
+6. **Detail All Flows:** All data flows must be documented step-by-step with error handling
+7. **Plan All Components:** All components must be planned with complete structure and responsibilities
+8. **Consider Additional Features:** Always consider and document additional features/sections/parts/UI that could match project requirements
+
+**DO NOT:**
+- ❌ Simplify or summarize sections
+- ❌ Skip subsections or details
+- ❌ Provide minimal specifications
+- ❌ Ignore edge cases or error scenarios
+- ❌ Overlook additional features that could enhance the implementation
+
+**DO:**
+- ✅ Provide comprehensive, detailed planning
+- ✅ Expand every section with full details
+- ✅ Include all subsections and considerations
+- ✅ Document additional features/sections/parts/UI that match requirements
+- ✅ Provide extensive examples and justifications
+- ✅ Create thorough, enterprise-grade implementation plans
+
 ## Planning Workflow
 
 When implementing a new feature, follow this systematic approach:
 
-### 1. Requirements Analysis
-**Objective:** Understand what needs to be built
+### 1. Requirements Analysis (COMPREHENSIVE)
+**Objective:** Deeply understand what needs to be built with complete specifications
 
-#### Questions to Answer:
-- What is the core functionality being requested?
-- What are the user stories or use cases?
-- What are the acceptance criteria?
-- Are there any edge cases or error scenarios?
-- What are the performance requirements?
-- Are there any security considerations?
-- What platforms need to be supported (iOS, Android, Web, Desktop)?
+#### 1.1 Core Functionality Analysis:
+- **Primary Functionality:** [Detailed description of main feature]
+- **Secondary Functionality:** [Additional features that enhance the main feature]
+- **Nice-to-Have Features:** [Features that could be added for enhanced experience]
+- **Feature Dependencies:** [Which features depend on others]
+- **Feature Interactions:** [How features work together]
+
+#### 1.2 User Stories & Use Cases (Detailed):
+- **Primary User Stories:**
+  - As a [user type], I want to [action], so that [benefit]
+    - Acceptance criteria: [Detailed list]
+    - User flow: [Step-by-step flow]
+    - Edge cases: [List edge cases]
+- **Secondary User Stories:** [Repeat pattern]
+- **Admin/Management Stories:** [If applicable]
+- **Use Case Diagrams:** [If applicable, describe use case relationships]
+
+#### 1.3 Acceptance Criteria (Comprehensive):
+- **Functional Acceptance Criteria:**
+  - [ ] [Criterion 1] - Validation: [How to validate]
+  - [ ] [Criterion 2] - Validation: [How to validate]
+  - [ ] [Criterion 3] - Validation: [How to validate]
+- **Non-Functional Acceptance Criteria:**
+  - [ ] Performance: [Specific metrics, e.g., <200ms response time]
+  - [ ] Security: [Security requirements]
+  - [ ] Accessibility: [WCAG compliance level]
+  - [ ] Platform Support: [All supported platforms]
+- **Quality Acceptance Criteria:**
+  - [ ] Test coverage: [Target percentage]
+  - [ ] Code quality: [Lint rules, code standards]
+  - [ ] Documentation: [What documentation is required]
+
+#### 1.4 Edge Cases & Error Scenarios (Comprehensive):
+- **Data Edge Cases:**
+  - Empty data: [How to handle]
+  - Invalid data: [Validation and error handling]
+  - Large datasets: [Performance considerations]
+  - Concurrent modifications: [Conflict resolution]
+  - Data corruption: [Recovery strategy]
+- **User Edge Cases:**
+  - First-time users: [Onboarding]
+  - Power users: [Advanced features]
+  - Users with disabilities: [Accessibility]
+  - Users on slow connections: [Performance]
+  - Offline users: [Offline capabilities]
+- **System Edge Cases:**
+  - Network failures: [Error handling, retry logic]
+  - Server errors: [Graceful degradation]
+  - Timeout scenarios: [Handling timeouts]
+  - Rate limiting: [User feedback]
+  - Maintenance windows: [User communication]
+- **Integration Edge Cases:**
+  - Third-party service failures: [Fallback strategies]
+  - API version changes: [Compatibility handling]
+  - Data format changes: [Migration strategy]
+
+#### 1.5 Performance Requirements (Detailed):
+- **Response Time:**
+  - API response: [Target, e.g., <200ms]
+  - Page load: [Target, e.g., <2s]
+  - Action completion: [Target, e.g., <500ms]
+- **Throughput:**
+  - Requests per second: [Target]
+  - Concurrent users: [Target]
+- **Resource Usage:**
+  - CPU: [Limits]
+  - Memory: [Limits]
+  - Storage: [Limits]
+  - Network: [Bandwidth considerations]
+
+#### 1.6 Security Considerations (Comprehensive):
+- **Authentication:** [Methods required, session management]
+- **Authorization:** [Access control, role-based permissions]
+- **Data Protection:** [Encryption requirements, data masking]
+- **Input Security:** [Validation, sanitization, injection prevention]
+- **API Security:** [Rate limiting, API keys, OAuth]
+- **Compliance:** [GDPR, HIPAA, PCI-DSS, etc.]
+
+#### 1.7 Platform Support (Detailed):
+- **Target Platforms:**
+  - iOS: [Versions, devices]
+  - Android: [Versions, devices]
+  - Web: [Browsers, versions]
+  - Desktop: [OS, versions]
+- **Platform-Specific Features:** [Features unique to each platform]
+- **Responsive Design:** [Breakpoints, adaptive layouts]
+
+#### 1.8 Additional Features & Enhancements:
+- **Potential Additional Features:**
+  - [Feature 1]: [Description, value, complexity, implementation effort]
+  - [Feature 2]: [Description, value, complexity, implementation effort]
+- **UI/UX Enhancements:**
+  - [Enhancement 1]: [Description, impact, complexity]
+  - [Enhancement 2]: [Description, impact, complexity]
+- **Performance Optimizations:**
+  - [Optimization 1]: [Description, expected impact]
+  - [Optimization 2]: [Description, expected impact]
 
 #### Deliverable:
-- Clear feature description
-- List of functional requirements
-- List of non-functional requirements (performance, security, accessibility)
+- Comprehensive feature description with all details
+- Complete list of functional requirements with specifications
+- Detailed list of non-functional requirements (performance, security, accessibility, scalability, reliability)
+- Complete edge cases and error scenarios documentation
+- Additional features and enhancements analysis
 
 ---
 
 ### 2. Architecture Design
 **Objective:** Plan the implementation following Clean Architecture
 
-#### Domain Layer Planning:
-**Entities:**
-- What business objects need to be created?
-- What are their properties and relationships?
-- Are they immutable? (Use immutability pattern/library appropriate for your language)
-- Do they need value objects for complex types?
+#### Domain Layer Planning (Comprehensive):
 
-**Repository Interfaces:**
-- What data operations are needed?
-- What methods should the repository expose?
-- What is the return type? (Use Result<Success, Failure> or Either pattern for error handling)
-- Are there pagination requirements?
+**Entities (Detailed Specifications):**
+- **Entity 1: [Name]**
+  - Properties: [Complete list with types, nullable/required, default values]
+  - Relationships: [One-to-one, one-to-many, many-to-many with other entities]
+  - Immutability: [Yes/No, which immutability pattern/library]
+  - Value Objects: [Complex types that should be value objects]
+  - Business Rules: [Validation rules, constraints]
+  - Methods: [Business logic methods, if any]
+  - Equality: [How equality is determined]
+- **Entity 2: [Name]** [Repeat pattern]
 
-**Use Cases:**
-- What business logic needs to be executed?
-- What are the inputs (parameters)?
-- What are the outputs (success/failure types)?
-- Are there dependencies on other use cases?
-- What validations are needed?
+**Repository Interfaces (Complete Specifications):**
+- **Repository 1: [Name]**
+  - **Method 1: [Name]**
+    - Purpose: [What it does]
+    - Parameters: [Complete parameter list with types]
+    - Return Type: [Result<Success, Failure> or Either pattern]
+    - Pagination: [If applicable, pagination strategy]
+    - Error Cases: [What failures can occur]
+    - Side Effects: [Any side effects]
+  - **Method 2: [Name]** [Repeat pattern]
+- **Repository 2: [Name]** [Repeat pattern]
 
-#### Data Layer Planning:
-**Models:**
-- How do models map to entities?
-- What JSON serialization is needed? (Serialization library/annotations for your language)
-- Are there snake_case to camelCase conversions?
-- What are the API response structures?
+**Use Cases (Complete Specifications):**
+- **Use Case 1: [Name]**
+  - Purpose: [What business logic it executes]
+  - Input Parameters: [Complete parameter class/object with all fields]
+  - Output: [Success type, Failure types]
+  - Dependencies: [Other use cases, repositories]
+  - Validations: [Input validations, business rule validations]
+  - Business Logic: [Step-by-step business logic]
+  - Error Handling: [How errors are handled]
+  - Side Effects: [Navigation, logging, notifications]
+- **Use Case 2: [Name]** [Repeat pattern]
 
-**Data Sources:**
-- What remote APIs need to be called?
-- What local storage is required (Key-value storage, Relational database, NoSQL, etc.)?
-- What are the endpoints and HTTP methods?
-- What headers or authentication is needed?
-- How should responses be parsed?
+#### Data Layer Planning (Comprehensive):
 
-**Repository Implementation:**
-- How to handle network connectivity checks?
-- What caching strategy should be used?
-- How to map models to entities?
-- What error handling is required?
-- How to handle data synchronization?
+**Models (Complete Specifications):**
+- **Model 1: [Name]**
+  - Maps to Entity: [Which entity]
+  - Fields: [Complete list with types, JSON field names]
+  - JSON Serialization: [Library/annotations, fromJSON/toJSON methods]
+  - Field Conversions: [snake_case to camelCase, date formats, etc.]
+  - API Response Structure: [Complete JSON structure example]
+  - toDomain() Method: [How model maps to entity]
+  - Validation: [Model-level validations]
+- **Model 2: [Name]** [Repeat pattern]
 
-#### Presentation Layer Planning:
-**State Management:**
-- What state management approach is needed? (Redux, MobX, Context API, Vuex, NgRx, Bloc, Cubit, etc.)
-- What are the states (initial, loading, success, error)?
-- What are the events/actions for state management?
-- What side effects need to be handled?
-- Are there navigation requirements?
+**Remote Data Source (Complete Specifications):**
+- **Base URL:** [API base URL]
+- **Endpoints:**
+  - **Endpoint 1: [Path]**
+    - HTTP Method: [GET/POST/PUT/DELETE/PATCH]
+    - Purpose: [What it does]
+    - Request Headers: [Complete list with values]
+    - Request Body: [Structure if applicable]
+    - Query Parameters: [List with types]
+    - Response Structure: [Complete JSON structure]
+    - Status Codes: [200, 400, 401, 404, 500, etc.]
+    - Error Responses: [Error response structure]
+    - Authentication: [JWT, OAuth, API key, etc.]
+    - Rate Limiting: [Limits, handling]
+  - **Endpoint 2: [Path]** [Repeat pattern]
+- **HTTP Client:** [Library, configuration]
+- **Response Parsing:** [How responses are parsed, error handling]
 
-**UI Components:**
-- What screens/pages are needed?
-- What components will be reused vs. feature-specific?
-- What user interactions are required?
-- How should errors be displayed?
-- What loading indicators are needed?
-- Are there any animations or transitions?
+**Local Data Source (Complete Specifications):**
+- **Storage Type:** [Key-value, SQLite, NoSQL, File system, etc.]
+- **Storage Structure:**
+  - **Table/Collection 1: [Name]**
+    - Schema: [Complete schema with fields, types, constraints]
+    - Indexes: [Required indexes]
+    - Relationships: [Foreign keys, relationships]
+  - **Table/Collection 2: [Name]** [Repeat pattern]
+- **Operations:**
+  - **Operation 1: [Name]**
+    - Purpose: [What it does]
+    - Parameters: [Complete parameter list]
+    - Return Type: [What it returns]
+    - Error Handling: [How errors are handled]
+  - **Operation 2: [Name]** [Repeat pattern]
+- **Migration Strategy:** [If applicable, how schema changes are handled]
+
+**Repository Implementation (Complete Strategy):**
+- **Network Connectivity:**
+  - Check Method: [How connectivity is checked]
+  - Offline Behavior: [What happens when offline]
+  - Retry Logic: [Retry strategy, exponential backoff]
+- **Caching Strategy:**
+  - What to Cache: [List of cacheable data]
+  - Cache Duration: [TTL, expiration]
+  - Cache Invalidation: [When and how cache is invalidated]
+  - Cache Storage: [Where cache is stored]
+- **Data Mapping:**
+  - Model to Entity: [Mapping logic, transformations]
+  - Entity to Model: [If applicable]
+  - Error Mapping: [How exceptions map to Failures]
+- **Error Handling:**
+  - Network Errors: [How network errors are handled]
+  - Server Errors: [How server errors are handled]
+  - Local Storage Errors: [How local errors are handled]
+  - Error Mapping: [Exception to Failure mapping]
+- **Data Synchronization:**
+  - Sync Strategy: [Online-first, offline-first, hybrid]
+  - Conflict Resolution: [How conflicts are resolved]
+  - Background Sync: [If applicable, sync strategy]
+
+#### Presentation Layer Planning (Comprehensive):
+
+**State Management (Complete Specifications):**
+- **Approach:** [Redux, MobX, Context API, Vuex, NgRx, Bloc, Cubit, etc.]
+  - Rationale: [Why this approach]
+  - Scope: [Global, feature-specific, local]
+- **States (Complete State Definitions):**
+  - **State 1: [Name]**
+    - Type: [Initial, Loading, Success, Error, etc.]
+    - Properties: [Complete list with types]
+    - Immutability: [Yes/No, pattern used]
+    - When Used: [When this state is active]
+  - **State 2: [Name]** [Repeat pattern]
+- **Events/Actions (Complete Event Definitions):**
+  - **Event 1: [Name]**
+    - Purpose: [What it triggers]
+    - Payload: [Complete payload structure]
+    - Side Effects: [What happens when triggered]
+  - **Event 2: [Name]** [Repeat pattern]
+- **State Transitions:**
+  - [State A] → [Event] → [State B]
+  - [Complete state transition diagram]
+- **Side Effects:**
+  - Navigation: [When navigation occurs, to where]
+  - Notifications: [When notifications are shown]
+  - Logging: [What is logged]
+  - Analytics: [What events are tracked]
+
+**UI Components (Complete Specifications):**
+- **Pages/Screens:**
+  - **Page 1: [Name]**
+    - Purpose: [What it displays/does]
+    - Layout: [Layout structure, sections]
+    - Components Used: [List of child components]
+    - User Interactions: [All user actions]
+    - State Dependencies: [Which states it depends on]
+    - Navigation: [Where it navigates to/from]
+    - Error Display: [How errors are shown]
+    - Loading States: [Loading indicators, skeleton screens]
+    - Animations: [Entrance, transitions, micro-interactions]
+  - **Page 2: [Name]** [Repeat pattern]
+- **Reusable Components:**
+  - **Component 1: [Name]**
+    - Purpose: [What it does]
+    - Props/Parameters: [Complete list with types]
+    - States: [Internal states if any]
+    - Styling: [Style specifications]
+    - Accessibility: [ARIA labels, keyboard navigation]
+  - **Component 2: [Name]** [Repeat pattern]
+- **Feature-Specific Components:**
+  - **Component 1: [Name]** [Same structure as reusable]
+  - **Component 2: [Name]** [Same structure]
+- **User Interactions (Complete List):**
+  - [Interaction 1]: [What user does, what happens]
+  - [Interaction 2]: [What user does, what happens]
+- **Error Display Strategy:**
+  - Error Types: [List of error types]
+  - Display Method: [Toast, inline, modal, etc.]
+  - Error Messages: [User-friendly messages]
+  - Recovery Actions: [Retry, dismiss, etc.]
+- **Loading Indicators:**
+  - Types: [Skeleton screens, spinners, progress bars]
+  - When Shown: [When each type is used]
+  - Styling: [Visual specifications]
+- **Animations & Transitions:**
+  - Entrance Animations: [How elements appear]
+  - Page Transitions: [Transitions between pages]
+  - Micro-interactions: [Button presses, hovers, etc.]
+  - Scroll Animations: [Parallax, reveal, etc.]
+  - Performance: [60fps target, optimization]
 
 #### Deliverable:
-- Layer-by-layer component breakdown
-- Data flow diagram (conceptual)
-- List of files to be created/modified
+- Complete layer-by-layer component breakdown with full specifications
+- Detailed data flow diagrams (success paths, error paths, state transitions)
+- Complete list of files to be created/modified with file paths
+- Complete component specifications (properties, methods, relationships)
+- Complete state management specifications (states, events, transitions)
+- Complete UI component specifications (pages, components, interactions)
 
 ---
 
-### 3. Dependencies & Infrastructure
-**Objective:** Identify required packages and setup
+### 3. Dependencies & Infrastructure (COMPREHENSIVE)
+**Objective:** Identify all required packages, infrastructure, and setup with complete specifications
 
-#### Required Packages:
-- Are new pub dependencies needed?
-- What versions are compatible?
-- Are there platform-specific dependencies?
+#### 3.1 Required Packages (Complete List):
+- **State Management:**
+  - Package: [Name, version]
+  - Purpose: [Why needed]
+  - Compatibility: [Compatible with other packages]
+- **HTTP Client:**
+  - Package: [Name, version]
+  - Purpose: [Why needed]
+  - Features: [Required features]
+- **Local Storage:**
+  - Package: [Name, version]
+  - Purpose: [Why needed]
+  - Storage Type: [What it provides]
+- **Dependency Injection:**
+  - Package: [Name, version]
+  - Purpose: [Why needed]
+  - Features: [Code generation, annotations, etc.]
+- **Serialization:**
+  - Package: [Name, version]
+  - Purpose: [Why needed]
+  - Features: [JSON serialization, code generation]
+- **Utilities:**
+  - Package: [Name, version]
+  - Purpose: [Why needed]
+- **Platform-Specific Dependencies:**
+  - iOS: [If applicable]
+  - Android: [If applicable]
+  - Web: [If applicable]
+- **Dev Dependencies:**
+  - Build Tools: [List]
+  - Code Generation: [List]
+  - Testing: [List]
+  - Linting: [List]
 
-#### Dependency Injection:
-- What classes need to be registered with the DI container?
-- What should be singleton vs. factory?
-- What DI registration approach is needed? (Annotations, manual registration, etc.)
-- Are there any initialization requirements?
+#### 3.2 Dependency Injection (Complete Registration Plan):
+- **Registration Approach:** [Annotations, manual, code generation]
+- **Classes to Register:**
+  - **Class 1: [Name]**
+    - Registration Type: [Singleton, Factory, LazySingleton]
+    - Dependencies: [What it depends on]
+    - Purpose: [Why registered]
+    - Lifecycle: [When created, when disposed]
+  - **Class 2: [Name]** [Repeat pattern]
+- **Module Organization:** [How DI modules are organized]
+- **Initialization:**
+  - Setup Steps: [Step-by-step initialization]
+  - Order: [Initialization order]
+  - Error Handling: [How initialization errors are handled]
 
-#### Configuration:
-- Are environment variables needed?
-- Are there API keys or secrets?
-- Is there different config for dev/prod?
+#### 3.3 Configuration (Complete Configuration Plan):
+- **Environment Variables:**
+  - Variable 1: [Name, purpose, default value, required]
+  - Variable 2: [Name, purpose, default value, required]
+- **API Keys & Secrets:**
+  - Key 1: [Name, purpose, storage method, security]
+  - Key 2: [Name, purpose, storage method, security]
+- **Environment-Specific Config:**
+  - Development: [Config values]
+  - Staging: [Config values]
+  - Production: [Config values]
+- **Configuration Management:**
+  - Config Files: [Location, format]
+  - Loading Strategy: [How config is loaded]
+  - Validation: [Config validation]
+
+#### 3.4 Infrastructure Setup:
+- **Build Configuration:**
+  - Build Scripts: [List]
+  - Code Generation: [Commands, when to run]
+  - Build Variants: [If applicable]
+- **Project Structure:**
+  - Directory Layout: [Complete structure]
+  - File Naming: [Conventions]
+- **Development Tools:**
+  - IDE Setup: [Required plugins, settings]
+  - Debugging: [Debug configuration]
+  - Testing: [Test setup]
 
 #### Deliverable:
-- List of dependencies to add to package configuration file (package.json, requirements.txt, pom.xml, etc.)
-- Injectable registration plan
-- Configuration requirements
+- Complete list of dependencies with versions and justifications
+- Complete dependency injection registration plan with all classes
+- Complete configuration requirements (environment variables, API keys, secrets)
+- Complete infrastructure setup plan
+- Package configuration file updates (package.json, requirements.txt, pom.xml, etc.)
 
 ---
 
-### 4. Data Flow & Business Logic
-**Objective:** Map out how data moves through the system
+### 4. Data Flow & Business Logic (COMPREHENSIVE)
+**Objective:** Map out complete data flows through the system with detailed specifications
 
-#### Flow Mapping:
+#### 4.1 Flow Mapping (Complete Diagrams):
 ```
-User Action → Event/Method Call → Use Case → Repository → Data Source → API/Storage
-                                                                            ↓
-User Feedback ← State Update ← Either<Failure, Success> ← Model → Response
+Detailed Flow Diagram:
+┌─────────────┐
+│   User UI   │
+└──────┬──────┘
+       │ 1. User Action (detailed description)
+       ▼
+┌─────────────────┐
+│  View/Page      │
+└──────┬──────────┘
+       │ 2. Trigger Event/Method (event name, payload)
+       ▼
+┌─────────────────────┐
+│ Controller/Manager  │◄──────┐
+└──────┬──────────────┘       │
+       │ 3. setState(loading) │ 9. setState(success/error)
+       ▼                      │
+┌─────────────────┐           │
+│    Use Case     │           │
+└──────┬──────────┘           │
+       │ 4. Call repository   │
+       │    (with validation)  │
+       ▼                      │
+┌─────────────────┐           │
+│   Repository    │           │
+└──────┬──────────┘           │
+       │ 5. Check network/    │
+       │    cache strategy     │
+       ▼                      │
+   ┌───┴────┐                │
+   │ Remote │ Local          │
+   │ Source │ Source         │
+   └───┬────┴────┬───────────┘
+       │ 6. Fetch│ 6. Fetch
+       ▼         ▼        
+   ┌─────────────────┐   
+   │   Data/Error     │   
+   └──────┬──────────┘   
+          │ 7. Map to Entity
+          ▼              
+   ┌─────────────────┐   
+   │ Result<Success, │   
+   │     Failure>    │   
+   └──────┬──────────┘   
+          │ 8. Return result
+          └──────────────┘
 ```
 
-#### For Each Flow:
-1. **Trigger:** What initiates this flow?
-2. **Input Validation:** What needs to be validated?
-3. **Processing Steps:** What happens at each layer?
-4. **Success Path:** What happens on success?
-5. **Error Path:** What failures can occur and how are they handled?
-6. **State Changes:** How does the UI state change?
-7. **Side Effects:** Are there navigation, notifications, or logging?
+#### 4.2 For Each Flow (Complete Specifications):
+
+**Flow 1: [Flow Name]**
+- **Trigger:**
+  - User Action: [Detailed description]
+  - Event/Method: [Event name or method name]
+  - Payload: [Complete payload structure]
+- **Input Validation:**
+  - Validation Rules: [Complete list of validations]
+  - Validation Errors: [What errors can occur]
+  - Error Handling: [How validation errors are handled]
+- **Processing Steps (Detailed):**
+  1. **Presentation Layer:**
+     - Component: [Which component]
+     - Action: [What happens]
+     - State Change: [What state changes]
+  2. **Domain Layer:**
+     - Use Case: [Which use case]
+     - Business Logic: [Step-by-step logic]
+     - Validations: [Business rule validations]
+  3. **Data Layer:**
+     - Repository: [Which repository method]
+     - Data Source: [Remote or local]
+     - Data Transformation: [How data is transformed]
+  4. **Response Processing:**
+     - Success: [How success is processed]
+     - Error: [How error is processed]
+- **Success Path (Detailed):**
+  - Data Flow: [How data flows back]
+  - State Updates: [All state changes]
+  - UI Updates: [What UI changes]
+  - Side Effects: [Navigation, notifications, etc.]
+- **Error Path (Detailed):**
+  - Error Types: [All possible errors]
+  - Error Handling: [How each error is handled]
+  - Error Mapping: [Exception to Failure mapping]
+  - User Feedback: [How errors are shown to user]
+  - Recovery: [Retry logic, fallback strategies]
+- **State Changes:**
+  - Initial State: [Starting state]
+  - Intermediate States: [Loading, processing, etc.]
+  - Final States: [Success, error states]
+  - State Transition Diagram: [Visual representation]
+- **Side Effects:**
+  - Navigation: [Where navigation occurs, when]
+  - Notifications: [What notifications are shown]
+  - Logging: [What is logged]
+  - Analytics: [What events are tracked]
+  - Background Tasks: [Any background processing]
+
+**Flow 2: [Flow Name]** [Repeat complete pattern]
+
+#### 4.3 State Transition Diagrams:
+```
+Complete State Machine:
+                    ┌─────────┐
+                    │ Initial │
+                    └────┬────┘
+                         │ Event triggered
+                         ▼
+                    ┌─────────┐
+              ┌────►│ Loading │◄────┐
+              │     └────┬────┘     │
+              │          │          │ Retry
+              │          ▼          │
+         ┌────┴─────┬─────────┬────┴────┐
+         │          │         │         │
+    ┌────▼───┐ ┌───▼────┐ ┌──▼─────┐   │
+    │Success │ │ Error  │ │ Empty  │   │
+    └────┬───┘ └───┬────┘ └──┬─────┘   │
+         │         │         │          │
+         └─────────┴─────────┴──────────┘
+           Refresh/New Action
+```
 
 #### Deliverable:
-- Sequence of operations for each user action
-- Error handling strategy for each flow
-- State transition diagram
+- Complete sequence of operations for each user action with detailed steps
+- Comprehensive error handling strategy for each flow with all error types
+- Complete state transition diagrams for all flows
+- Complete data flow diagrams (success paths, error paths)
+- Complete side effects documentation
 
 ---
 
-### 5. Error Handling Strategy
-**Objective:** Plan comprehensive error management
+### 5. Error Handling Strategy (COMPREHENSIVE)
+**Objective:** Plan comprehensive error management with complete specifications
 
-#### Identify Failure Types:
-- **NetworkFailure:** No internet, timeout, connection issues
-- **ServerFailure:** API errors, 4xx/5xx responses
-- **CacheFailure:** Local storage errors
-- **ValidationFailure:** Input validation errors
-- **AuthenticationFailure:** Token expired, unauthorized
-- **Custom Failures:** Domain-specific errors
+#### 5.1 Identify Failure Types (Complete List):
+- **NetworkFailure:**
+  - Scenarios: [No internet, timeout, connection issues, DNS failures]
+  - User Message: [User-friendly message]
+  - Recovery: [Retry logic, offline handling]
+- **ServerFailure:**
+  - Scenarios: [API errors, 4xx/5xx responses, service unavailable]
+  - Status Codes: [400, 401, 403, 404, 500, 502, 503, etc.]
+  - User Message: [User-friendly message per status code]
+  - Recovery: [Retry logic, fallback]
+- **CacheFailure:**
+  - Scenarios: [Local storage errors, read/write failures, corruption]
+  - User Message: [User-friendly message]
+  - Recovery: [Clear cache, fallback to remote]
+- **ValidationFailure:**
+  - Scenarios: [Input validation errors, business rule violations]
+  - Validation Types: [Field-level, form-level, business rules]
+  - User Message: [User-friendly message per validation]
+  - Recovery: [User correction, inline validation]
+- **AuthenticationFailure:**
+  - Scenarios: [Token expired, unauthorized, invalid credentials]
+  - User Message: [User-friendly message]
+  - Recovery: [Re-login, token refresh]
+- **Custom Failures:**
+  - **Failure 1: [Name]**
+    - Scenarios: [When it occurs]
+    - User Message: [User-friendly message]
+    - Recovery: [How to recover]
+  - **Failure 2: [Name]** [Repeat pattern]
 
-#### Error Handling Plan:
-- What custom Failure classes are needed?
-- How are exceptions caught and mapped to Failures?
-- What error messages should users see?
-- Should errors be logged/reported?
-- Are there retry mechanisms?
+#### 5.2 Error Handling Plan (Complete Strategy):
+- **Custom Failure Classes:**
+  - **Class 1: [Name]**
+    - Extends: [Base Failure class]
+    - Properties: [Message, code, details]
+    - When Used: [When this failure occurs]
+  - **Class 2: [Name]** [Repeat pattern]
+- **Exception to Failure Mapping:**
+  - **Layer: Data Source**
+    - Exception Type: [NetworkException, HttpException, etc.]
+    - Maps To: [NetworkFailure, ServerFailure, etc.]
+    - Mapping Logic: [How exception is converted]
+  - **Layer: Repository**
+    - Exception Type: [CacheException, etc.]
+    - Maps To: [CacheFailure, etc.]
+    - Mapping Logic: [How exception is converted]
+  - **Layer: Use Case**
+    - Validation: [How validation errors become ValidationFailure]
+    - Business Rules: [How business rule violations become Failures]
+- **User-Facing Error Messages:**
+  - **Failure Type → Message Mapping:**
+    - NetworkFailure: "[User-friendly message]"
+    - ServerFailure: "[User-friendly message]"
+    - [All failure types with messages]
+  - **Message Localization:** [If applicable, i18n strategy]
+- **Error Logging & Reporting:**
+  - What to Log: [Error details, stack traces, user context]
+  - Logging Level: [Error, warning, info]
+  - Error Reporting: [Crash reporting, analytics]
+  - Privacy: [What not to log - PII, sensitive data]
+- **Retry Mechanisms:**
+  - Retry Strategy: [Exponential backoff, fixed interval]
+  - Max Retries: [Number of retries]
+  - Retry Conditions: [When to retry, when not to]
+  - User Feedback: [How retry status is shown]
+
+#### 5.3 Error Display Strategy:
+- **Error Display Methods:**
+  - Toast/Snackbar: [For transient errors]
+  - Inline Errors: [For form validation]
+  - Modal/Dialog: [For critical errors]
+  - Error Page: [For fatal errors]
+- **Error Recovery Actions:**
+  - Retry Button: [When shown, what it does]
+  - Dismiss: [When errors can be dismissed]
+  - Go Back: [Navigation on error]
+  - Contact Support: [For persistent errors]
 
 #### Deliverable:
-- List of Failure classes to create
-- Error mapping strategy per layer
-- User-facing error messages
+- Complete list of Failure classes with full specifications
+- Complete error mapping strategy per layer with all exception types
+- Complete user-facing error messages for all failure types
+- Complete error logging and reporting strategy
+- Complete retry mechanism specifications
+- Complete error display and recovery strategy
 
 ---
 
@@ -209,56 +696,207 @@ User Feedback ← State Update ← Either<Failure, Success> ← Model → Respon
 
 ---
 
-### 7. Implementation Checklist
-**Objective:** Step-by-step implementation order
+### 7. Implementation Checklist (COMPREHENSIVE)
+**Objective:** Step-by-step implementation order with complete task breakdown
 
-#### Recommended Order:
-1. **Setup:**
-   - [ ] Add dependencies to package configuration file (package.json, requirements.txt, pom.xml, etc.)
-   - [ ] Install dependencies using package manager (npm install, pip install, etc.)
-   - [ ] Create directory structure
+#### 7.1 Phase 1: Setup & Infrastructure
+- [ ] **Project Structure:**
+  - [ ] Create directory structure (all layers)
+  - [ ] Set up feature directory
+  - [ ] Create placeholder files if needed
+- [ ] **Dependencies:**
+  - [ ] Add dependencies to package configuration file (package.json, requirements.txt, pom.xml, etc.)
+  - [ ] Add dev dependencies
+  - [ ] Install dependencies using package manager (npm install, pip install, etc.)
+  - [ ] Verify dependency versions are compatible
+- [ ] **Configuration:**
+  - [ ] Set up environment variables
+  - [ ] Configure API keys/secrets
+  - [ ] Set up environment-specific configs (dev/staging/prod)
+- [ ] **Build Setup:**
+  - [ ] Configure build scripts
+  - [ ] Set up code generation (if applicable)
+  - [ ] Configure linting/formatting
 
-2. **Core/Shared Components:**
-   - [ ] Create Failure classes (if new ones needed)
-   - [ ] Create custom exceptions
-   - [ ] Add utility functions/extensions
+#### 7.2 Phase 2: Core/Shared Components
+- [ ] **Failure Classes:**
+  - [ ] Create base Failure class (if not exists)
+  - [ ] Create NetworkFailure
+  - [ ] Create ServerFailure
+  - [ ] Create CacheFailure
+  - [ ] Create ValidationFailure
+  - [ ] Create AuthenticationFailure
+  - [ ] Create custom failures: [List all custom failures]
+- [ ] **Exception Classes:**
+  - [ ] Create custom exceptions: [List all exceptions]
+- [ ] **Utility Functions:**
+  - [ ] Add utility functions/extensions: [List all utilities]
+- [ ] **Common Components:**
+  - [ ] Create reusable UI components: [List components]
 
-3. **Domain Layer:**
-   - [ ] Define entities (with immutability support)
-   - [ ] Create repository interfaces
-   - [ ] Implement use cases
+#### 7.3 Phase 3: Domain Layer
+- [ ] **Entities:**
+  - [ ] Create Entity 1: [Name] (with immutability support)
+    - [ ] Define all properties
+    - [ ] Add business logic methods (if any)
+    - [ ] Implement equality/comparison
+    - [ ] Run code generation (if applicable)
+  - [ ] Create Entity 2: [Name] [Repeat pattern]
+- [ ] **Repository Interfaces:**
+  - [ ] Create Repository 1: [Name]
+    - [ ] Define all methods with signatures
+    - [ ] Document each method
+  - [ ] Create Repository 2: [Name] [Repeat pattern]
+- [ ] **Use Cases:**
+  - [ ] Create UseCase 1: [Name]
+    - [ ] Define parameters class
+    - [ ] Implement business logic
+    - [ ] Add validations
+    - [ ] Add DI registration
+  - [ ] Create UseCase 2: [Name] [Repeat pattern]
 
-4. **Data Layer:**
-   - [ ] Create models (with JsonSerializable)
-   - [ ] Implement data sources (remote/local)
-   - [ ] Implement repository
+#### 7.4 Phase 4: Data Layer
+- [ ] **Models:**
+  - [ ] Create Model 1: [Name] (with JsonSerializable)
+    - [ ] Define all fields
+    - [ ] Add JSON annotations
+    - [ ] Implement fromJSON/toJSON
+    - [ ] Implement toDomain()
+    - [ ] Run code generation
+  - [ ] Create Model 2: [Name] [Repeat pattern]
+- [ ] **Remote Data Source:**
+  - [ ] Create RemoteDataSource: [Name]
+    - [ ] Implement method 1: [Name]
+    - [ ] Implement method 2: [Name]
+    - [ ] Add error handling
+    - [ ] Add request/response parsing
+  - [ ] Create RemoteDataSource: [Name] [Repeat if multiple]
+- [ ] **Local Data Source:**
+  - [ ] Create LocalDataSource: [Name]
+    - [ ] Set up storage (database/file)
+    - [ ] Implement method 1: [Name]
+    - [ ] Implement method 2: [Name]
+    - [ ] Add error handling
+  - [ ] Create LocalDataSource: [Name] [Repeat if multiple]
+- [ ] **Repository Implementation:**
+  - [ ] Create RepositoryImpl: [Name]
+    - [ ] Implement all repository methods
+    - [ ] Add network connectivity checks
+    - [ ] Implement caching strategy
+    - [ ] Add error mapping
+    - [ ] Add data synchronization (if applicable)
 
-5. **Presentation Layer:**
-   - [ ] Create state classes (immutable)
-   - [ ] Create event/action classes
-   - [ ] Implement state manager/controller
-   - [ ] Create UI components
-   - [ ] Wire up state subscription/binding
+#### 7.5 Phase 5: Presentation Layer
+- [ ] **State Management:**
+  - [ ] Create state classes (immutable)
+    - [ ] State 1: [Name]
+    - [ ] State 2: [Name]
+  - [ ] Create event/action classes
+    - [ ] Event 1: [Name]
+    - [ ] Event 2: [Name]
+  - [ ] Implement state manager/controller
+    - [ ] Implement event handler 1
+    - [ ] Implement event handler 2
+    - [ ] Add side effects (navigation, logging, etc.)
+- [ ] **UI Components:**
+  - [ ] Create pages/screens
+    - [ ] Page 1: [Name]
+      - [ ] Layout structure
+      - [ ] State binding
+      - [ ] User interactions
+      - [ ] Error handling
+      - [ ] Loading states
+    - [ ] Page 2: [Name] [Repeat pattern]
+  - [ ] Create reusable components
+    - [ ] Component 1: [Name]
+    - [ ] Component 2: [Name]
+  - [ ] Create feature-specific components
+    - [ ] Component 1: [Name]
+    - [ ] Component 2: [Name]
+- [ ] **State Integration:**
+  - [ ] Wire up state subscription/binding
+  - [ ] Add navigation logic
+  - [ ] Add error display logic
+  - [ ] Add loading indicators
 
-6. **Dependency Injection:**
-   - [ ] Add DI annotations/configuration
-   - [ ] Run build tools (if applicable)
-   - [ ] Verify DI setup
+#### 7.6 Phase 6: Dependency Injection & Code Generation
+- [ ] **Dependency Injection:**
+  - [ ] Add DI annotations/configuration to all classes
+  - [ ] Register all dependencies
+  - [ ] Set up DI modules (if applicable)
+  - [ ] Run build tools (if applicable)
+  - [ ] Verify DI container registration
+  - [ ] Test dependency resolution
+- [ ] **Code Generation:**
+  - [ ] Run immutability code generation (if applicable)
+  - [ ] Run JSON serialization code generation
+  - [ ] Run DI code generation
+  - [ ] Verify all generated code compiles
+  - [ ] Fix any generation errors
 
-7. **Code Analysis:**
-   - [ ] Run code analysis using your language's linter/analyzer
-   - [ ] Fix all compilation errors and warnings
-   - [ ] Verify null safety compliance
-   - [ ] Ensure lint rules are followed
+#### 7.7 Phase 7: Code Analysis & Quality
+- [ ] **Static Analysis:**
+  - [ ] Run code analysis using your language's linter/analyzer
+  - [ ] Fix all compilation errors
+  - [ ] Fix all warnings
+  - [ ] Fix all hints/suggestions
+- [ ] **Code Quality:**
+  - [ ] Verify null safety compliance
+  - [ ] Ensure lint rules are followed
+  - [ ] Check code style consistency
+  - [ ] Verify naming conventions
+  - [ ] Check for unused imports/code
+- [ ] **Documentation:**
+  - [ ] Add code comments for complex logic
+  - [ ] Document public APIs
+  - [ ] Update README if needed
 
-8. **Integration & Deployment:**
-   - [ ] Test on device/emulator
-   - [ ] Handle edge cases
-   - [ ] Fix any issues
+#### 7.8 Phase 8: Testing & Integration
+- [ ] **Unit Tests:**
+  - [ ] Test entities
+  - [ ] Test use cases
+  - [ ] Test repositories
+  - [ ] Test state management
+- [ ] **Integration Tests:**
+  - [ ] Test data flow
+  - [ ] Test error handling
+  - [ ] Test state transitions
+- [ ] **Manual Testing:**
+  - [ ] Test on device/emulator
+  - [ ] Test all user flows
+  - [ ] Test error scenarios
+  - [ ] Test edge cases
+  - [ ] Test on all target platforms
+- [ ] **Performance Testing:**
+  - [ ] Test response times
+  - [ ] Test memory usage
+  - [ ] Test with large datasets
+- [ ] **Accessibility Testing:**
+  - [ ] Test with screen readers
+  - [ ] Test keyboard navigation
+  - [ ] Test color contrast
+  - [ ] Verify WCAG compliance
+
+#### 7.9 Phase 9: Polish & Finalization
+- [ ] **Edge Cases:**
+  - [ ] Handle all identified edge cases
+  - [ ] Add error recovery
+  - [ ] Add fallback strategies
+- [ ] **Performance Optimization:**
+  - [ ] Optimize rendering
+  - [ ] Optimize data loading
+  - [ ] Optimize animations
+- [ ] **Final Review:**
+  - [ ] Code review
+  - [ ] Architecture review
+  - [ ] UI/UX review
+  - [ ] Fix any issues found
 
 #### Deliverable:
-- Ordered task list
-- Clear action items
+- Complete ordered task list with all subtasks
+- Clear action items with acceptance criteria
+- Phase-by-phase breakdown with dependencies
+- Complete testing checklist
 
 ---
 
@@ -521,3 +1159,21 @@ This implementation planning guide ensures:
 - Code quality and maintainability
 
 Always complete the planning phase before writing code. A well-planned feature is easier to implement and maintain.
+
+---
+
+## CRITICAL: Comprehensive Detail Requirements Reminder
+
+**⚠️ ALL IMPLEMENTATION PLANS MUST BE DETAILED AND COMPREHENSIVE**
+
+**The implementation plan should be so comprehensive that a developer can implement the feature without asking additional questions.**
+
+**Remember:**
+- ✅ Expand every section with full details
+- ✅ Include all subsections and considerations
+- ✅ Document additional features/sections/parts/UI that match requirements
+- ✅ Provide extensive examples and justifications
+- ✅ Create thorough, enterprise-grade implementation plans
+- ❌ DO NOT simplify or summarize
+- ❌ DO NOT skip details or subsections
+- ❌ DO NOT overlook additional features that could enhance the implementation

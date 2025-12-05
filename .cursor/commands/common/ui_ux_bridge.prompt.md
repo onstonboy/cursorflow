@@ -44,6 +44,66 @@ Flutter/Android/iOS/React Native/SwiftUI/Jetpack Compose/etc.
 
 **⚠️ AI MUST COMPLETE THIS STEP BEFORE PROCEEDING TO PHASE 1**
 
+### Step 0.0: Check UI Styles Reference & Match Project Requirements (MANDATORY)
+
+**⚠️ CRITICAL: AI MUST CHECK THE UI STYLES REFERENCE FIRST**
+
+**Action Required:**
+1. **Read and analyze** `.cursor/commands/common/ui_styles_reference.md`
+2. **Extract project/feature requirements** from the user's request
+3. **Match project type** with suitable UI styles from the reference
+4. **Research on Internet** (if possible) to validate and find additional inspiration
+5. **Select best-fit UI styles** that match the project requirements
+
+**Process:**
+```markdown
+### UI Styles Reference Analysis
+
+**Project/Feature Requirements:**
+- Project Type: [SaaS, E-commerce, Portfolio, Gaming, etc.]
+- Target Audience: [Description]
+- Brand Personality: [Modern, Luxury, Playful, Professional, etc.]
+- Key Features: [List main features]
+- Performance Requirements: [Mobile, Desktop, Both]
+- Complexity Constraints: [Low, Medium, High]
+
+**UI Styles Reference Check:**
+1. Reviewed `.cursor/commands/common/ui_styles_reference.md`
+2. Identified relevant styles based on "Suitable Project Types" attribute
+3. Cross-referenced with project requirements
+
+**Matching UI Styles Found:**
+- [Style Name 1] - WOW Factor: X/10, Complexity: [Low/Medium/High], Performance: [Excellent/Good/Fair]
+  - Match Score: [High/Medium/Low]
+  - Why it fits: [Explanation]
+  - Suitable Project Types: [List from reference]
+  
+- [Style Name 2] - WOW Factor: X/10, Complexity: [Low/Medium/High], Performance: [Excellent/Good/Fair]
+  - Match Score: [High/Medium/Low]
+  - Why it fits: [Explanation]
+  - Suitable Project Types: [List from reference]
+
+**Internet Research (if applicable):**
+- [Additional research findings from web search]
+- [Current trends in similar products]
+- [Validation of style choices]
+
+**Selected Best-Fit UI Styles:**
+1. **Primary Style:** [Style Name] - [Brief justification]
+2. **Secondary Style (optional):** [Style Name] - [Brief justification]
+3. **Combination Approach:** [If combining multiple styles]
+
+**Style Implementation Plan:**
+- Background Effects: [Selected from reference]
+- Animation Patterns: [Selected from reference]
+- Visual Effects: [Selected from reference]
+- Technical Specifications: [From reference]
+```
+
+**Deliverable:** UI Styles Reference Analysis document with matched styles and implementation plan
+
+---
+
 ### Step 0.1: Identify Similar Products
 
 **Research Sources:**
@@ -1823,6 +1883,41 @@ struct ProductCard: View {
 - **Performance:** Ensure smooth 60fps animations (optimize for performance)
 
 **Remember:** The HTML/CSS intermediate format is the single source of truth. Every platform conversion should be a faithful representation of this intermediate format. Always research top-tier products first to ensure modern, competitive design. **MOST IMPORTANTLY: Focus on creating WOW animations, backgrounds, and effects that attract users and match their requirements.**
+
+---
+
+## CRITICAL: Comprehensive Detail Requirements
+
+**⚠️ ALL UI/UX BRIDGE CONVERSIONS MUST BE DETAILED AND COMPREHENSIVE - NO SIMPLIFICATIONS**
+
+When converting UI/UX designs to code, you MUST:
+
+1. **Complete HTML Structure:** Every element must be semantically correct with complete attributes (ARIA labels, data attributes, etc.)
+2. **Comprehensive CSS Specifications:** All styles must be fully specified with specific values, not placeholders
+3. **Complete Animation Specs:** All animations must have timing, easing, duration, and performance optimizations
+4. **Faithful Platform Conversion:** Platform-specific code must be a complete, faithful representation of the HTML/CSS intermediate
+5. **Complete Component Specifications:** All components must have complete props/parameters, states, and behaviors
+6. **Comprehensive Responsive Design:** All breakpoints and responsive behaviors must be fully implemented
+7. **Complete Accessibility:** All accessibility features must be implemented (ARIA, keyboard navigation, screen reader support)
+8. **Additional UI Elements:** Always consider and document additional UI elements/sections/parts that could match project requirements
+
+**DO NOT:**
+- ❌ Simplify or summarize code implementations
+- ❌ Use placeholders or incomplete specifications
+- ❌ Skip responsive design details
+- ❌ Ignore accessibility requirements
+- ❌ Overlook additional UI elements that could enhance the implementation
+- ❌ Create incomplete platform conversions
+
+**DO:**
+- ✅ Provide comprehensive, detailed code implementations
+- ✅ Expand every component with full specifications
+- ✅ Include all states, variations, and edge cases
+- ✅ Document additional UI elements/sections/parts that match requirements
+- ✅ Provide complete, production-ready code
+- ✅ Create thorough, enterprise-grade implementations
+
+**The code should be so comprehensive that a developer can use it immediately without asking additional questions.**
 
 ---
 

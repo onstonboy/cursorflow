@@ -28,6 +28,85 @@ When you receive a UI/UX design request, you MUST:
 
 **⚠️ AI MUST COMPLETE THIS STEP BEFORE PROCEEDING TO STEP 1**
 
+#### 0.0 Check UI Styles Reference & Match Project Requirements (MANDATORY)
+
+**⚠️ CRITICAL: AI MUST CHECK THE UI STYLES REFERENCE FIRST**
+
+**Action Required:**
+1. **Read and analyze** `.cursor/commands/common/ui_styles_reference.md`
+2. **Extract project/feature requirements** from the user's request
+3. **Match project type** with suitable UI styles from the reference
+4. **Research on Internet** (if possible) to validate and find additional inspiration
+5. **Select best-fit UI styles** that match the project requirements
+
+**Process:**
+```markdown
+### UI Styles Reference Analysis
+
+**Project/Feature Requirements:**
+- Project Type: [SaaS, E-commerce, Portfolio, Gaming, etc.]
+- Target Audience: [Description]
+- Brand Personality: [Modern, Luxury, Playful, Professional, etc.]
+- Key Features: [List main features]
+- Performance Requirements: [Mobile, Desktop, Both]
+- Complexity Constraints: [Low, Medium, High]
+
+**UI Styles Reference Check:**
+1. Reviewed `.cursor/commands/common/ui_styles_reference.md`
+2. Identified relevant styles based on "Suitable Project Types" attribute
+3. Cross-referenced with project requirements
+
+**Matching UI Styles Found:**
+- [Style Name 1] - WOW Factor: X/10, Complexity: [Low/Medium/High], Performance: [Excellent/Good/Fair]
+  - Match Score: [High/Medium/Low]
+  - Why it fits: [Explanation]
+  - Suitable Project Types: [List from reference]
+  - Visual Description: [From reference]
+  - Technical Specifications: [From reference]
+  
+- [Style Name 2] - WOW Factor: X/10, Complexity: [Low/Medium/High], Performance: [Excellent/Good/Fair]
+  - Match Score: [High/Medium/Low]
+  - Why it fits: [Explanation]
+  - Suitable Project Types: [List from reference]
+  - Visual Description: [From reference]
+  - Technical Specifications: [From reference]
+
+**Internet Research (if applicable):**
+- [Additional research findings from web search]
+- [Current trends in similar products]
+- [Validation of style choices]
+- [Real-world implementation examples]
+
+**Selected Best-Fit UI Styles:**
+1. **Primary Style:** [Style Name] - [Brief justification]
+   - WOW Factor: [X/10]
+   - Complexity: [Low/Medium/High]
+   - Performance: [Excellent/Good/Fair]
+   - Mobile Support: [Yes/Partial/No]
+   
+2. **Secondary Style (optional):** [Style Name] - [Brief justification]
+   - WOW Factor: [X/10]
+   - Complexity: [Low/Medium/High]
+   - Performance: [Excellent/Good/Fair]
+   - Mobile Support: [Yes/Partial/No]
+
+3. **Combination Approach:** [If combining multiple styles]
+   - How styles complement each other
+   - Implementation strategy
+
+**Style Implementation Plan:**
+- Background Effects: [Selected from reference with technical specs]
+- Animation Patterns: [Selected from reference with timing]
+- Visual Effects: [Selected from reference with parameters]
+- Color Palette: [From style reference or custom]
+- Typography: [From style reference or custom]
+- Component Styles: [How style affects components]
+```
+
+**Deliverable:** UI Styles Reference Analysis document with matched styles, technical specifications, and implementation plan
+
+---
+
 #### 0.1 Identify Similar Products
 
 **Research Sources:**
@@ -1087,3 +1166,38 @@ Single comprehensive markdown document with all specifications, ready to be used
 - **Balance:** Balance WOW factor with usability (don't sacrifice usability for effects)
 
 **Remember:** The goal is to create a complete, specific, and actionable design system that developers can implement immediately without guessing any details. Always research top-tier products first to ensure the design is competitive and modern. **MOST IMPORTANTLY: Focus on creating WOW animations, backgrounds, and effects that attract users and match their requirements. Make them say "WOW!"**
+
+---
+
+## CRITICAL: Comprehensive Detail Requirements
+
+**⚠️ ALL UI/UX DESIGN SPECIFICATIONS MUST BE DETAILED AND COMPREHENSIVE - NO SIMPLIFICATIONS**
+
+When creating UI/UX design systems, you MUST:
+
+1. **Expand Every Component:** Every component (atomic, molecular, organism) must have comprehensive specifications with specific values, not placeholders
+2. **Document All States:** All component states (default, hover, active, disabled, error, loading, empty) must be fully specified
+3. **Specify All Interactions:** All user interactions must be documented with detailed animation specifications
+4. **Complete Responsive Design:** All breakpoints and responsive behaviors must be fully specified
+5. **Comprehensive Animation Specs:** All animations must have timing, easing, duration, and performance considerations
+6. **Detailed WOW Elements:** All WOW backgrounds, animations, and effects must be fully specified with technical details
+7. **Complete Accessibility:** All accessibility features must be documented (ARIA labels, keyboard navigation, screen reader support)
+8. **Additional Design Elements:** Always consider and document additional design elements/sections/parts/UI that could match project requirements
+
+**DO NOT:**
+- ❌ Simplify or summarize design specifications
+- ❌ Use placeholders without specific values
+- ❌ Skip component states or variations
+- ❌ Ignore responsive design details
+- ❌ Overlook additional design elements that could enhance the UI/UX
+- ❌ Provide vague descriptions
+
+**DO:**
+- ✅ Provide comprehensive, detailed design specifications
+- ✅ Expand every component with full details
+- ✅ Include all states, variations, and edge cases
+- ✅ Document additional design elements/sections/parts/UI that match requirements
+- ✅ Provide specific values for all properties (colors, sizes, spacing, timing, etc.)
+- ✅ Create thorough, enterprise-grade design systems
+
+**The design system should be so comprehensive that a developer can implement it without asking additional questions.**
