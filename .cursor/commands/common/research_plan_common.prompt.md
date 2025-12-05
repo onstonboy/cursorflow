@@ -730,16 +730,27 @@ When analyzing a feature request, follow this systematic 7-step approach (ALL ST
 - Accessibility features (ARIA, screen readers, keyboard navigation, semantic HTML)
 
 #### UI/UX Research & Design (MANDATORY for UI/UX features):
-**⚠️ For any UI/UX-related feature, MUST check UI Styles Reference FIRST, then research top-tier similar products**
+**⚠️ For any UI/UX-related feature, MUST check UI Styles Reference AND UI/UX Reference Data FIRST, then research top-tier similar products**
 
-**⚠️ CRITICAL: AI MUST CHECK THE UI STYLES REFERENCE FIRST**
+**⚠️ CRITICAL: AI MUST CHECK BOTH UI STYLES REFERENCE AND UI/UX REFERENCE DATA FIRST**
 
-**Step 1: Check UI Styles Reference (MANDATORY)**
+**Step 1: Check UI Styles Reference & UI/UX Reference Data (MANDATORY)**
 1. **Read and analyze** `.cursor/commands/common/ui_styles_reference.md`
-2. **Extract project/feature requirements** from the user's request
-3. **Match project type** with suitable UI styles from the reference using the "Suitable Project Types" attribute
-4. **Select best-fit UI styles** that match the project requirements
-5. **Document selected styles** with their WOW factor, complexity, and performance ratings
+2. **Read and analyze** `.cursor/uiux_reference/data/` folder for additional UI/UX context:
+   - `styles.csv` - UI style patterns and specifications
+   - `colors.csv` - Color palettes and schemes
+   - `typography.csv` - Typography guidelines and font recommendations
+   - `ux-guidelines.csv` - UX best practices and guidelines
+   - `landing.csv` - Landing page patterns and examples
+   - `products.csv` - Product page patterns and examples
+   - `charts.csv` - Data visualization patterns
+   - `prompts.csv` - UI/UX prompt templates and examples
+   - `stacks/[FRAMEWORK].csv` - Framework-specific UI/UX patterns (check relevant framework)
+3. **Extract project/feature requirements** from the user's request
+4. **Match project type** with suitable UI styles from both references using the "Suitable Project Types" attribute
+5. **Cross-reference** data from both sources to find comprehensive UI/UX solutions
+6. **Select best-fit UI styles** that match the project requirements
+7. **Document selected styles** with their WOW factor, complexity, and performance ratings
 
 **UI Styles Reference Analysis Process:**
 ```markdown
@@ -755,9 +766,20 @@ When analyzing a feature request, follow this systematic 7-step approach (ALL ST
 
 **UI Styles Reference Check:**
 1. Reviewed `.cursor/commands/common/ui_styles_reference.md`
-2. Identified relevant styles based on "Suitable Project Types" attribute
-3. Cross-referenced with project requirements
-4. Evaluated WOW factor, complexity, and performance ratings
+2. Reviewed `.cursor/uiux_reference/data/` folder:
+   - Checked `styles.csv` for style patterns
+   - Checked `colors.csv` for color schemes
+   - Checked `typography.csv` for typography guidelines
+   - Checked `ux-guidelines.csv` for UX best practices
+   - Checked `landing.csv` for landing page patterns (if applicable)
+   - Checked `products.csv` for product page patterns (if applicable)
+   - Checked `charts.csv` for data visualization patterns (if applicable)
+   - Checked `prompts.csv` for UI/UX prompt examples
+   - Checked `stacks/[FRAMEWORK].csv` for framework-specific patterns
+3. Identified relevant styles based on "Suitable Project Types" attribute from both sources
+4. Cross-referenced data from both sources with project requirements
+5. Evaluated WOW factor, complexity, and performance ratings from both references
+6. Synthesized findings from both sources for comprehensive UI/UX approach
 
 **Animation & Effect Research (PRIMARY FOCUS):**
 - **Background Effects:** Animated gradients, particle systems, video backgrounds, parallax, geometric patterns, glass morphism, mesh gradients, noise textures
@@ -783,6 +805,14 @@ When analyzing a feature request, follow this systematic 7-step approach (ALL ST
 1. **Primary Style:** [Style Name] - [Brief justification]
 2. **Secondary Style (optional):** [Style Name] - [Brief justification]
 3. **Combination Approach:** [If combining multiple styles]
+
+**UI/UX Reference Data Insights:**
+- **Colors:** [Key color schemes from colors.csv that match project]
+- **Typography:** [Typography recommendations from typography.csv]
+- **UX Guidelines:** [Relevant UX best practices from ux-guidelines.csv]
+- **Page Patterns:** [Relevant patterns from landing.csv, products.csv, charts.csv if applicable]
+- **Framework Patterns:** [Framework-specific patterns from stacks/[FRAMEWORK].csv]
+- **Prompt Examples:** [Relevant UI/UX prompts from prompts.csv]
 ```
 
 **Step 2: Internet Research (MANDATORY)**

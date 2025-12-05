@@ -44,16 +44,27 @@ Flutter/Android/iOS/React Native/SwiftUI/Jetpack Compose/etc.
 
 **⚠️ AI MUST COMPLETE THIS STEP BEFORE PROCEEDING TO PHASE 1**
 
-### Step 0.0: Check UI Styles Reference & Match Project Requirements (MANDATORY)
+### Step 0.0: Check UI Styles Reference & UI/UX Reference Data & Match Project Requirements (MANDATORY)
 
-**⚠️ CRITICAL: AI MUST CHECK THE UI STYLES REFERENCE FIRST**
+**⚠️ CRITICAL: AI MUST CHECK BOTH UI STYLES REFERENCE AND UI/UX REFERENCE DATA FIRST**
 
 **Action Required:**
 1. **Read and analyze** `.cursor/commands/common/ui_styles_reference.md`
-2. **Extract project/feature requirements** from the user's request
-3. **Match project type** with suitable UI styles from the reference
-4. **Research on Internet** (if possible) to validate and find additional inspiration
-5. **Select best-fit UI styles** that match the project requirements
+2. **Read and analyze** `.cursor/uiux_reference/data/` folder for additional UI/UX context:
+   - `styles.csv` - UI style patterns and specifications
+   - `colors.csv` - Color palettes and schemes
+   - `typography.csv` - Typography guidelines and font recommendations
+   - `ux-guidelines.csv` - UX best practices and guidelines
+   - `landing.csv` - Landing page patterns and examples (if applicable)
+   - `products.csv` - Product page patterns and examples (if applicable)
+   - `charts.csv` - Data visualization patterns (if applicable)
+   - `prompts.csv` - UI/UX prompt templates and examples
+   - `stacks/[FRAMEWORK].csv` - Framework-specific UI/UX patterns (check relevant framework for the project)
+3. **Extract project/feature requirements** from the user's request
+4. **Match project type** with suitable UI styles from both references
+5. **Cross-reference** data from both sources to find comprehensive UI/UX solutions
+6. **Research on Internet** (if possible) to validate and find additional inspiration
+7. **Select best-fit UI styles** that match the project requirements, synthesizing information from both sources
 
 **Process:**
 ```markdown
@@ -69,8 +80,19 @@ Flutter/Android/iOS/React Native/SwiftUI/Jetpack Compose/etc.
 
 **UI Styles Reference Check:**
 1. Reviewed `.cursor/commands/common/ui_styles_reference.md`
-2. Identified relevant styles based on "Suitable Project Types" attribute
-3. Cross-referenced with project requirements
+2. Reviewed `.cursor/uiux_reference/data/` folder:
+   - Checked `styles.csv` for style patterns
+   - Checked `colors.csv` for color schemes
+   - Checked `typography.csv` for typography guidelines
+   - Checked `ux-guidelines.csv` for UX best practices
+   - Checked `landing.csv` for landing page patterns (if applicable)
+   - Checked `products.csv` for product page patterns (if applicable)
+   - Checked `charts.csv` for data visualization patterns (if applicable)
+   - Checked `prompts.csv` for UI/UX prompt examples
+   - Checked `stacks/[FRAMEWORK].csv` for framework-specific patterns
+3. Identified relevant styles based on "Suitable Project Types" attribute from both sources
+4. Cross-referenced data from both sources with project requirements
+5. Synthesized findings from both references for comprehensive UI/UX approach
 
 **Matching UI Styles Found:**
 - [Style Name 1] - WOW Factor: X/10, Complexity: [Low/Medium/High], Performance: [Excellent/Good/Fair]
@@ -94,10 +116,14 @@ Flutter/Android/iOS/React Native/SwiftUI/Jetpack Compose/etc.
 3. **Combination Approach:** [If combining multiple styles]
 
 **Style Implementation Plan:**
-- Background Effects: [Selected from reference]
-- Animation Patterns: [Selected from reference]
-- Visual Effects: [Selected from reference]
-- Technical Specifications: [From reference]
+- Background Effects: [Selected from both references]
+- Animation Patterns: [Selected from both references]
+- Visual Effects: [Selected from both references]
+- Color Palette: [From uiux_reference/data/colors.csv and style reference]
+- Typography: [From uiux_reference/data/typography.csv and style reference]
+- Technical Specifications: [From both references]
+- UX Guidelines: [From uiux_reference/data/ux-guidelines.csv]
+- Framework-Specific Patterns: [From uiux_reference/data/stacks/[FRAMEWORK].csv]
 ```
 
 **Deliverable:** UI Styles Reference Analysis document with matched styles and implementation plan
