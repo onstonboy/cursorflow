@@ -546,7 +546,7 @@ Complete research document with:
 
 **⚠️ MANDATORY: READ AND REFERENCE THE UI/UX DESIGN GENERATOR PROMPT FILE (ONLY IF UI/UX REQUIRED)**
 
-**⚠️ CRITICAL: The UI/UX Design Generator Prompt includes checking `.cursor/commands/common/ui_styles_reference.md` first to match project requirements with suitable UI styles. This step is mandatory and must be completed before proceeding.**
+**⚠️ CRITICAL: The UI/UX Design Generator Prompt includes checking `.cursor/commands/common/ui_styles_reference.md` AND `.cursor/uiux_reference/data/` folder first to match project requirements with suitable UI styles. This step is mandatory and must be completed before proceeding.**
 
 **File Path (from Step 0):**
 - **Primary:** `./.cursor/commands/specify/ui_ux_design_generator_[TECH]_[LANGUAGE].prompt.md`
@@ -556,6 +556,20 @@ Complete research document with:
 - **Location:** `./.cursor/commands/common/ui_styles_reference.md`
 - **Purpose:** Contains 102 top-tier UI styles with "Suitable Project Types" attribute
 - **Action:** The UI/UX Design Generator Prompt will check this reference first to find best-fit styles
+
+**UI/UX Reference Data:**
+- **Location:** `./.cursor/uiux_reference/data/`
+- **Purpose:** Contains comprehensive UI/UX reference data including:
+  - `styles.csv` - UI style patterns and specifications
+  - `colors.csv` - Color palettes and schemes
+  - `typography.csv` - Typography guidelines and font recommendations
+  - `ux-guidelines.csv` - UX best practices and guidelines
+  - `landing.csv` - Landing page patterns and examples
+  - `products.csv` - Product page patterns and examples
+  - `charts.csv` - Data visualization patterns
+  - `prompts.csv` - UI/UX prompt templates and examples
+  - `stacks/[FRAMEWORK].csv` - Framework-specific UI/UX patterns
+- **Action:** The UI/UX Design Generator Prompt will check this reference data folder to provide additional context and comprehensive UI/UX solutions
 
 Before proceeding, you MUST:
 1. Read the complete tech-specific UI/UX design generator prompt file (generated in Step 0)
@@ -634,7 +648,7 @@ Complete design system with:
 
 **⚠️ MANDATORY: READ AND REFERENCE THE UI/UX BRIDGE PROMPT FILE (ONLY IF UI/UX REQUIRED)**
 
-**⚠️ CRITICAL: The UI/UX Bridge Prompt includes checking `.cursor/commands/common/ui_styles_reference.md` first in the PRE-PHASE to match project requirements with suitable UI styles. This step is mandatory and must be completed before proceeding to Phase 1.**
+**⚠️ CRITICAL: The UI/UX Bridge Prompt includes checking `.cursor/commands/common/ui_styles_reference.md` AND `.cursor/uiux_reference/data/` folder first in the PRE-PHASE to match project requirements with suitable UI styles. This step is mandatory and must be completed before proceeding to Phase 1.**
 
 **File Path (from Step 0):**
 - **Primary:** `./.cursor/commands/specify/ui_ux_bridge_[TECH]_[LANGUAGE].prompt.md`
@@ -644,6 +658,20 @@ Complete design system with:
 - **Location:** `./.cursor/commands/common/ui_styles_reference.md`
 - **Purpose:** Contains 102 top-tier UI styles with "Suitable Project Types" attribute
 - **Action:** The UI/UX Bridge Prompt will check this reference first in PRE-PHASE Step 0.0 to find best-fit styles
+
+**UI/UX Reference Data:**
+- **Location:** `./.cursor/uiux_reference/data/`
+- **Purpose:** Contains comprehensive UI/UX reference data including:
+  - `styles.csv` - UI style patterns and specifications
+  - `colors.csv` - Color palettes and schemes
+  - `typography.csv` - Typography guidelines and font recommendations
+  - `ux-guidelines.csv` - UX best practices and guidelines
+  - `landing.csv` - Landing page patterns and examples
+  - `products.csv` - Product page patterns and examples
+  - `charts.csv` - Data visualization patterns
+  - `prompts.csv` - UI/UX prompt templates and examples
+  - `stacks/[FRAMEWORK].csv` - Framework-specific UI/UX patterns
+- **Action:** The UI/UX Bridge Prompt will check this reference data folder in PRE-PHASE Step 0.0 to provide additional context and comprehensive UI/UX solutions
 
 Before proceeding, you MUST:
 1. Read the complete tech-specific UI/UX bridge prompt file (generated in Step 0)
