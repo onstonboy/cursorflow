@@ -71,12 +71,24 @@ Verify Commands (Step 0) → Check commands/specify/ → Generate if missing
          ↓
 User Requirement (Step 1)
          ↓
+Determine UI/UX Requirement (Step 1.5) → Does feature need UI/UX?
+         ↓
 Research & Analysis (Step 2) → ./docs/research_plans/
          ↓
+    ┌────┴────┐
+    │         │
+    │    YES  │
+    │         │
+    ▼         ▼
 UI/UX Design System (Step 3) → ./docs/ui_ux/
          ↓
 Platform-Specific Code (Step 4) → ./docs/ui_ux/
          ↓
+    └────┬────┘
+         │
+    NO   │
+         │
+         ▼
 Implementation Plan (Step 5) → ./docs/implementation_plans/
          ↓
 USER CONFIRMATION REQUIRED ⚠️
@@ -344,6 +356,119 @@ browse shoes, filter by categories, add to cart, and checkout."
 
 ---
 
+## STEP 1.5: Determine UI/UX Requirement (MANDATORY)
+
+**Objective:** Accurately determine if the feature requires UI/UX components
+
+**⚠️ CRITICAL: This determination must be accurate - do not skip UI/UX if it's actually needed**
+
+### 1.5.1 UI/UX Requirement Analysis
+
+**Analyze the feature requirements to determine if UI/UX is needed:**
+
+**Features that DO NOT require UI/UX:**
+- **Backend-only features:** API endpoints, server-side logic, database migrations, background jobs
+- **Pure business logic:** Domain services, calculations, data processing without user interaction
+- **Infrastructure features:** DevOps scripts, CI/CD configurations, deployment scripts
+- **Data layer only:** Database schemas, data migrations, ETL processes
+- **API-only features:** REST/GraphQL endpoints, webhooks, integrations without UI
+- **Library/package development:** Reusable libraries, SDKs without UI components
+- **Testing infrastructure:** Test utilities, mocking frameworks, test data generators
+- **Configuration-only:** Environment setup, config files, feature flags (without UI toggles)
+
+**Features that DO require UI/UX:**
+- **User-facing features:** Any feature that users interact with directly
+- **Admin panels:** Management interfaces, dashboards, control panels
+- **Forms and inputs:** User data entry, search interfaces, filters
+- **Display components:** Lists, cards, tables, charts, visualizations
+- **Navigation:** Menus, tabs, routing, page transitions
+- **Interactive elements:** Buttons, modals, dialogs, tooltips
+- **Mobile apps:** Any mobile application feature
+- **Web applications:** Any web application feature with user interface
+- **Desktop applications:** Any desktop application feature
+- **Data visualization:** Charts, graphs, reports with visual representation
+- **Settings/Preferences:** User preference interfaces, configuration UIs
+- **Onboarding flows:** User onboarding, tutorials, walkthroughs
+
+### 1.5.2 Determination Criteria
+
+**Ask these questions:**
+1. **Will users interact with this feature through a visual interface?**
+   - YES → UI/UX required
+   - NO → Continue to question 2
+
+2. **Does this feature display information to users?**
+   - YES → UI/UX required
+   - NO → Continue to question 3
+
+3. **Does this feature require user input through forms, buttons, or other UI elements?**
+   - YES → UI/UX required
+   - NO → Continue to question 4
+
+4. **Is this feature purely backend/infrastructure/data processing?**
+   - YES → UI/UX NOT required
+   - NO → UI/UX likely required
+
+### 1.5.3 Decision Logic
+
+**IF any of the following are TRUE, UI/UX is REQUIRED:**
+- ✅ Feature has user-facing components
+- ✅ Feature displays data to users
+- ✅ Feature requires user interaction (clicks, inputs, gestures)
+- ✅ Feature is part of a mobile/web/desktop application
+- ✅ Feature includes forms, buttons, navigation, or visual elements
+- ✅ Feature is an admin panel, dashboard, or management interface
+
+**IF all of the following are TRUE, UI/UX is NOT REQUIRED:**
+- ✅ Feature is backend-only (API, server logic, database)
+- ✅ Feature has no user-facing components
+- ✅ Feature does not display information to users
+- ✅ Feature does not require user interaction
+- ✅ Feature is infrastructure, configuration, or data processing only
+
+### 1.5.4 Document Decision
+
+**Deliverable:**
+```markdown
+## UI/UX Requirement Determination
+
+**Feature:** [Feature Name]
+**Requires UI/UX:** [YES/NO]
+
+**Determination Rationale:**
+- [Reason 1]
+- [Reason 2]
+- [Reason 3]
+
+**Feature Type:** [User-facing/Backend-only/Infrastructure/Data processing/etc.]
+
+**Decision Confidence:** [High/Medium/Low]
+- High: Clear backend-only or clear user-facing feature
+- Medium: Some ambiguity, but determination is reasonable
+- Low: Unclear - may need clarification
+
+**If Low Confidence:**
+- Document assumptions
+- Proceed with conservative choice (include UI/UX if uncertain)
+- Note in requirements that UI/UX determination may need review
+```
+
+### 1.5.5 Store Decision
+
+**Action:** Store UI/UX requirement decision in memory:
+- `requires_ui_ux: true/false`
+- `ui_ux_rationale: [explanation]`
+- `decision_confidence: [High/Medium/Low]`
+
+**This decision will be used to:**
+- Skip Step 3 (UI/UX Design System) if `requires_ui_ux: false`
+- Skip Step 4 (Platform-Specific UI Code) if `requires_ui_ux: false`
+- Include UI/UX steps if `requires_ui_ux: true`
+
+**⚠️ IMPORTANT:** If confidence is LOW, default to including UI/UX steps to avoid missing requirements.
+
+---
+
 ## STEP 2: Execute Research & Analysis Plan (MANDATORY)
 
 **Objective:** Perform comprehensive feature research following tech-specific research plan prompt
@@ -411,20 +536,31 @@ Complete research document with:
 
 ---
 
-## STEP 3: Generate UI/UX Design System (MANDATORY)
+## STEP 3: Generate UI/UX Design System (CONDITIONAL - ONLY IF UI/UX REQUIRED)
 
 **Objective:** Create comprehensive UI/UX specifications following tech-specific UI/UX design generator prompt
 
-**⚠️ MANDATORY: READ AND REFERENCE THE UI/UX DESIGN GENERATOR PROMPT FILE**
+**⚠️ CONDITIONAL EXECUTION:**
+- **IF `requires_ui_ux: true`** → Execute this step
+- **IF `requires_ui_ux: false`** → Skip this step and proceed to Step 5
+
+**⚠️ MANDATORY: READ AND REFERENCE THE UI/UX DESIGN GENERATOR PROMPT FILE (ONLY IF UI/UX REQUIRED)**
+
+**⚠️ CRITICAL: The UI/UX Design Generator Prompt includes checking `.cursor/commands/common/ui_styles_reference.md` first to match project requirements with suitable UI styles. This step is mandatory and must be completed before proceeding.**
 
 **File Path (from Step 0):**
 - **Primary:** `./.cursor/commands/specify/ui_ux_design_generator_[TECH]_[LANGUAGE].prompt.md`
 - **Fallback:** `./.cursor/commands/common/ui_ux_design_generator.prompt.md`
 
+**UI Styles Reference:**
+- **Location:** `./.cursor/commands/common/ui_styles_reference.md`
+- **Purpose:** Contains 102 top-tier UI styles with "Suitable Project Types" attribute
+- **Action:** The UI/UX Design Generator Prompt will check this reference first to find best-fit styles
+
 Before proceeding, you MUST:
 1. Read the complete tech-specific UI/UX design generator prompt file (generated in Step 0)
 2. If tech-specific file doesn't exist, use common file as fallback
-3. Understand all 6 steps and their requirements
+3. Understand all 6 steps and their requirements (including Step 0.0: UI Styles Reference Check)
 4. Follow the instructions exactly as specified in that file
 5. Generate all deliverables as defined in that file
 
@@ -488,20 +624,31 @@ Complete design system with:
 
 ---
 
-## STEP 4: Generate Platform-Specific UI Code (MANDATORY)
+## STEP 4: Generate Platform-Specific UI Code (CONDITIONAL - ONLY IF UI/UX REQUIRED)
 
 **Objective:** Convert UI/UX design to platform-specific code following tech-specific UI/UX bridge prompt
 
-**⚠️ MANDATORY: READ AND REFERENCE THE UI/UX BRIDGE PROMPT FILE**
+**⚠️ CONDITIONAL EXECUTION:**
+- **IF `requires_ui_ux: true`** → Execute this step
+- **IF `requires_ui_ux: false`** → Skip this step and proceed to Step 5
+
+**⚠️ MANDATORY: READ AND REFERENCE THE UI/UX BRIDGE PROMPT FILE (ONLY IF UI/UX REQUIRED)**
+
+**⚠️ CRITICAL: The UI/UX Bridge Prompt includes checking `.cursor/commands/common/ui_styles_reference.md` first in the PRE-PHASE to match project requirements with suitable UI styles. This step is mandatory and must be completed before proceeding to Phase 1.**
 
 **File Path (from Step 0):**
 - **Primary:** `./.cursor/commands/specify/ui_ux_bridge_[TECH]_[LANGUAGE].prompt.md`
 - **Fallback:** `./.cursor/commands/common/ui_ux_bridge.prompt.md`
 
+**UI Styles Reference:**
+- **Location:** `./.cursor/commands/common/ui_styles_reference.md`
+- **Purpose:** Contains 102 top-tier UI styles with "Suitable Project Types" attribute
+- **Action:** The UI/UX Bridge Prompt will check this reference first in PRE-PHASE Step 0.0 to find best-fit styles
+
 Before proceeding, you MUST:
 1. Read the complete tech-specific UI/UX bridge prompt file (generated in Step 0)
 2. If tech-specific file doesn't exist, use common file as fallback
-3. Understand all 3 phases and their requirements
+3. Understand all 3 phases and PRE-PHASE requirements (including Step 0.0: UI Styles Reference Check)
 4. Follow the instructions exactly as specified in that file
 5. Generate all deliverables as defined in that file
 
@@ -746,6 +893,11 @@ Complete implementation plans with:
 **Status:** Completed
 **Output:** Requirements documented
 
+### ✅ Step 1.5: UI/UX Requirement Determination
+**Status:** Completed
+**Requires UI/UX:** [YES/NO]
+**Rationale:** [Brief explanation]
+
 ### ✅ Step 2: Research & Analysis
 **Status:** Completed
 **Output:** Research plan generated
@@ -753,16 +905,18 @@ Complete implementation plans with:
 **Selected Approach:** [Approach name and brief rationale]
 
 ### ✅ Step 3: UI/UX Design System
-**Status:** Completed
-**Output:** Complete design system with [X] components
-**Location:** `./docs/ui_ux/[FEATURE_NAME]_UI_UX_DESIGN_SYSTEM_[DATE].md`
-**Design Style:** [Style name]
+**Status:** [Completed/Skipped]
+**Requires UI/UX:** [YES/NO]
+**Output:** [Complete design system with [X] components / N/A - Feature does not require UI/UX]
+**Location:** [`./docs/ui_ux/[FEATURE_NAME]_UI_UX_DESIGN_SYSTEM_[DATE].md` / N/A]
+**Design Style:** [Style name / N/A]
 
 ### ✅ Step 4: Platform-Specific UI Code
-**Status:** Completed
-**Output:** [Platform] implementation with code samples
-**Location:** `./docs/ui_ux/[FEATURE_NAME]_UI_IMPLEMENTATION_[PLATFORM]_[DATE].md`
-**Platform:** [Platform name]
+**Status:** [Completed/Skipped]
+**Requires UI/UX:** [YES/NO]
+**Output:** [[Platform] implementation with code samples / N/A - Feature does not require UI/UX]
+**Location:** [`./docs/ui_ux/[FEATURE_NAME]_UI_IMPLEMENTATION_[PLATFORM]_[DATE].md` / N/A]
+**Platform:** [Platform name / N/A]
 
 ### ✅ Step 5: Implementation Plans
 **Status:** Completed
@@ -819,6 +973,7 @@ Complete implementation plans with:
 - Flow diagrams
 
 ### UI/UX Documentation
+[IF UI/UX Required:]
 📄 `./docs/ui_ux/[FEATURE_NAME]_UI_UX_DESIGN_SYSTEM_[DATE].md`
 - Complete design system
 - Component library
@@ -829,6 +984,9 @@ Complete implementation plans with:
 - Platform-specific UI code
 - Component mapping
 - Code samples
+
+[IF UI/UX NOT Required:]
+ℹ️ UI/UX documentation skipped - Feature does not require user interface components
 
 ### Implementation Documentation
 📄 `./docs/implementation_plans/[FEATURE_NAME]/`
@@ -1082,22 +1240,60 @@ Step 6: Execute ONLY if user approves
 - Step 5: `./.cursor/commands/specify/implementation_plan_[TECH]_[LANGUAGE].prompt.md` (or common fallback)
 - Project Rule: `./.cursor/rules/specify/project-rule_[TECH]_[LANGUAGE].mdc` (or common fallback: `./.cursor/rules/common/project-rule.mdc`)
 
+---
+
+## CRITICAL: Comprehensive Detail Requirements Across All Steps
+
+**⚠️ ALL STEPS MUST PRODUCE DETAILED AND COMPREHENSIVE OUTPUTS - NO SIMPLIFICATIONS**
+
+This workflow orchestrates multiple steps, each of which must produce comprehensive, detailed outputs:
+
+### Step 2: Research & Analysis
+- **MUST produce:** Complete requirements analysis, comprehensive technology inventory, detailed approach comparisons, complete technical specifications
+- **Reference:** `research_plan_common.prompt.md` (or tech-specific version) - Follow ALL comprehensive detail requirements in that file
+- **Output Quality:** Research plan should be so detailed that implementation can proceed without questions
+
+### Step 3: UI/UX Design System
+- **MUST produce:** Complete design system with all atomic, molecular, and organism components fully specified
+- **Reference:** `ui_ux_design_generator.prompt.md` (or tech-specific version) - Follow ALL comprehensive detail requirements in that file
+- **Output Quality:** Design system should have specific values (not placeholders) for all properties
+
+### Step 4: Platform-Specific Code
+- **MUST produce:** Complete, production-ready platform-specific code
+- **Reference:** `ui_ux_bridge.prompt.md` (or tech-specific version) - Follow ALL comprehensive detail requirements in that file
+- **Output Quality:** Code should be immediately usable without additional questions
+
+### Step 5: Implementation Plan
+- **MUST produce:** Complete implementation plan with all layers, components, and flows fully specified
+- **Reference:** `implementation_plan_common.prompt.md` (or tech-specific version) - Follow ALL comprehensive detail requirements in that file
+- **Output Quality:** Implementation plan should enable developers to implement without asking questions
+
+**Cross-Step Consistency:**
+- All steps must reference and build upon previous steps
+- Additional features/sections/parts/UI identified in research must be considered in design and implementation
+- All deliverables must be comprehensive and detailed
+- No step should produce simplified or summarized outputs
+
 **When you receive a feature request, you MUST:**
 
 ✅ **Step 0:** Verify tech-specific commands and project rule exist:
    - Commands in `./.cursor/commands/specify/` → Generate missing files from `./.cursor/commands/common/`
    - Project rule in `./.cursor/rules/specify/` → Generate missing file from `./.cursor/rules/common/`
 ✅ **Step 1:** Parse and document user requirements
+✅ **Step 1.5:** Determine if feature requires UI/UX (analyze requirements carefully)
 ✅ **Step 2:** Execute complete research plan (following tech-specific research plan prompt) → Save to `./docs/research_plans/`
-✅ **Step 3:** Generate complete UI/UX design (following tech-specific UI/UX design generator prompt) → Save to `./docs/ui_ux/`
-✅ **Step 4:** Create platform-specific UI code (following tech-specific UI/UX bridge prompt) → Save to `./docs/ui_ux/`
+✅ **Step 3:** [IF UI/UX required] Generate complete UI/UX design (following tech-specific UI/UX design generator prompt) → Save to `./docs/ui_ux/` [ELSE] Skip UI/UX design step
+✅ **Step 4:** [IF UI/UX required] Create platform-specific UI code (following tech-specific UI/UX bridge prompt) → Save to `./docs/ui_ux/` [ELSE] Skip UI/UX code step
 ✅ **Step 5:** Generate all implementation plans (following tech-specific implementation plan prompt - 1 main + 6 child) → Save to `./docs/implementation_plans/[FEATURE_NAME]/`
 ✅ **STOP:** Present completion summary and **WAIT FOR USER CONFIRMATION**
 ✅ **Step 6:** Execute implementation ONLY if user approves
 
 **DO NOT:**
-❌ Skip any step (0-5 must complete before asking user)
+❌ Skip any step (0-5 must complete before asking user, except Step 3 & 4 if UI/UX not required)
 ❌ Proceed to Step 1 without verifying/generating tech-specific commands and project rule
+❌ Skip Step 1.5 UI/UX determination (must analyze requirements carefully)
+❌ Skip UI/UX steps if feature actually needs UI/UX (be conservative - if uncertain, include UI/UX)
+❌ Include UI/UX steps for clearly backend-only features (waste of resources)
 ❌ Proceed to Step 6 without user saying "YES" or "PROCEED"
 ❌ Store files in wrong locations
 ❌ Generate incomplete documentation
@@ -1107,13 +1303,16 @@ Step 6: Execute ONLY if user approves
 **REMEMBER:**
 - Step 0 is MANDATORY and must execute FIRST
 - Step 0 must verify BOTH command files AND project rules
+- Step 1.5 is MANDATORY to determine UI/UX requirement (analyze carefully, be conservative)
 - Steps 0-5 are AUTOMATIC (no user confirmation needed)
+- Steps 3 & 4 are CONDITIONAL (only execute if UI/UX required)
 - USER CONFIRMATION is MANDATORY before Step 6
 - All documentation must be complete and stored correctly
 - Implementation execution only happens after user approval
 - Always prefer tech-specific prompts and rules over common ones
+- If uncertain about UI/UX requirement, default to including UI/UX steps (better safe than sorry)
 
-**WORKFLOW = Verify Commands & Rules → Parse → Research → Design → Code → Plan → **CONFIRM** → Implement**
+**WORKFLOW = Verify Commands & Rules → Parse → Determine UI/UX → Research → [Design → Code] (if UI/UX) → Plan → **CONFIRM** → Implement**
 
 ---
 
@@ -1134,13 +1333,33 @@ Step 6: Execute ONLY if user approves
    - Check `./.cursor/rules/specify/` → Generate missing file from `./.cursor/rules/common/`
      - Generate: `project-rule_flutter_dart.mdc`
 2. ✅ **Step 1:** Parse requirements
-3. ✅ **Step 2:** Generate research plan → `./docs/research_plans/SHOE_SHOP_RESEARCH_PLAN_2025-12-03.md`
-4. ✅ **Step 3:** Generate UI/UX design → `./docs/ui_ux/SHOE_SHOP_UI_UX_DESIGN_SYSTEM_2025-12-03.md`
-5. ✅ **Step 4:** Generate Flutter UI code → `./docs/ui_ux/SHOE_SHOP_UI_IMPLEMENTATION_FLUTTER_2025-12-03.md`
-6. ✅ **Step 5:** Generate 7 implementation plans → `./docs/implementation_plans/SHOE_SHOP/`
-7. ⏸️ **PRESENT SUMMARY AND ASK: "Do you want to proceed with implementation?"**
-8. ⏸️ **WAIT FOR USER RESPONSE**
-9. ✅ (If user confirms) Execute all 6 implementation plans in order
+3. ✅ **Step 1.5:** Determine UI/UX requirement
+   - Analysis: "Shoe shopping e-commerce app" → User-facing feature with browsing, filtering, cart, checkout
+   - Decision: **Requires UI/UX: YES** (High confidence)
+4. ✅ **Step 2:** Generate research plan → `./docs/research_plans/SHOE_SHOP_RESEARCH_PLAN_2025-12-03.md`
+5. ✅ **Step 3:** Generate UI/UX design → `./docs/ui_ux/SHOE_SHOP_UI_UX_DESIGN_SYSTEM_2025-12-03.md` (UI/UX required)
+6. ✅ **Step 4:** Generate Flutter UI code → `./docs/ui_ux/SHOE_SHOP_UI_IMPLEMENTATION_FLUTTER_2025-12-03.md` (UI/UX required)
+7. ✅ **Step 5:** Generate 7 implementation plans → `./docs/implementation_plans/SHOE_SHOP/`
+8. ⏸️ **PRESENT SUMMARY AND ASK: "Do you want to proceed with implementation?"**
+9. ⏸️ **WAIT FOR USER RESPONSE**
+10. ✅ (If user confirms) Execute all 6 implementation plans in order
+
+**Example: Backend-Only Feature**
+```
+User Input: "Create a REST API endpoint for user authentication with JWT tokens"
+
+AI Execution:
+1. ✅ Step 0: Verify commands
+2. ✅ Step 1: Parse requirements
+3. ✅ Step 1.5: Determine UI/UX requirement
+   - Analysis: "REST API endpoint" → Backend-only, no user interface
+   - Decision: **Requires UI/UX: NO** (High confidence)
+4. ✅ Step 2: Generate research plan
+5. ⏭️ Step 3: SKIP (UI/UX not required)
+6. ⏭️ Step 4: SKIP (UI/UX not required)
+7. ✅ Step 5: Generate implementation plans
+8. ⏸️ Present summary
+```
 
 ---
 
