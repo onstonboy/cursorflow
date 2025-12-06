@@ -195,20 +195,20 @@ Platform: iOS, Android
     └── implementation_plan_[TECH]_[LANGUAGE].prompt.md
 ```
 
-### 0.6 Check rules/specify/ Directory for Project Rules
+### 0.6 Check rules/ Directory for Project Rules
 
 **MANDATORY: Check for existing tech-specific project rules**
 
 **Directory to check:**
 ```
-./.cursor/rules/specify/
+./.cursor/rules/
 ```
 
 **Required file to verify:**
 1. `project-rule_[TECH]_[LANGUAGE].mdc` (e.g., `project-rule_flutter_dart.mdc`)
 
 **Check process:**
-1. List all files in `./.cursor/rules/specify/`
+1. List all files in `./.cursor/rules/`
 2. Identify if the required project rule file exists
 3. Identify if the project rule file is missing
 
@@ -218,11 +218,11 @@ Platform: iOS, Android
 
 **Source file to reference:**
 ```
-./.cursor/rules/common/project-rule.mdc
+./.cursor/rules/common/project_rule_common.mdc
 ```
 
 **Generation process:**
-1. Read the common project rule file from `./.cursor/rules/common/project-rule.mdc`
+1. Read the common project rule file from `./.cursor/rules/common/project_rule_common.mdc`
 2. Adapt it for the specific tech/language/framework
 3. Generate tech-specific version with:
    - Technology-specific syntax examples
@@ -246,7 +246,7 @@ project-rule_[TECH]_[LANGUAGE].mdc
 
 **⚠️ MANDATORY: Save generated project rule file to:**
 ```
-./.cursor/rules/specify/project-rule_[TECH]_[LANGUAGE].mdc
+./.cursor/rules/project-rule_[TECH]_[LANGUAGE].mdc
 ```
 
 **Updated Directory Structure After Step 0:**
@@ -265,16 +265,15 @@ project-rule_[TECH]_[LANGUAGE].mdc
 │       └── implementation_plan_[TECH]_[LANGUAGE].prompt.md
 └── rules/
     ├── common/
-    │   └── project-rule.mdc
-    └── specify/
-        └── project-rule_[TECH]_[LANGUAGE].mdc
+    │   └── project_rule_common.mdc
+    └── project-rule_[TECH]_[LANGUAGE].mdc
 ```
 
 ### 0.9 Verification Checklist
 
 **Before proceeding to Step 1, verify:**
 - ✅ All 4 required tech-specific command files exist in `./.cursor/commands/specify/`
-- ✅ Project rule file exists in `./.cursor/rules/specify/`
+- ✅ Project rule file exists in `./.cursor/rules/`
 - ✅ All files are properly named according to tech/language/framework
 - ✅ Files contain technology-specific adaptations
 - ✅ Files reference correct syntax and patterns for the tech stack
@@ -286,7 +285,7 @@ project-rule_[TECH]_[LANGUAGE].mdc
 
 **Deliverable:**
 - ✅ Complete set of tech-specific command files in `./.cursor/commands/specify/`
-- ✅ Tech-specific project rule file in `./.cursor/rules/specify/`
+- ✅ Tech-specific project rule file in `./.cursor/rules/`
 - ✅ Verification report confirming all files exist
 
 **Action:** Store tech stack information, file locations, and project rule location in memory for use in subsequent steps.
@@ -914,7 +913,7 @@ Complete implementation plans with:
 **Status:** Completed
 **Output:** Tech-specific command files and project rule verified/generated
 **Command Files Location:** `./.cursor/commands/specify/`
-**Project Rule Location:** `./.cursor/rules/specify/`
+**Project Rule Location:** `./.cursor/rules/`
 **Tech Stack:** [Technology/Language/Framework]
 
 ### ✅ Step 1: Requirement Analysis
@@ -1261,12 +1260,12 @@ Step 6: Execute ONLY if user approves
 **MANDATORY PROMPT FILE REFERENCES (from Step 0):**
 - Step 0: Verify and generate tech-specific files in:
   - `./.cursor/commands/specify/` (command files)
-  - `./.cursor/rules/specify/` (project rule)
+  - `./.cursor/rules/` (project rule)
 - Step 2: `./.cursor/commands/specify/research_plan_[TECH]_[LANGUAGE].prompt.md` (or common fallback)
 - Step 3: `./.cursor/commands/specify/ui_ux_design_generator_[TECH]_[LANGUAGE].prompt.md` (or common fallback)
 - Step 4: `./.cursor/commands/specify/ui_ux_bridge_[TECH]_[LANGUAGE].prompt.md` (or common fallback)
 - Step 5: `./.cursor/commands/specify/implementation_plan_[TECH]_[LANGUAGE].prompt.md` (or common fallback)
-- Project Rule: `./.cursor/rules/specify/project-rule_[TECH]_[LANGUAGE].mdc` (or common fallback: `./.cursor/rules/common/project-rule.mdc`)
+- Project Rule: `./.cursor/rules/project-rule_[TECH]_[LANGUAGE].mdc` (or common fallback: `./.cursor/rules/common/project_rule_common.mdc`)
 
 ---
 
@@ -1306,7 +1305,7 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
 
 ✅ **Step 0:** Verify tech-specific commands and project rule exist:
    - Commands in `./.cursor/commands/specify/` → Generate missing files from `./.cursor/commands/common/`
-   - Project rule in `./.cursor/rules/specify/` → Generate missing file from `./.cursor/rules/common/`
+   - Project rule in `./.cursor/rules/` → Generate missing file from `./.cursor/rules/common/`
 ✅ **Step 1:** Parse and document user requirements
 ✅ **Step 1.5:** Determine if feature requires UI/UX (analyze requirements carefully)
 ✅ **Step 2:** Execute complete research plan (following tech-specific research plan prompt) → Save to `./docs/research_plans/`
@@ -1358,7 +1357,7 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
      - Generate: `ui_ux_design_generator_flutter_dart.prompt.md`
      - Generate: `ui_ux_bridge_flutter_dart.prompt.md`
      - Generate: `implementation_plan_flutter_dart.prompt.md`
-   - Check `./.cursor/rules/specify/` → Generate missing file from `./.cursor/rules/common/`
+   - Check `./.cursor/rules/` → Generate missing file from `./.cursor/rules/common/`
      - Generate: `project-rule_flutter_dart.mdc`
 2. ✅ **Step 1:** Parse requirements
 3. ✅ **Step 1.5:** Determine UI/UX requirement

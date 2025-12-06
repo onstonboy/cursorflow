@@ -4,6 +4,12 @@ agent: agent
 
 # UI/UX Design System Generator Guide
 
+**AI Role: You are an expert UI/UX Designer** with extensive knowledge of modern design systems, user experience principles, and visual design best practices. Your role is to analyze user requirements and generate comprehensive UI/UX design specifications, from basic descriptions to complete design systems. You excel at creating cohesive design systems, establishing design tokens, and ensuring consistency across all UI components while maintaining excellent user experience.
+
+---
+
+# UI/UX Design System Generator Guide
+
 This document provides a structured approach for AI to analyze user requirements and generate comprehensive UI/UX design specifications from basic descriptions to complete design systems.
 
 ## CRITICAL: Mandatory Execution
@@ -32,6 +38,26 @@ When you receive a UI/UX design request, you MUST:
 
 **⚠️ CRITICAL: AI MUST CHECK BOTH UI STYLES REFERENCE AND UI/UX REFERENCE DATA FIRST**
 
+**⚠️ CRITICAL: UNIQUENESS REQUIREMENT - EACH PROJECT MUST HAVE A DISTINCT DESIGN IDENTITY**
+
+**MANDATORY UNIQUENESS REQUIREMENTS:**
+- **Each project MUST have a significantly different visual identity** from other projects
+- **Avoid repeating similar color palettes** - Create unique color combinations for each project
+- **Vary typography choices** - Use different font families and typography treatments
+- **Select different UI styles** - Don't default to the same style (e.g., Glass Morphism) for every project
+- **Create unique visual signatures** - Each project should be immediately recognizable and distinct
+- **Vary background effects and animations** - Use different animation patterns and background treatments
+- **Consider project context** - Match design to project type, industry, and target audience uniquely
+- **Avoid generic designs** - Create specific, memorable visual experiences
+
+**Uniqueness Checklist (MUST COMPLETE):**
+- ✅ Selected a DISTINCT UI style that differs from common defaults
+- ✅ Created a UNIQUE color palette (not just variations of blue/purple)
+- ✅ Chose DISTINCT typography (different font families, not just Inter/Roboto)
+- ✅ Selected UNIQUE background effects/animation patterns
+- ✅ Created a VISUAL SIGNATURE that makes this project immediately recognizable
+- ✅ Ensured this design is SIGNIFICANTLY DIFFERENT from other projects
+
 **Action Required:**
 1. **Read and analyze** `.cursor/commands/common/ui_styles_reference.md`
 2. **Read and analyze** `.cursor/uiux_reference/data/` folder for additional UI/UX context:
@@ -49,6 +75,7 @@ When you receive a UI/UX design request, you MUST:
 5. **Cross-reference** data from both sources to find comprehensive UI/UX solutions
 6. **Research on Internet** (if possible) to validate and find additional inspiration
 7. **Select best-fit UI styles** that match the project requirements, synthesizing information from both sources
+8. **ENSURE UNIQUENESS** - Select styles, colors, and typography that create a DISTINCT visual identity
 
 **Process:**
 ```markdown
@@ -105,26 +132,44 @@ When you receive a UI/UX design request, you MUST:
    - Complexity: [Low/Medium/High]
    - Performance: [Excellent/Good/Fair]
    - Mobile Support: [Yes/Partial/No]
+   - **Uniqueness Factor:** [How this style creates a DISTINCT visual identity different from other projects]
    
 2. **Secondary Style (optional):** [Style Name] - [Brief justification]
    - WOW Factor: [X/10]
    - Complexity: [Low/Medium/High]
    - Performance: [Excellent/Good/Fair]
    - Mobile Support: [Yes/Partial/No]
+   - **Uniqueness Factor:** [How this complements primary style to create uniqueness]
 
 3. **Combination Approach:** [If combining multiple styles]
    - How styles complement each other
    - Implementation strategy
+   - **Uniqueness Factor:** [How this combination creates a DISTINCT visual signature]
+
+**🎨 UNIQUENESS VERIFICATION:**
+- **Visual Differentiation:** [How this design will look SIGNIFICANTLY different from other projects]
+- **Color Uniqueness:** [Specific color palette that is DISTINCT and not commonly used]
+- **Typography Uniqueness:** [Font choices that create a DISTINCT typographic identity]
+- **Animation/Effect Uniqueness:** [Unique animation patterns and visual effects]
+- **Signature Elements:** [What makes this design immediately recognizable and unique]
 
 **Style Implementation Plan:**
-- Background Effects: [Selected from both references with technical specs]
-- Animation Patterns: [Selected from both references with timing]
-- Visual Effects: [Selected from both references with parameters]
-- Color Palette: [From uiux_reference/data/colors.csv and style reference or custom]
-- Typography: [From uiux_reference/data/typography.csv and style reference or custom]
-- Component Styles: [How style affects components, informed by both references]
+- Background Effects: [Selected from both references with technical specs - MUST be UNIQUE and DISTINCT]
+- Animation Patterns: [Selected from both references with timing - MUST create a DISTINCT visual signature]
+- Visual Effects: [Selected from both references with parameters - MUST be UNIQUE to this project]
+- Color Palette: [From uiux_reference/data/colors.csv and style reference or custom - MUST be UNIQUE, avoid common blue/purple defaults]
+- Typography: [From uiux_reference/data/typography.csv and style reference or custom - MUST be DISTINCT, avoid default Inter/Roboto]
+- Component Styles: [How style affects components, informed by both references - MUST create UNIQUE component treatments]
 - UX Guidelines: [From uiux_reference/data/ux-guidelines.csv]
 - Framework-Specific Patterns: [From uiux_reference/data/stacks/[FRAMEWORK].csv]
+
+**🎯 UNIQUENESS CHECKLIST FOR IMPLEMENTATION:**
+- ✅ Color palette is DISTINCT and not a variation of commonly used palettes
+- ✅ Typography creates a UNIQUE typographic identity
+- ✅ Background effects/animation patterns are SPECIFIC to this project
+- ✅ Component styles have UNIQUE treatments (not generic Material/Flat design)
+- ✅ Overall visual identity is IMMEDIATELY RECOGNIZABLE and DIFFERENT
+- ✅ Design matches project context while being DISTINCT from other projects
 ```
 
 **Deliverable:** UI Styles Reference Analysis document with matched styles, technical specifications, and implementation plan
@@ -228,9 +273,36 @@ When you receive a UI/UX design request, you MUST:
 
 #### 0.3 Design Style Determination & WOW Factor Planning
 
+**⚠️ CRITICAL: UNIQUENESS REQUIREMENT - AVOID REPETITIVE STYLES**
+
 **Style Decision Logic:**
-1. **If user specifies a style:** Use the specified style (e.g., glass morphism, neumorphism, material design, brutalist)
-2. **If user does NOT specify a style:** Default to **MODERN** design style
+1. **If user specifies a style:** Use the specified style BUT create UNIQUE variations:
+   - Don't use the same color palette as other projects with this style
+   - Add DISTINCT visual elements and treatments
+   - Create UNIQUE typography combinations
+   - Vary animation patterns and effects
+   - Make it DISTINCT even if style is similar
+
+2. **If user does NOT specify a style:** 
+   - **DO NOT default to the same style for every project**
+   - **Select a DISTINCT style** based on project type, industry, and target audience
+   - **Vary styles across projects** - Use different styles (Glass Morphism, Neumorphism, Brutalist, Minimal, etc.)
+   - **Create UNIQUE combinations** - Even if using "Modern" style, make it DISTINCT through unique colors, typography, and effects
+   - **Consider project context** - Match style to project's unique characteristics
+
+**🎨 Style Selection Strategy for Uniqueness:**
+- **E-commerce Projects:** Vary between Glass Morphism, Neumorphism, Minimal Luxury, Bold Commerce, etc.
+- **SaaS Projects:** Vary between Gradient Flow, Floating Particles, Mesh Gradients, Geometric Patterns, etc.
+- **Portfolio/Creative:** Vary between Brutalist, Artistic Gradients, Custom Illustrations, etc.
+- **Corporate:** Vary between Professional Minimal, Elegant Textures, Modern Corporate, etc.
+- **Gaming/Entertainment:** Vary between Dynamic Effects, Vibrant Gradients, Particle Systems, etc.
+
+**⚠️ AVOID:**
+- ❌ Using Glass Morphism for every project
+- ❌ Defaulting to blue/purple color schemes
+- ❌ Using Inter/Roboto for every project
+- ❌ Creating similar-looking designs across different projects
+- ❌ Repeating the same animation patterns
 
 **Modern Design Characteristics (Default):**
 - Clean, minimalist aesthetics with purposeful use of space
@@ -329,12 +401,22 @@ When you receive a UI/UX design request, you MUST:
 - **Key Actions:** [Browse, Purchase, Filter, etc.]
 
 #### 1.2 Design Style Analysis
-- **Visual Style:** [Glass morphism, Material, Minimal, Modern (default), etc.]
-  - **Note:** If no style specified, default to MODERN design
-- **Mood/Tone:** [Modern (default), Elegant, Playful, Professional]
+- **Visual Style:** [Glass morphism, Material, Minimal, Modern, Neumorphism, Brutalist, etc.]
+  - **⚠️ UNIQUENESS REQUIREMENT:** Select a DISTINCT style that differs from other projects
+  - **Note:** If no style specified, select a UNIQUE style based on project context (NOT just default to MODERN)
+  - **Variation Strategy:** Even if using a common style, create UNIQUE variations through colors, typography, and effects
+- **Mood/Tone:** [Modern, Elegant, Playful, Professional, Bold, Minimal, etc.]
+  - **⚠️ UNIQUENESS:** Choose a DISTINCT mood that creates a unique brand personality
 - **Color Scheme:** [Inferred from competitive research or requested]
-- **Animation Preferences:** [Subtle (default for modern), Dynamic, None]
+  - **⚠️ UNIQUENESS:** MUST be DISTINCT - Avoid common blue/purple defaults
+  - **Create UNIQUE color combinations** that are memorable and project-specific
+- **Typography:** [Font choices]
+  - **⚠️ UNIQUENESS:** MUST be DISTINCT - Avoid default Inter/Roboto for every project
+  - **Select UNIQUE font combinations** that create a distinct typographic identity
+- **Animation Preferences:** [Subtle, Dynamic, None]
+  - **⚠️ UNIQUENESS:** Use DISTINCT animation patterns that create a unique visual signature
 - **Influences from Research:** [Key patterns/trends from Step 0 that will be incorporated]
+- **Uniqueness Factors:** [What makes this design DISTINCT and DIFFERENT from other projects]
 
 #### 1.3 Implicit Requirements
 - Industry standards (e.g., e-commerce needs cart, wishlist)
@@ -355,10 +437,16 @@ When you receive a UI/UX design request, you MUST:
 - [Feature 2]
 
 **Design Direction:**
-- Visual Style: [Style - Modern if not specified]
-- Color Palette: [Colors - informed by competitive research]
-- Typography: [Font characteristics - modern sans-serif if not specified]
+- Visual Style: [Style - DISTINCT and UNIQUE, not generic]
+- Color Palette: [Colors - UNIQUE combination, informed by competitive research but DISTINCT]
+- Typography: [Font characteristics - DISTINCT font choices, not default Inter/Roboto]
 - Design Influences: [Key patterns from top-tier products analyzed]
+- **Uniqueness Verification:**
+  - ✅ This design will look SIGNIFICANTLY DIFFERENT from other projects
+  - ✅ Color palette is UNIQUE and not a variation of common palettes
+  - ✅ Typography creates a DISTINCT typographic identity
+  - ✅ Visual style has UNIQUE characteristics and signature elements
+  - ✅ Overall design is IMMEDIATELY RECOGNIZABLE as distinct
 ```
 
 ---
@@ -373,8 +461,18 @@ When you receive a UI/UX design request, you MUST:
 
 **Font Families:**
 - Primary: [Font name] - Body text, general content
+  - **⚠️ UNIQUENESS:** MUST be DISTINCT - Avoid default Inter/Roboto for every project
+  - **Why unique:** [Explanation of why this font creates a distinct typographic identity]
 - Secondary: [Font name] - Headings, emphasis
+  - **Why unique:** [How this complements primary font while being distinct]
 - Monospace: [Font name] - Code, technical content
+
+**Typography Uniqueness Verification:**
+- ✅ Font choices are NOT default Inter/Roboto
+- ✅ Typography creates a DISTINCT typographic identity
+- ✅ Font combination is memorable and project-specific
+- ✅ Typography reflects project's unique personality
+```
 
 **Type Scale:**
 - Display: [Size]px / [Line height] - Hero sections
@@ -402,15 +500,28 @@ When you receive a UI/UX design request, you MUST:
 ```markdown
 ### Color Palette
 
+**⚠️ UNIQUENESS REQUIREMENT: This color palette MUST be DISTINCT and UNIQUE**
+- **Avoid common defaults:** Don't use blue/purple (#3B82F6, #8B5CF6) as primary colors
+- **Create unique combinations:** Use DISTINCT color combinations that are memorable
+- **Project-specific colors:** Colors should reflect the project's unique identity and industry
+- **Memorable palette:** Choose colors that create a strong, recognizable brand identity
+
 **Primary Colors:**
 - Primary: [Hex] - Main actions, CTAs
+  - **Uniqueness:** [Why this color is DISTINCT and not a common default]
 - Primary Light: [Hex] - Hover states
 - Primary Dark: [Hex] - Active states
 
 **Secondary Colors:**
 - Secondary: [Hex] - Supporting elements
+  - **Uniqueness:** [How this complements primary while being DISTINCT]
 - Secondary Light: [Hex]
 - Secondary Dark: [Hex]
+
+**Accent Colors (UNIQUE):**
+- Accent 1: [Hex] - [Purpose] - **Why unique:** [Explanation]
+- Accent 2: [Hex] - [Purpose] - **Why unique:** [Explanation]
+- Accent 3: [Hex] - [Purpose] - **Why unique:** [Explanation]
 
 **Neutral Colors:**
 - Background: [Hex] - Main background
@@ -432,6 +543,13 @@ When you receive a UI/UX design request, you MUST:
 - Glass Surface: rgba([R], [G], [B], 0.1-0.3)
 - Glass Border: rgba([R], [G], [B], 0.2)
 - Backdrop Blur: [Value]px
+
+**Color Palette Uniqueness Verification:**
+- ✅ Primary color is NOT a common blue/purple default
+- ✅ Color combination is DISTINCT and memorable
+- ✅ Colors reflect project's unique identity
+- ✅ Palette creates a strong, recognizable brand
+- ✅ Overall color scheme is SIGNIFICANTLY DIFFERENT from other projects
 ```
 
 #### 2.3 Spacing System
@@ -1109,10 +1227,60 @@ After completing all 6 steps, generate:
 
 ---
 
+## ⚠️ FINAL UNIQUENESS VERIFICATION (MANDATORY BEFORE COMPLETION)
+
+**Before finalizing the design system, AI MUST verify uniqueness:**
+
+### Uniqueness Checklist
+
+**Visual Identity:**
+- ✅ This design has a DISTINCT visual identity that is SIGNIFICANTLY DIFFERENT from other projects
+- ✅ The overall look and feel is IMMEDIATELY RECOGNIZABLE as unique
+- ✅ Design signature elements make this project stand out
+
+**Color Palette:**
+- ✅ Primary colors are NOT common defaults (blue #3B82F6, purple #8B5CF6)
+- ✅ Color combination is DISTINCT and memorable
+- ✅ Palette reflects project's unique identity and industry
+- ✅ Colors create a strong, recognizable brand
+
+**Typography:**
+- ✅ Font choices are NOT default Inter/Roboto
+- ✅ Typography creates a DISTINCT typographic identity
+- ✅ Font combination is memorable and project-specific
+- ✅ Typography reflects project's unique personality
+
+**UI Style:**
+- ✅ Selected style is DISTINCT (not repeated from other projects)
+- ✅ Even if using a common style, it has UNIQUE variations
+- ✅ Style matches project context while being DIFFERENT
+
+**Background Effects & Animations:**
+- ✅ Background effects are UNIQUE and project-specific
+- ✅ Animation patterns create a DISTINCT visual signature
+- ✅ Effects are not generic or repeated from other projects
+
+**Component Treatments:**
+- ✅ Components have UNIQUE treatments (not generic Material/Flat)
+- ✅ Component styles reflect the DISTINCT design identity
+- ✅ Interactions and states are project-specific
+
+**Overall Verification:**
+- ✅ This design would be IMMEDIATELY RECOGNIZABLE as different from other projects
+- ✅ Someone viewing this design would NOT confuse it with other projects
+- ✅ The design has a STRONG, UNIQUE visual signature
+- ✅ All elements work together to create a DISTINCT, memorable experience
+
+**If ANY item is unchecked, AI MUST revise the design to ensure uniqueness before completion.**
+
+---
+
 ## Best Practices
 
 ### Do:
 ✅ Start with user requirements and platform
+✅ **ENSURE UNIQUENESS** - Create DISTINCT design identity for each project
+✅ **Vary styles** - Don't use the same style/colors/typography for every project
 ✅ Define atomic elements first
 ✅ Build components progressively (atoms → molecules → organisms)
 ✅ Consider accessibility from the beginning
@@ -1121,14 +1289,20 @@ After completing all 6 steps, generate:
 ✅ Include responsive specifications
 ✅ Define all interaction states
 ✅ Create consistent naming conventions
+✅ **Verify uniqueness** before finalizing design system
 
 ### Don't:
+❌ **Create similar-looking designs** - Each project MUST be DISTINCT
+❌ **Use default colors** - Avoid blue/purple defaults for every project
+❌ **Use default fonts** - Avoid Inter/Roboto for every project
+❌ **Repeat the same style** - Vary styles across projects
 ❌ Skip atomic definitions
 ❌ Ignore platform-specific patterns
 ❌ Forget about edge cases (loading, error, empty states)
 ❌ Use generic descriptions without specific values
 ❌ Ignore accessibility requirements
 ❌ Forget about responsive behavior
+❌ **Skip uniqueness verification** - Always verify before completion
 ❌ Skip animation and interaction details
 
 ---
