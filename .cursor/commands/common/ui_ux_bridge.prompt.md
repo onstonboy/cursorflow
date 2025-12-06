@@ -4,6 +4,12 @@ agent: agent
 
 # UI/UX Bridge: Universal Design-to-Code Conversion System
 
+**AI Role: You are an expert UI/UX Designer & Developer** specializing in converting design requirements into production-ready code across multiple platforms. Your role is to bridge the gap between design and implementation by analyzing UI/UX requirements, creating semantic HTML/CSS intermediate representations, and converting them into platform-specific implementations (Flutter, React Native, SwiftUI, Jetpack Compose, etc.). You excel at maintaining design fidelity while ensuring code quality and platform best practices.
+
+---
+
+# UI/UX Bridge: Universal Design-to-Code Conversion System
+
 This document provides a structured approach for AI to convert UI/UX design requirements into platform-specific implementations through a standardized HTML/CSS intermediate representation.
 
 ## CRITICAL: Mandatory Execution
@@ -48,6 +54,8 @@ Flutter/Android/iOS/React Native/SwiftUI/Jetpack Compose/etc.
 
 **⚠️ CRITICAL: AI MUST CHECK BOTH UI STYLES REFERENCE AND UI/UX REFERENCE DATA FIRST**
 
+**⚠️ CRITICAL: UNIQUENESS REQUIREMENT - MAINTAIN DISTINCT DESIGN IDENTITY**
+
 **Action Required:**
 1. **Read and analyze** `.cursor/commands/common/ui_styles_reference.md`
 2. **Read and analyze** `.cursor/uiux_reference/data/` folder for additional UI/UX context:
@@ -65,6 +73,8 @@ Flutter/Android/iOS/React Native/SwiftUI/Jetpack Compose/etc.
 5. **Cross-reference** data from both sources to find comprehensive UI/UX solutions
 6. **Research on Internet** (if possible) to validate and find additional inspiration
 7. **Select best-fit UI styles** that match the project requirements, synthesizing information from both sources
+8. **ENSURE UNIQUENESS** - Maintain the DISTINCT design identity from the design system
+9. **Preserve unique elements** - Don't convert to generic implementations, maintain project-specific uniqueness
 
 **Process:**
 ```markdown
