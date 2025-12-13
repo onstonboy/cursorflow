@@ -171,6 +171,31 @@ class ValidationFailure extends Failure {
 ## UI and Styling
 - **CRITICAL: Scan component/widget/view folders BEFORE implementing any UI** - Check for existing base components and reusable UI elements first
 - **ALWAYS reuse existing components** from component/widget/view folders - Do NOT create new UI if there already exists a suitable one
+- **MANDATORY: Wireframe Description Before Implementation** - Before implementing any UI component or screen, MUST describe the wireframe layout using text symbols/ASCII art for review. The wireframe should clearly show:
+  - Layout structure (header, content, footer, sidebars, etc.)
+  - Component placement and hierarchy
+  - Spacing and alignment relationships
+  - Navigation flow and interactive elements
+  - Responsive breakpoints (if applicable)
+  - Example wireframe format:
+    ```
+    ┌─────────────────────────────────────┐
+    │           HEADER                    │
+    │  [Logo]  [Nav Items]  [User Menu]   │
+    ├─────────────────────────────────────┤
+    │                                     │
+    │  ┌──────────┐  ┌──────────┐        │
+    │  │  Card 1   │  │  Card 2   │        │
+    │  │           │  │           │        │
+    │  └──────────┘  └──────────┘        │
+    │                                     │
+    │           CONTENT AREA              │
+    │                                     │
+    ├─────────────────────────────────────┤
+    │           FOOTER                    │
+    └─────────────────────────────────────┘
+    ```
+  - **DO NOT proceed with implementation until wireframe is reviewed and approved**
 - **Follow UI designs exactly** - When UI images or designs are provided, implement them precisely as specified
 - Use framework's built-in components and create custom components only when necessary
 - Implement responsive design using appropriate layout tools (MediaQuery, breakpoints, CSS Grid, Flexbox, etc.)
@@ -242,6 +267,171 @@ class UserStatusHelper {
 - Implement proper null safety/optional handling as per language features
 - Use value objects for domain-specific types
 - Use appropriate logging instead of print/console.log for debugging
+
+## Code Organization Standards
+
+### Variable Declaration Order
+Variables MUST be declared in the following order:
+1. **Static variables** (static const, static final, static readonly, etc.)
+2. **Late variables** (late fields that require initialization, lazy initialization)
+3. **Public variables** (final, const, non-private fields)
+4. **Private variables** (fields with private/underscore access modifiers)
+
+Example (adapt to language-specific syntax):
+```dart
+// Dart example
+class MyClass {
+  static const int maxCount = 10;
+  
+  late SomeService _service;
+  late SomeBloc _bloc;
+  
+  final PageController controller = PageController();
+  int currentIndex = 0;
+  
+  bool _isLoading = false;
+  String _errorMessage = '';
+}
+```
+
+```typescript
+// TypeScript example
+class MyClass {
+  private static readonly MAX_COUNT = 10;
+  
+  private service!: SomeService;
+  private bloc!: SomeBloc;
+  
+  readonly controller = new PageController();
+  currentIndex = 0;
+  
+  private isLoading = false;
+  private errorMessage = '';
+}
+```
+
+### Variable Scope Preference
+- **Prefer class-level (instance) variables over local variables** when the value is used across multiple methods or needs to persist between method calls
+- Use local variables only for temporary values within a single method scope
+- Extract repeated local variable initializations to class-level variables
+
+Example (Prefer this):
+```dart
+class MyClass {
+  PreferencesManager preferencesManager = getInstance<PreferencesManager>();
+  bool isCompleted = false;
+  
+  void checkStatus() {
+    isCompleted = preferencesManager.getItem<bool>(key) ?? false;
+  }
+  
+  void navigate() {
+    if (isCompleted) {
+      // use isCompleted
+    }
+  }
+}
+```
+
+Rather than:
+```dart
+void checkStatus() {
+  final preferencesManager = getInstance<PreferencesManager>();
+  final isCompleted = preferencesManager.getItem<bool>(key) ?? false;
+}
+```
+
+### Method Declaration Order
+Methods MUST be declared in the following order:
+1. **Override methods** (@override, @Override methods like build, render, componentDidMount, initState, dispose, etc.)
+2. **Public UI methods** (public methods that return UI elements - Widget, JSX, View, etc. or build UI)
+3. **Public logic methods** (public methods that handle business logic)
+4. **Private methods** (methods with private/underscore access modifiers)
+
+Example (adapt to language/framework-specific syntax):
+```dart
+class MyWidget extends StatefulWidget {
+  // Variables here (following variable order)
+  
+  @override
+  Widget build(BuildContext context) {
+    // Build UI
+  }
+  
+  @override
+  void initState() {
+    super.initState();
+    initializeData();
+  }
+  
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+  
+  Widget buildHeader() {
+    // Public UI method
+  }
+  
+  void handleButtonClick() {
+    // Public logic method
+  }
+  
+  void navigateToNextPage() {
+    // Public logic method
+  }
+  
+  void _initializeData() {
+    // Private method
+  }
+  
+  Widget _buildItem(BuildContext context) {
+    // Private UI method
+  }
+}
+```
+
+```typescript
+// React/TypeScript example
+class MyComponent extends React.Component {
+  // Variables here (following variable order)
+  
+  render() {
+    // Override UI method
+  }
+  
+  componentDidMount() {
+    // Override lifecycle method
+    this.initializeData();
+  }
+  
+  componentWillUnmount() {
+    // Override lifecycle method
+    this.controller.dispose();
+  }
+  
+  buildHeader() {
+    // Public UI method
+  }
+  
+  handleButtonClick() {
+    // Public logic method
+  }
+  
+  navigateToNextPage() {
+    // Public logic method
+  }
+  
+  private initializeData() {
+    // Private method
+  }
+  
+  private buildItem() {
+    // Private UI method
+  }
+}
+```
 
 ## Code Generation
 - Utilize appropriate code generation tools for the language/framework (build_runner, codegen, etc.)

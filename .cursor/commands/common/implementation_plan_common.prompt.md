@@ -705,6 +705,49 @@ Complete State Machine:
 ### 7. Implementation Checklist (COMPREHENSIVE)
 **Objective:** Step-by-step implementation order with complete task breakdown
 
+**⚠️ CRITICAL: GRANULAR TASK BREAKDOWN REQUIREMENTS**
+
+**When creating child plans (as specified in Step 7.7 of research_plan_common.prompt.md), each child plan MUST break down major tasks into very detailed, granular sub-steps:**
+
+**Granularity Requirements:**
+- Each major task must be broken into 3-7 detailed sub-steps
+- Each sub-step must include:
+  - Specific file paths to create/modify (e.g., `lib/core/theme/app_colors.dart`)
+  - Code structure examples with complete property/method definitions
+  - Verification criteria (how to verify the step is complete)
+  - Checklist items for each sub-step
+- **Total granular steps per child plan:**
+  - Setup & Infrastructure: ~100+ individual actionable steps
+  - Core Layer: ~80+ individual actionable steps
+  - Domain Layer: ~120+ individual actionable steps
+  - Data Layer: ~100+ individual actionable steps
+  - Presentation Layer: ~150+ individual actionable steps
+  - Integration & Validation: ~60+ individual actionable steps
+
+**Example Task Breakdown Pattern:**
+```markdown
+### Task 1.1: Create Color Constants File
+**Step 1.1.1:** Create app_colors.dart file
+- [ ] Create file `lib/core/theme/app_colors.dart`
+- [ ] Add file header comment with description
+
+**Step 1.1.2:** Define dark theme colors
+- [ ] Add class `AppColors` with static const Color fields
+- [ ] Add `backgroundPrimary = Color(0xFF1A1A2E)` (dark blue-grey)
+- [ ] Add `backgroundSecondary = Color(0xFF1E1E2E)` (card background)
+- [ ] Add `primaryTeal = Color(0xFF80E8C8)` (main accent)
+- [ ] [Continue with all color definitions...]
+
+**Step 1.1.3:** Define light theme colors
+- [ ] Add `AppColorsLight` class
+- [ ] Add `backgroundPrimary = Color(0xFFFFFFFF)` (white)
+- [ ] [Continue pattern...]
+
+**Verification:** Import file and verify no syntax errors
+```
+
+**Each child plan should follow this granular pattern for ALL tasks.**
+
 #### 7.1 Phase 1: Setup & Infrastructure
 - [ ] **Project Structure:**
   - [ ] Create directory structure (all layers)
@@ -1183,3 +1226,90 @@ Always complete the planning phase before writing code. A well-planned feature i
 - ❌ DO NOT simplify or summarize
 - ❌ DO NOT skip details or subsections
 - ❌ DO NOT overlook additional features that could enhance the implementation
+
+---
+
+## CRITICAL: Granular Child Plan Breakdown Requirements
+
+**⚠️ WHEN CREATING CHILD PLANS, EACH PLAN MUST INCLUDE VERY DETAILED, GRANULAR TASK BREAKDOWNS**
+
+**After creating the main implementation plan, you MUST create 6 child plans with the following granularity:**
+
+### Granular Breakdown Requirements:
+
+**1. Each Major Task → Multiple Sub-Tasks (3-7 sub-tasks per major task)**
+- Task 1.1: [Major Task Name]
+  - Step 1.1.1: [Specific action with exact file path]
+  - Step 1.1.2: [Specific action with code structure]
+  - Step 1.1.3: [Specific action with verification]
+  - Step 1.1.4: [Additional detailed steps...]
+
+**2. Each Sub-Step MUST Include:**
+- ✅ Exact file path: `lib/[path]/[filename].[ext]`
+- ✅ Specific actions: "Create file", "Add property", "Import library", etc.
+- ✅ Code structure examples: Complete code snippets with all properties/methods
+- ✅ Verification criteria: How to verify the step is complete
+- ✅ Checklist items: Individual checkboxes for each action
+
+**3. Expected Granular Steps Per Child Plan:**
+- **Setup & Infrastructure:** ~100+ individual actionable steps
+- **Core Layer:** ~80+ individual actionable steps
+- **Domain Layer:** ~120+ individual actionable steps
+- **Data Layer:** ~100+ individual actionable steps
+- **Presentation Layer:** ~150+ individual actionable steps
+- **Integration & Validation:** ~60+ individual actionable steps
+
+**4. Example Pattern:**
+```markdown
+### Task 1.1: Create Color Constants File
+
+**Step 1.1.1:** Create app_colors.dart file
+- [ ] Create file `lib/core/theme/app_colors.dart`
+- [ ] Add file header comment with description
+
+**Step 1.1.2:** Define dark theme colors
+- [ ] Add class `AppColors` with static const Color fields
+- [ ] Add `backgroundPrimary = Color(0xFF1A1A2E)` (dark blue-grey)
+- [ ] Add `backgroundSecondary = Color(0xFF1E1E2E)` (card background)
+- [ ] Add `primaryTeal = Color(0xFF80E8C8)` (main accent)
+- [ ] Add `primaryTealDark = Color(0xFF5FD4C4)` (hover/pressed)
+- [ ] Add `primaryTealLight = Color(0xFFB0F4E8)` (highlights)
+- [ ] Add `successGreen = Color(0xFF4CAF50)` (completion, on track)
+- [ ] Add `warningOrange = Color(0xFFFF9800)` (at risk, off track)
+- [ ] Add `errorRed = Color(0xFFEF4444)` (at risk, behind schedule)
+
+**Step 1.1.3:** Define text colors for dark theme
+- [ ] Add `textPrimary = Color(0xFFFFFFFF)` (white headings)
+- [ ] Add `textSecondary = Color(0xFFB0B0B0)` (light grey subtitles)
+- [ ] Add `textDisabled = Color(0xFF6B7280)` (inactive states)
+
+**Step 1.1.4:** Define light theme colors
+- [ ] Add `AppColorsLight` class
+- [ ] Add `backgroundPrimary = Color(0xFFFFFFFF)` (white)
+- [ ] Add `backgroundSecondary = Color(0xFFF8F9FA)` (light grey)
+- [ ] Add `textPrimary = Color(0xFF111827)` (dark grey)
+- [ ] [Continue with all light theme colors...]
+
+**Verification:** Import file and verify no syntax errors: `import 'package:goal_quest/core/theme/app_colors.dart';`
+```
+
+**5. Quality Standards:**
+- Each step should be immediately actionable without additional questions
+- File paths must be complete and accurate
+- Code examples must be complete (not placeholders)
+- Verification steps must be specific and testable
+- Total granular steps should match expected counts above
+
+**DO NOT:**
+- ❌ Create high-level tasks without sub-steps
+- ❌ Use vague descriptions like "Set up theme system"
+- ❌ Skip file paths or use relative paths without context
+- ❌ Provide incomplete code examples
+- ❌ Create plans with fewer than expected granular steps
+
+**DO:**
+- ✅ Break every major task into 3-7 detailed sub-steps
+- ✅ Include exact file paths for every file to be created
+- ✅ Provide complete code structure examples
+- ✅ Include verification criteria for each step
+- ✅ Create comprehensive, actionable child plans

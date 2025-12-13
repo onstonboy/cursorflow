@@ -52,13 +52,15 @@ Before executing this workflow, you MUST have access to and reference these prom
 **⚠️ AI MUST COMPLETE ALL STEPS IN EXACT ORDER - NO EXCEPTIONS**
 
 When you receive a feature request, you MUST:
-1. Execute ALL 6 steps sequentially (Step 0 through Step 5)
-2. Generate ALL deliverables for each step
-3. Store results in specified directories
-4. Do NOT skip any step
-5. Do NOT ask for permission between steps - execute automatically
-6. ONLY ask for user confirmation AFTER completing Step 5
-7. Complete the entire workflow before proceeding to implementation
+1. Execute Step 0 (Verify Commands & Project Rules)
+2. **IF UI design images are detected** → Execute Step 0.5 (Process UI Images) → Break into components → Convert each to HTML using @ui_ux_bridge
+3. Execute ALL remaining steps sequentially (Step 1 through Step 5)
+4. Generate ALL deliverables for each step
+5. Store results in specified directories
+6. Do NOT skip any step (except Step 0.5 if no images)
+7. Do NOT ask for permission between steps - execute automatically
+8. ONLY ask for user confirmation AFTER completing Step 5
+9. Complete the entire workflow before proceeding to implementation
 
 **Failure to complete all steps is considered incomplete work.**
 
@@ -69,7 +71,13 @@ When you receive a feature request, you MUST:
 ```
 Verify Commands (Step 0) → Check commands/specify/ → Generate if missing
          ↓
-User Requirement (Step 1)
+Detect UI Images (Step 0.5) → IF images provided:
+         ↓
+    Break into Components → Convert each to HTML (@ui_ux_bridge)
+         ↓
+    Store Components → Continue to Step 1
+         ↓
+User Requirement (Step 1) → Include converted UI reference
          ↓
 Determine UI/UX Requirement (Step 1.5) → Does feature need UI/UX?
          ↓
@@ -80,9 +88,9 @@ Research & Analysis (Step 2) → ./docs/research_plans/
     │    YES  │
     │         │
     ▼         ▼
-UI/UX Design System (Step 3) → ./docs/ui_ux/
+UI/UX Design System (Step 3) → ./docs/ui_ux/ (Use converted components)
          ↓
-Platform-Specific Code (Step 4) → ./docs/ui_ux/
+Platform-Specific Code (Step 4) → ./docs/ui_ux/ (Convert HTML to platform)
          ↓
     └────┬────┘
          │
@@ -292,6 +300,326 @@ project-rule_[TECH]_[LANGUAGE].mdc
 
 ---
 
+## STEP 0.5: Detect & Process UI Design Images (CONDITIONAL - IF UI IMAGES PROVIDED)
+
+**Objective:** Detect, analyze, and convert UI design images to HTML components before proceeding with normal workflow
+
+**⚠️ CONDITIONAL EXECUTION:**
+- **IF user provides UI design image(s)** → Execute this step
+- **IF user provides text-only requirement** → Skip this step and proceed to Step 1
+
+**⚠️ MANDATORY: Execute this step BEFORE Step 1 if UI images are detected**
+
+### 0.5.1 Detect UI Design Images
+
+**Check user input for:**
+- Image files (PNG, JPG, JPEG, SVG, etc.)
+- Screenshots or mockups
+- Design files (Figma links, Sketch files, etc.)
+- Any visual design references
+
+**Detection Criteria:**
+- Files attached that are image formats
+- User mentions "image", "design", "mockup", "screenshot", "UI", "wireframe"
+- URLs pointing to design tools (Figma, Dribbble, Behance, etc.)
+
+**Action:**
+- If images detected → Proceed to Step 0.5.2
+- If no images → Skip to Step 1
+
+### 0.5.2 Break Down UI Image into Components
+
+**Objective:** Analyze the UI image and identify all distinct components and sections
+
+**⚠️ MANDATORY: AI MUST analyze the image comprehensively and break it down into logical parts**
+
+**Component Identification Process:**
+
+1. **Screen-Level Analysis:**
+   - Identify if single screen or multiple screens
+   - Identify screen type (onboarding, login, dashboard, detail, etc.)
+   - Identify overall layout structure (header, body, footer, sidebar, etc.)
+
+2. **Section-Level Breakdown:**
+   - Break into major sections (Header, Navigation, Main Content, Sidebar, Footer, etc.)
+   - Identify repeated patterns (card lists, grids, forms, etc.)
+   - Identify distinct visual areas
+
+3. **Component-Level Breakdown:**
+   - For each section, identify individual components:
+     - Buttons, Inputs, Cards, Lists, Modals, Navigation bars, etc.
+     - Icons, Images, Typography elements
+     - Interactive elements (toggles, sliders, checkboxes, etc.)
+
+4. **Hierarchical Organization:**
+   - Organize components in hierarchy:
+     - Page/Screen Level
+       - Section Level
+         - Component Level
+           - Element Level (text, icon, image, etc.)
+
+**Deliverable:**
+```markdown
+## UI Image Breakdown Analysis
+
+**Image Source:** [Image filename/path/URL]
+**Analysis Date:** [Date]
+
+### Screen Identification
+- **Screen Type:** [Onboarding/Login/Dashboard/Detail/etc.]
+- **Platform:** [Mobile/Tablet/Desktop/Responsive]
+- **Theme:** [Light/Dark/Custom]
+
+### Section Breakdown
+1. **Section 1: [Section Name]**
+   - **Location:** [Top/Middle/Bottom/Left/Right]
+   - **Purpose:** [Function/Content]
+   - **Components:**
+     - Component 1.1: [Component Name] - [Description]
+     - Component 1.2: [Component Name] - [Description]
+     - Component 1.3: [Component Name] - [Description]
+
+2. **Section 2: [Section Name]**
+   - **Location:** [Position]
+   - **Purpose:** [Function/Content]
+   - **Components:**
+     - Component 2.1: [Component Name] - [Description]
+     - Component 2.2: [Component Name] - [Description]
+     - [Additional components...]
+
+[Continue for all sections]
+
+### Component Inventory
+**Total Components Identified:** [Number]
+
+| Component ID | Component Name | Section | Type | Description | Priority |
+|--------------|---------------|---------|------|-------------|----------|
+| C001 | [Name] | [Section] | [Button/Card/Input/etc.] | [Description] | [High/Medium/Low] |
+| C002 | [Name] | [Section] | [Type] | [Description] | [Priority] |
+| [Continue for all components] |
+
+### Visual Elements Inventory
+- **Colors:** [Primary, Secondary, Accent colors identified]
+- **Typography:** [Font families, sizes, weights observed]
+- **Spacing:** [Margins, padding patterns]
+- **Shadows:** [Shadow styles and elevations]
+- **Borders:** [Border styles and radius]
+- **Icons:** [Icon styles and types]
+- **Images:** [Image types and placements]
+- **Animations/Effects:** [Observed animations or visual effects]
+```
+
+### 0.5.3 Convert Each Component to HTML Using UI/UX Bridge
+
+**Objective:** Convert each identified component to semantic HTML/CSS using UI/UX Bridge workflow
+
+**⚠️ MANDATORY: Reference and use UI/UX Bridge prompt file for conversion**
+
+**Reference File:**
+- **Primary:** `./.cursor/commands/specify/ui_ux_bridge_[TECH]_[LANGUAGE].prompt.md`
+- **Fallback:** `./.cursor/commands/common/ui_ux_bridge.prompt.md`
+
+**⚠️ CRITICAL: Read UI/UX Bridge prompt file before proceeding**
+
+**Conversion Process for Each Component:**
+
+**For EACH component identified in Step 0.5.2:**
+
+1. **Extract Component Requirements:**
+   - Visual appearance (colors, sizes, spacing)
+   - Layout and positioning
+   - Typography details
+   - Interactive states (hover, active, disabled)
+   - Responsive behavior
+   - Accessibility requirements
+
+2. **Apply UI/UX Bridge Workflow:**
+   - **PRE-PHASE:** Check UI styles reference and UI/UX reference data
+   - **PHASE 1:** Create semantic HTML structure for component
+   - **PHASE 2:** Implement CSS styling with design tokens
+   - **PHASE 3:** Convert to target platform code (if needed)
+
+3. **Generate Component HTML/CSS:**
+   - Semantic HTML structure
+   - Complete CSS with all styling details
+   - Include all states and variations
+   - Include responsive breakpoints
+   - Include accessibility attributes
+
+**Conversion Command Template:**
+```
+@ui_ux_bridge
+
+Component: [Component Name]
+Type: [Button/Card/Input/Navigation/etc.]
+Requirements:
+- [Visual requirement 1]
+- [Visual requirement 2]
+- [Interactive requirement]
+- [Responsive requirement]
+- [Accessibility requirement]
+
+Reference: [Reference to section in breakdown analysis]
+
+Target Platform: [Flutter/React/Web/etc.]
+```
+
+**Component Conversion Order:**
+- Process components from simplest to most complex
+- Atomic components first (buttons, inputs, icons)
+- Then molecular components (cards, forms, lists)
+- Finally organism components (navigation, headers, complex layouts)
+
+**Deliverable for Each Component:**
+```markdown
+## Component: [Component Name]
+
+### Component Details
+- **Component ID:** [C001, C002, etc.]
+- **Section:** [Which section it belongs to]
+- **Type:** [Atomic/Molecular/Organism]
+- **Priority:** [High/Medium/Low]
+
+### HTML Structure
+```html
+<!-- Semantic HTML for component -->
+[Complete HTML code]
+```
+
+### CSS Styling
+```css
+/* Complete CSS with design tokens */
+[Complete CSS code]
+```
+
+### Design Tokens Used
+- **Colors:** [Token values]
+- **Typography:** [Font properties]
+- **Spacing:** [Margin/padding values]
+- **Shadows:** [Shadow values]
+- **Borders:** [Border properties]
+
+### States & Variations
+- **Default State:** [Description and CSS]
+- **Hover State:** [Description and CSS]
+- **Active State:** [Description and CSS]
+- **Disabled State:** [Description and CSS]
+- **Other Variations:** [If applicable]
+
+### Responsive Behavior
+- **Mobile:** [Breakpoint and behavior]
+- **Tablet:** [Breakpoint and behavior]
+- **Desktop:** [Breakpoint and behavior]
+
+### Accessibility
+- **ARIA Labels:** [Applied labels]
+- **Keyboard Navigation:** [Support details]
+- **Screen Reader:** [Support details]
+- **Color Contrast:** [WCAG compliance]
+
+### Platform-Specific Code (if applicable)
+```[language]
+// Target platform code
+[Platform-specific implementation]
+```
+```
+
+### 0.5.4 Compile All Components into Complete HTML Structure
+
+**Objective:** Combine all converted components into a complete page/screen structure
+
+**Assembly Process:**
+1. Create base HTML document structure
+2. Add global styles and design tokens
+3. Assemble components in order based on original layout
+4. Link component CSS files or inline styles
+5. Add JavaScript for interactivity (if needed)
+6. Ensure proper semantic structure and accessibility
+
+**Deliverable:**
+```markdown
+## Complete UI Implementation from Image
+
+### Page Structure
+[Complete HTML document with all components assembled]
+
+### Global Styles
+[CSS for base styling, design tokens, reset styles]
+
+### Component Library
+[List of all components with their HTML/CSS]
+
+### Design System Summary
+[Extracted design tokens and patterns from image]
+```
+
+### 0.5.5 Store Converted HTML/Components
+
+**⚠️ MANDATORY: Save converted UI components to:**
+```
+./docs/ui_ux/image_conversions/[FEATURE_NAME]_[DATE]/
+├── image_breakdown_analysis.md
+├── components/
+│   ├── [COMPONENT_01]_[NAME].html
+│   ├── [COMPONENT_01]_[NAME].css
+│   ├── [COMPONENT_02]_[NAME].html
+│   ├── [COMPONENT_02]_[NAME].css
+│   └── [Additional component files...]
+├── complete_page.html
+├── complete_page.css
+├── design_tokens.json
+└── component_index.md
+```
+
+### 0.5.6 Document Converted Components
+
+**Action:** Store the converted components and design information for use in subsequent workflow steps:
+- Use in Step 3 (UI/UX Design System) as reference
+- Use in Step 4 (Platform-Specific Code) as source
+- Reference in Step 2 (Research & Analysis) for requirements
+
+**Deliverable:**
+```markdown
+## UI Image Conversion Summary
+
+**Image Source:** [Source]
+**Conversion Date:** [Date]
+**Components Converted:** [Number]
+**Total Files Generated:** [Number]
+
+### Components Converted
+1. [Component Name] - [Status: Complete/Partial]
+2. [Component Name] - [Status: Complete/Partial]
+[Continue list...]
+
+### Design Tokens Extracted
+- Colors: [Number] tokens identified
+- Typography: [Number] styles identified
+- Spacing: [Number] scale values identified
+- [Additional tokens...]
+
+### Next Steps
+- Use this conversion in Step 2 (Research & Analysis)
+- Reference in Step 3 (UI/UX Design System)
+- Apply in Step 4 (Platform-Specific Code)
+```
+
+### 0.5.7 Continue with Normal Workflow
+
+**After completing image conversion:**
+- Proceed to Step 1: Receive & Analyze User Requirement
+- Include converted UI components in requirements analysis
+- Use converted components as design reference
+- Integrate extracted design tokens into design system
+
+**Integration Notes:**
+- The converted HTML/CSS serves as the design specification
+- Design tokens extracted from image inform the design system
+- Component breakdown informs the component library structure
+- Continue workflow normally but use image analysis as primary design reference
+
+---
+
 ## STEP 1: Receive & Analyze User Requirement (MANDATORY)
 
 **Objective:** Extract and document complete user requirements
@@ -305,6 +633,7 @@ project-rule_[TECH]_[LANGUAGE].mdc
 - Technology stack preferences (if any)
 - Timeline constraints (if any)
 - Any specific requirements
+- **UI design images (processed in Step 0.5 if present)**
 
 **Example Input:**
 ```
@@ -679,6 +1008,38 @@ Before proceeding, you MUST:
 4. Follow the instructions exactly as specified in that file
 5. Generate all deliverables as defined in that file
 
+**⚠️ MANDATORY: WIREFRAME DESCRIPTION BEFORE IMPLEMENTATION**
+
+**Before executing Phase 1, you MUST:**
+1. Create a wireframe description using text symbols/ASCII art for each UI component/screen
+2. The wireframe must clearly show:
+   - Layout structure (header, content, footer, sidebars, etc.)
+   - Component placement and hierarchy
+   - Spacing and alignment relationships
+   - Navigation flow and interactive elements
+   - Responsive breakpoints (if applicable)
+3. Present the wireframe for review
+4. **DO NOT proceed with Phase 1 implementation until wireframe is reviewed and approved**
+
+**Wireframe Format Example:**
+```
+┌─────────────────────────────────────┐
+│           HEADER                    │
+│  [Logo]  [Nav Items]  [User Menu]   │
+├─────────────────────────────────────┤
+│                                     │
+│  ┌──────────┐  ┌──────────┐        │
+│  │  Card 1   │  │  Card 2   │        │
+│  │           │  │           │        │
+│  └──────────┘  └──────────┘        │
+│                                     │
+│           CONTENT AREA              │
+│                                     │
+├─────────────────────────────────────┤
+│           FOOTER                    │
+└─────────────────────────────────────┘
+```
+
 **⚠️ EXECUTE ALL 3 PHASES FROM THE UI/UX BRIDGE PROMPT FILE**
 
 ### 4.1 Reference Document
@@ -821,23 +1182,66 @@ SHOE_SHOP_ECOMMERCE_IMPLEMENTATION_PLAN_2025-12-03.md
 
 **Reference:** See Step 7.7 in research_plan.prompt.md for detailed child plan specifications.
 
+**⚠️ CRITICAL: Each child plan MUST be broken down into very detailed, granular task breakdowns:**
+
+**Granularity Requirements:**
+- Each major task must be broken into 3-7 detailed sub-steps
+- Each sub-step must include:
+  - Specific file paths to create/modify
+  - Code structure examples
+  - Property/method definitions
+  - Verification criteria
+  - Checklist items
+- Total granular steps per child plan:
+  - Setup & Infrastructure: ~100+ individual actionable steps
+  - Core Layer: ~80+ individual actionable steps
+  - Domain Layer: ~120+ individual actionable steps
+  - Data Layer: ~100+ individual actionable steps
+  - Presentation Layer: ~150+ individual actionable steps
+  - Integration & Validation: ~60+ individual actionable steps
+
+**Example Task Breakdown Pattern:**
+```markdown
+### Task 1.1: Create Color Constants File
+**Step 1.1.1:** Create app_colors.dart
+- [ ] Create file `lib/core/theme/app_colors.dart`
+- [ ] Add file header comment with description
+
+**Step 1.1.2:** Define dark theme colors
+- [ ] Add class `AppColors` with static const Color fields
+- [ ] Add `backgroundPrimary = Color(0xFF1A1A2E)`
+- [ ] Add `backgroundSecondary = Color(0xFF1E1E2E)`
+- [ ] [Continue with all color definitions...]
+
+**Step 1.1.3:** Define light theme colors
+- [ ] Add `AppColorsLight` class
+- [ ] Add all light theme color definitions
+- [ ] [Continue pattern...]
+```
+
 1. **Setup & Infrastructure**
    - File: `[FEATURE_NAME]_IMPLEMENTATION_PLAN_01_SETUP_[DATE].md`
+   - Must include: ~100+ granular steps broken down from major tasks
 
 2. **Core Layer**
    - File: `[FEATURE_NAME]_IMPLEMENTATION_PLAN_02_CORE_[DATE].md`
+   - Must include: ~80+ granular steps broken down from major tasks
 
 3. **Domain Layer**
    - File: `[FEATURE_NAME]_IMPLEMENTATION_PLAN_03_DOMAIN_[DATE].md`
+   - Must include: ~120+ granular steps broken down from major tasks
 
 4. **Data Layer**
    - File: `[FEATURE_NAME]_IMPLEMENTATION_PLAN_04_DATA_[DATE].md`
+   - Must include: ~100+ granular steps broken down from major tasks
 
 5. **Presentation Layer**
    - File: `[FEATURE_NAME]_IMPLEMENTATION_PLAN_05_PRESENTATION_[DATE].md`
+   - Must include: ~150+ granular steps broken down from major tasks
 
 6. **Integration & Validation**
    - File: `[FEATURE_NAME]_IMPLEMENTATION_PLAN_06_INTEGRATION_[DATE].md`
+   - Must include: ~60+ granular steps broken down from major tasks
 
 ### 5.5 Output Location
 
@@ -1306,18 +1710,27 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
 ✅ **Step 0:** Verify tech-specific commands and project rule exist:
    - Commands in `./.cursor/commands/specify/` → Generate missing files from `./.cursor/commands/common/`
    - Project rule in `./.cursor/rules/` → Generate missing file from `./.cursor/rules/common/`
-✅ **Step 1:** Parse and document user requirements
+✅ **Step 0.5:** [IF UI design images detected] Process UI images:
+   - Detect UI design images in user input
+   - Break image into logical components/sections
+   - Convert each component to HTML/CSS using @ui_ux_bridge workflow
+   - Store converted components to `./docs/ui_ux/image_conversions/[FEATURE_NAME]_[DATE]/`
+   - Use converted components as design reference in subsequent steps
+✅ **Step 1:** Parse and document user requirements (include converted UI components if Step 0.5 executed)
 ✅ **Step 1.5:** Determine if feature requires UI/UX (analyze requirements carefully)
-✅ **Step 2:** Execute complete research plan (following tech-specific research plan prompt) → Save to `./docs/research_plans/`
-✅ **Step 3:** [IF UI/UX required] Generate complete UI/UX design (following tech-specific UI/UX design generator prompt) → Save to `./docs/ui_ux/` [ELSE] Skip UI/UX design step
-✅ **Step 4:** [IF UI/UX required] Create platform-specific UI code (following tech-specific UI/UX bridge prompt) → Save to `./docs/ui_ux/` [ELSE] Skip UI/UX code step
+✅ **Step 2:** Execute complete research plan (following tech-specific research plan prompt) → Save to `./docs/research_plans/` (reference converted components if available)
+✅ **Step 3:** [IF UI/UX required] Generate complete UI/UX design (following tech-specific UI/UX design generator prompt) → Save to `./docs/ui_ux/` (use converted HTML/components as reference) [ELSE] Skip UI/UX design step
+✅ **Step 4:** [IF UI/UX required] Create platform-specific UI code (following tech-specific UI/UX bridge prompt) → Save to `./docs/ui_ux/` (convert HTML from Step 0.5 to platform code) [ELSE] Skip UI/UX code step
 ✅ **Step 5:** Generate all implementation plans (following tech-specific implementation plan prompt - 1 main + 6 child) → Save to `./docs/implementation_plans/[FEATURE_NAME]/`
 ✅ **STOP:** Present completion summary and **WAIT FOR USER CONFIRMATION**
 ✅ **Step 6:** Execute implementation ONLY if user approves
 
 **DO NOT:**
-❌ Skip any step (0-5 must complete before asking user, except Step 3 & 4 if UI/UX not required)
+❌ Skip any step (0-5 must complete before asking user, except Step 0.5 if no images, Step 3 & 4 if UI/UX not required)
 ❌ Proceed to Step 1 without verifying/generating tech-specific commands and project rule
+❌ Skip Step 0.5 if UI images are detected (must process images first)
+❌ Skip breaking down UI images into components (must analyze comprehensively)
+❌ Skip converting components to HTML using @ui_ux_bridge (each component must be converted)
 ❌ Skip Step 1.5 UI/UX determination (must analyze requirements carefully)
 ❌ Skip UI/UX steps if feature actually needs UI/UX (be conservative - if uncertain, include UI/UX)
 ❌ Include UI/UX steps for clearly backend-only features (waste of resources)
@@ -1330,6 +1743,8 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
 **REMEMBER:**
 - Step 0 is MANDATORY and must execute FIRST
 - Step 0 must verify BOTH command files AND project rules
+- Step 0.5 is CONDITIONAL (execute ONLY if UI design images detected in user input)
+- Step 0.5 must break images into components and convert each to HTML using @ui_ux_bridge
 - Step 1.5 is MANDATORY to determine UI/UX requirement (analyze carefully, be conservative)
 - Steps 0-5 are AUTOMATIC (no user confirmation needed)
 - Steps 3 & 4 are CONDITIONAL (only execute if UI/UX required)
@@ -1338,8 +1753,9 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
 - Implementation execution only happens after user approval
 - Always prefer tech-specific prompts and rules over common ones
 - If uncertain about UI/UX requirement, default to including UI/UX steps (better safe than sorry)
+- Converted HTML/components from Step 0.5 must be used as design reference in subsequent steps
 
-**WORKFLOW = Verify Commands & Rules → Parse → Determine UI/UX → Research → [Design → Code] (if UI/UX) → Plan → **CONFIRM** → Implement**
+**WORKFLOW = Verify Commands & Rules → [Process UI Images if present → Break into Components → Convert to HTML (@ui_ux_bridge)] → Parse → Determine UI/UX → Research → [Design → Code] (if UI/UX) → Plan → **CONFIRM** → Implement**
 
 ---
 

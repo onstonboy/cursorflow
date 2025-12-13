@@ -16,15 +16,237 @@ This document provides a structured approach for AI to research, analyze, and ev
 
 **⚠️ AI MUST COMPLETE ALL STEPS SEQUENTIALLY - NO EXCEPTIONS**
 
+**⚠️ NEW: UI IMAGE DETECTION & PROCESSING (STEP 0 - EXECUTE FIRST IF IMAGES DETECTED)**
+
+**BEFORE Step 1, check if user provided UI design images:**
+- **IF UI design images detected** → Execute Step 0 (Process UI Images) FIRST
+- **IF no images** → Proceed directly to Step 1
+
 When you receive a feature request, you MUST:
-1. Execute ALL 7 steps in order (Steps 1-7)
-2. Generate ALL deliverables for each step
-3. Create complete documentation as specified
-4. Do NOT skip or summarize any step
-5. Do NOT ask for permission to proceed - execute automatically
-6. Complete the entire workflow before returning results to the user
+1. **IF images present:** Execute Step 0 (Process UI Images) → Break into components → Convert each to HTML using @ui_ux_bridge → Store components
+2. Execute ALL 7 research steps in order (Steps 1-7)
+3. Generate ALL deliverables for each step
+4. Create complete documentation as specified
+5. Do NOT skip or summarize any step
+6. Do NOT ask for permission to proceed - execute automatically
+7. Complete the entire workflow before returning results to the user
+8. **Use converted HTML/components from Step 0 as design reference in subsequent steps**
 
 **Failure to complete all steps is considered incomplete work.**
+
+---
+
+## STEP 0: Process UI Design Images (CONDITIONAL - IF UI IMAGES PROVIDED)
+
+**Objective:** Detect, analyze, and convert UI design images to HTML components before research
+
+**⚠️ CONDITIONAL EXECUTION:**
+- **IF user provides UI design image(s)** → Execute this step FIRST
+- **IF user provides text-only requirement** → Skip this step and proceed to Step 1
+
+**⚠️ MANDATORY: Execute this step BEFORE Step 1 if UI images are detected**
+
+### 0.1 Detect UI Design Images
+
+**Check user input for:**
+- Image files (PNG, JPG, JPEG, SVG, etc.)
+- Screenshots or mockups
+- Design files (Figma links, Sketch files, etc.)
+- Any visual design references
+
+**Detection Criteria:**
+- Files attached that are image formats
+- User mentions "image", "design", "mockup", "screenshot", "UI", "wireframe"
+- URLs pointing to design tools (Figma, Dribbble, Behance, etc.)
+
+**Action:**
+- If images detected → Proceed to Step 0.2
+- If no images → Skip to Step 1
+
+### 0.2 Break Down UI Image into Components
+
+**Objective:** Analyze the UI image and identify all distinct components and sections
+
+**⚠️ MANDATORY: AI MUST analyze the image comprehensively and break it down into logical parts**
+
+**Component Identification Process:**
+
+1. **Screen-Level Analysis:**
+   - Identify if single screen or multiple screens
+   - Identify screen type (onboarding, login, dashboard, detail, etc.)
+   - Identify overall layout structure (header, body, footer, sidebar, etc.)
+
+2. **Section-Level Breakdown:**
+   - Break into major sections (Header, Navigation, Main Content, Sidebar, Footer, etc.)
+   - Identify repeated patterns (card lists, grids, forms, etc.)
+   - Identify distinct visual areas
+
+3. **Component-Level Breakdown:**
+   - For each section, identify individual components:
+     - Buttons, Inputs, Cards, Lists, Modals, Navigation bars, etc.
+     - Icons, Images, Typography elements
+     - Interactive elements (toggles, sliders, checkboxes, etc.)
+
+4. **Hierarchical Organization:**
+   - Organize components in hierarchy:
+     - Page/Screen Level
+       - Section Level
+         - Component Level
+           - Element Level (text, icon, image, etc.)
+
+**Deliverable:**
+```markdown
+## UI Image Breakdown Analysis
+
+**Image Source:** [Image filename/path/URL]
+**Analysis Date:** [Date]
+
+### Screen Identification
+- **Screen Type:** [Onboarding/Login/Dashboard/Detail/etc.]
+- **Platform:** [Mobile/Tablet/Desktop/Responsive]
+- **Theme:** [Light/Dark/Custom]
+
+### Section Breakdown
+1. **Section 1: [Section Name]**
+   - **Location:** [Top/Middle/Bottom/Left/Right]
+   - **Purpose:** [Function/Content]
+   - **Components:**
+     - Component 1.1: [Component Name] - [Description]
+     - Component 1.2: [Component Name] - [Description]
+
+[Continue for all sections...]
+
+### Component Inventory
+**Total Components Identified:** [Number]
+
+| Component ID | Component Name | Section | Type | Description | Priority |
+|--------------|---------------|---------|------|-------------|----------|
+| C001 | [Name] | [Section] | [Button/Card/Input/etc.] | [Description] | [High/Medium/Low] |
+[Continue for all components...]
+```
+
+### 0.3 Convert Each Component to HTML Using UI/UX Bridge
+
+**Objective:** Convert each identified component to semantic HTML/CSS using UI/UX Bridge workflow
+
+**⚠️ MANDATORY: Reference and use UI/UX Bridge prompt file for conversion**
+
+**Reference File:**
+- **Primary:** `./.cursor/commands/specify/ui_ux_bridge_[TECH]_[LANGUAGE].prompt.md`
+- **Fallback:** `./.cursor/commands/common/ui_ux_bridge.prompt.md`
+
+**⚠️ CRITICAL: Read UI/UX Bridge prompt file before proceeding**
+
+**Conversion Process for Each Component:**
+
+**For EACH component identified in Step 0.2:**
+
+1. **Extract Component Requirements:**
+   - Visual appearance (colors, sizes, spacing)
+   - Layout and positioning
+   - Typography details
+   - Interactive states (hover, active, disabled)
+   - Responsive behavior
+   - Accessibility requirements
+
+2. **Apply UI/UX Bridge Workflow:**
+   - **PRE-PHASE:** Check UI styles reference and UI/UX reference data
+   - **PHASE 1:** Create semantic HTML structure for component
+   - **PHASE 2:** Implement CSS styling with design tokens
+   - **PHASE 3:** Convert to target platform code (if needed)
+
+3. **Generate Component HTML/CSS:**
+   - Semantic HTML structure
+   - Complete CSS with all styling details
+   - Include all states and variations
+   - Include responsive breakpoints
+   - Include accessibility attributes
+
+**Conversion Command:**
+```
+Use @ui_ux_bridge prompt file to convert:
+- Component: [Component Name from breakdown]
+- Extract visual requirements from image analysis
+- Generate semantic HTML structure
+- Generate complete CSS with design tokens
+- Ensure accessibility compliance
+```
+
+**Component Conversion Order:**
+- Process components from simplest to most complex
+- Atomic components first (buttons, inputs, icons)
+- Then molecular components (cards, forms, lists)
+- Finally organism components (navigation, headers, complex layouts)
+
+**Deliverable for Each Component:**
+```markdown
+## Component: [Component Name]
+
+### Component Details
+- **Component ID:** [C001, C002, etc.]
+- **Section:** [Which section it belongs to]
+- **Type:** [Atomic/Molecular/Organism]
+
+### HTML Structure
+```html
+<!-- Semantic HTML for component -->
+[Complete HTML code following UI/UX Bridge Phase 1]
+```
+
+### CSS Styling
+```css
+/* Complete CSS with design tokens following UI/UX Bridge Phase 2 */
+[Complete CSS code]
+```
+
+### Design Tokens Extracted
+- **Colors:** [Token values from image]
+- **Typography:** [Font properties from image]
+- **Spacing:** [Margin/padding values from image]
+- **Shadows:** [Shadow values from image]
+- **Borders:** [Border properties from image]
+
+### States & Variations
+- **Default State:** [Description and CSS]
+- **Hover State:** [Description and CSS]
+- **Active/Disabled States:** [If applicable]
+```
+
+### 0.4 Store Converted Components
+
+**⚠️ MANDATORY: Save converted UI components to:**
+```
+./docs/ui_ux/image_conversions/[FEATURE_NAME]_[DATE]/
+├── image_breakdown_analysis.md
+├── components/
+│   ├── [COMPONENT_01]_[NAME].html
+│   ├── [COMPONENT_01]_[NAME].css
+│   ├── [COMPONENT_02]_[NAME].html
+│   ├── [COMPONENT_02]_[NAME].css
+│   └── [Additional component files...]
+├── complete_page.html
+├── complete_page.css
+├── design_tokens.json
+└── component_index.md
+```
+
+### 0.5 Use Converted Components in Research
+
+**Integration with Research Steps:**
+- **Step 1 (Requirements Analysis):** Reference converted HTML/components as design specifications
+- **Step 2 (Technology Inventory):** Use component structure to inform technology choices
+- **Step 3 (Approaches):** Consider converted components when evaluating approaches
+- **Step 4 (Final Decision):** Ensure selected approach supports converted component structure
+- **Step 5 (Technical Specification):** Include converted HTML/CSS in specifications
+- **Step 6 (Implementation Plan):** Reference converted components in implementation tasks
+
+**Action:** Store converted components information for use throughout research process:
+- Converted HTML/CSS files location
+- Design tokens extracted from images
+- Component hierarchy and structure
+- Visual design specifications
+
+---
 
 ## Research Workflow
 
@@ -2984,26 +3206,54 @@ After completing this child plan:
 - Each child plan should be completable in 1-2 days
 - Focus on a single layer or cohesive component set
 - Clear entry and exit criteria
+- **CRITICAL: Break down each major task into very detailed, granular sub-steps (3-7 steps per task)**
 
-**2. Dependencies:**
+**2. Detailed Task Breakdown Requirements:**
+- **Each major task MUST be broken down into granular sub-steps:**
+  - Task 1.1: [Major Task Name]
+    - Step 1.1.1: [Specific action with file path]
+    - Step 1.1.2: [Specific action with code structure]
+    - Step 1.1.3: [Specific action with verification]
+    - Step 1.1.4: [Additional detailed steps...]
+  - Task 1.2: [Next Major Task]
+    - Step 1.2.1: [Detailed sub-step]
+    - Step 1.2.2: [Detailed sub-step]
+    - [Continue pattern...]
+- **Each sub-step MUST include:**
+  - Specific file paths to create/modify
+  - Code structure examples (if applicable)
+  - Property/method definitions
+  - Verification criteria
+  - Checklist items
+- **Total granular steps per child plan:**
+  - Setup & Infrastructure: ~100+ individual actionable steps
+  - Core Layer: ~80+ individual actionable steps
+  - Domain Layer: ~120+ individual actionable steps
+  - Data Layer: ~100+ individual actionable steps
+  - Presentation Layer: ~150+ individual actionable steps
+  - Integration & Validation: ~60+ individual actionable steps
+
+**3. Dependencies:**
 - Clearly document dependencies between child plans
 - Follow the natural architecture flow (Domain → Data → Presentation)
 - Ensure each plan can be validated independently
 
-**3. Self-Contained:**
+**4. Self-Contained:**
 - Include all necessary code templates
 - Reference specific sections from main implementation plan
 - Provide complete context for that component
+- Include specific file paths for every file to be created
 
-**4. Traceability:**
+**5. Traceability:**
 - Link back to main implementation plan sections
 - Reference research findings where applicable
 - Maintain consistency with selected approach
 
-**5. Practical Focus:**
+**6. Practical Focus:**
 - Emphasize actionable steps over theory
 - Include actual file paths and class names
 - Provide concrete code examples
+- Each step should be immediately actionable without additional questions
 
 #### Example: Child Plan for Domain Layer
 
@@ -3036,43 +3286,98 @@ This plan covers the implementation of the domain layer, including entities, rep
 ### Task 1: Create User Entity
 **Objective:** Define the User entity with immutable properties
 
-**Steps:**
-1. Create file: `src/domain/entities/user.[ext]`
-2. Import immutability support library (if applicable)
-3. Define User class with immutability pattern
-4. Add properties: id, email, name, createdAt
-5. Generate code if needed (run build tools if applicable)
+**Step 1.1: Create entity file**
+- [ ] Create file: `src/domain/entities/user.[ext]`
+- [ ] Add file header comment with description
+- [ ] Import immutability support library: `import '[library]';`
+- [ ] Import equality library (if needed): `import '[library]';`
+
+**Step 1.2: Define entity class structure**
+- [ ] Create class `User` with immutability pattern
+- [ ] Add annotation: `@[immutability_annotation]` (if applicable)
+- [ ] Add mixin: `with _$User` (if using code generation)
+
+**Step 1.3: Define properties**
+- [ ] Add property: `final String id;`
+- [ ] Add property: `final String email;`
+- [ ] Add property: `final String name;`
+- [ ] Add property: `final DateTime createdAt;`
+- [ ] Add optional properties if needed: `final String? photoUrl;`
+
+**Step 1.4: Add constructor**
+- [ ] Add const factory constructor: `const factory User({...}) = _User;`
+- [ ] Add required parameters for all non-optional fields
+- [ ] Add default values for optional fields if applicable
+
+**Step 1.5: Add business logic methods (if any)**
+- [ ] Add method: `bool isActive()` - Returns true if user is active
+- [ ] Add method: `String getDisplayName()` - Returns formatted name
+- [ ] [Add other business logic methods as needed]
+
+**Step 1.6: Add JSON serialization (if needed)**
+- [ ] Add factory: `factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);`
+- [ ] Add method: `Map<String, dynamic> toJson() => _$UserToJson(this);`
+
+**Step 1.7: Run code generation**
+- [ ] Run command: `[specific code generation command]`
+- [ ] Verify generated files created: `user.[generated_ext]`
+- [ ] Check for generation errors
+- [ ] Fix any generation issues
 
 **File Path:** `src/domain/entities/user.[ext]`
 
 **Code Template:**
 ```[language]
 // Using immutable data pattern
-class User {
+@[immutability_annotation]
+class User with _$User {
   final String id;
   final String email;
   final String name;
   final DateTime createdAt;
+  final String? photoUrl;
   
-  User({
+  const User({
     required this.id,
     required this.email,
     required this.name,
     required this.createdAt,
+    this.photoUrl,
   });
+  
+  // Business logic methods
+  bool isActive() {
+    // Implementation
+  }
+  
+  String getDisplayName() {
+    // Implementation
+  }
+  
+  // JSON serialization (if needed)
+  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+  Map<String, dynamic> toJson() => _$UserToJson(this);
 }
 ```
 
 **Acceptance Criteria:**
-- [ ] File created at correct location
-- [ ] All required properties defined
-- [ ] Immutability pattern applied
+- [ ] File created at correct location: `src/domain/entities/user.[ext]`
+- [ ] All required properties defined with correct types
+- [ ] Immutability pattern applied correctly
+- [ ] Const constructor available and working
 - [ ] Generated code compiles without errors
-- [ ] Const constructor available
+- [ ] Business logic methods work correctly
+- [ ] JSON serialization works (if implemented)
 
 **Dependencies:**
 - Depends on: Core Layer (none for this task)
 - Required by: UserModel (Data Layer), LoginUser use case
+
+**Verification:**
+- [ ] Can instantiate User: `User(id: '1', email: 'test@test.com', ...)`
+- [ ] Immutability works: Cannot modify properties after creation
+- [ ] Equality comparison works: `user1 == user2` (if implemented)
+- [ ] Code generation successful: Generated files exist and compile
 
 ---
 
@@ -3457,14 +3762,19 @@ This research guide ensures:
 
 **When you receive a feature request, you MUST:**
 
-✅ **Step 1:** Complete Requirements Analysis (all subsections 1.1-1.4, full deliverable)
-✅ **Step 2:** Complete Technology & Concept Inventory (all subsections 2.1, full deliverable)
-✅ **Step 3:** Generate 2-3 Complete Approaches (using template, all sections filled)
-✅ **Step 4:** Conclude Final Approach (evaluation criteria, decision matrix, final decision)
-✅ **Step 5:** Write Complete Technical Specification (architecture, flow diagrams, schemas, APIs, file structure)
-✅ **Step 6:** Describe in Human-Friendly Language (all subsections 6.1-6.6)
-✅ **Step 7:** Create Complete Implementation Plan (following implementation_plan.instructions.md template)
-✅ **Step 7.7:** Generate ALL 6 Child Plans (Setup, Core, Domain, Data, Presentation, Integration & Validation)
+✅ **Step 0:** [IF UI design images detected] Process UI Images:
+   - Detect UI design images in user input
+   - Break image into logical components/sections
+   - Convert each component to HTML/CSS using @ui_ux_bridge workflow
+   - Store converted components for use in research steps
+✅ **Step 1:** Complete Requirements Analysis (all subsections 1.1-1.4, full deliverable) - Reference converted UI components if Step 0 executed
+✅ **Step 2:** Complete Technology & Concept Inventory (all subsections 2.1, full deliverable) - Consider converted component structure
+✅ **Step 3:** Generate 2-3 Complete Approaches (using template, all sections filled) - Include converted HTML/CSS in approach evaluation
+✅ **Step 4:** Conclude Final Approach (evaluation criteria, decision matrix, final decision) - Ensure approach supports converted component structure
+✅ **Step 5:** Write Complete Technical Specification (architecture, flow diagrams, schemas, APIs, file structure) - Include converted HTML/CSS in specifications
+✅ **Step 6:** Describe in Human-Friendly Language (all subsections 6.1-6.6) - Reference converted components in explanation
+✅ **Step 7:** Create Complete Implementation Plan (following implementation_plan.instructions.md template) - Reference converted components in implementation tasks
+✅ **Step 7.7:** Generate ALL 6 Child Plans (Setup, Core, Domain, Data, Presentation, Integration & Validation) - Include converted component conversion tasks
 
 **DO NOT:**
 ❌ Skip any step or subsection
