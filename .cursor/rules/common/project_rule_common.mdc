@@ -197,6 +197,27 @@ class ValidationFailure extends Failure {
     ```
   - **DO NOT proceed with implementation until wireframe is reviewed and approved**
 - **Follow UI designs exactly** - When UI images or designs are provided, implement them precisely as specified
+- **CRITICAL: Use Inline Closures for Widget Callbacks (Flutter/Similar Frameworks)** - When passing callbacks to widgets/components, ALWAYS use inline closures/anonymous functions instead of method references to avoid `'!_debugLocked': is not true` errors and widget tree locking issues:
+  - **DO NOT use method references:**
+    ```dart
+    // ❌ WRONG - Can cause '!_debugLocked' errors
+    foo(onTap: onTap)
+    
+    void onTap() {
+      // logic of method
+    }
+    ```
+  - **SHOULD use inline closures:**
+    ```dart
+    // ✅ CORRECT - Safe inline closure
+    foo(
+      onTap: () {
+        // logic of on tap here
+      }
+    )
+    ```
+  - **Rationale:** Inline closures prevent widget tree locking issues during build phase and ensure callbacks are properly bound to the widget context
+  - **Applies to:** Flutter, React Native, and similar frameworks where callbacks are passed to widgets/components
 - Use framework's built-in components and create custom components only when necessary
 - Implement responsive design using appropriate layout tools (MediaQuery, breakpoints, CSS Grid, Flexbox, etc.)
 - Use themes/design tokens for consistent styling across the app

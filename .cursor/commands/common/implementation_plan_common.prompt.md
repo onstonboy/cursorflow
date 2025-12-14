@@ -320,6 +320,31 @@ When implementing a new feature, follow this systematic approach:
 - **Feature-Specific Components:**
   - **Component 1: [Name]** [Same structure as reusable]
   - **Component 2: [Name]** [Same structure]
+- **CRITICAL: Widget Callback Implementation (Flutter/Similar Frameworks):**
+  - **MANDATORY: Use Inline Closures for All Widget Callbacks** - When implementing callbacks (onTap, onPressed, onChange, etc.) for widgets/components, ALWAYS use inline closures/anonymous functions instead of method references:
+    - **DO NOT use method references:**
+      ```dart
+      // ❌ WRONG - Can cause '!_debugLocked': is not true errors
+      ElevatedButton(
+        onPressed: handleButtonPress,
+      )
+      
+      void handleButtonPress() {
+        // logic of method
+      }
+      ```
+    - **SHOULD use inline closures:**
+      ```dart
+      // ✅ CORRECT - Safe inline closure
+      ElevatedButton(
+        onPressed: () {
+          // logic of button press here
+        },
+      )
+      ```
+    - **Rationale:** Inline closures prevent widget tree locking issues during build phase, avoid `'!_debugLocked': is not true` errors, and ensure callbacks are properly bound to the widget context
+    - **Applies to:** All Flutter widgets (ElevatedButton, InkWell, GestureDetector, TextField, etc.) and similar frameworks (React Native, SwiftUI, etc.)
+    - **When Planning:** Document all callbacks as inline closures in component specifications
 - **User Interactions (Complete List):**
   - [Interaction 1]: [What user does, what happens]
   - [Interaction 2]: [What user does, what happens]
@@ -855,13 +880,18 @@ Complete State Machine:
       - [ ] User interactions
       - [ ] Error handling
       - [ ] Loading states
+      - [ ] **CRITICAL: Use inline closures for all widget callbacks** (onTap, onPressed, onChange, etc.) - DO NOT use method references
     - [ ] Page 2: [Name] [Repeat pattern]
   - [ ] Create reusable components
     - [ ] Component 1: [Name]
+      - [ ] **CRITICAL: Use inline closures for all widget callbacks** - DO NOT use method references
     - [ ] Component 2: [Name]
+      - [ ] **CRITICAL: Use inline closures for all widget callbacks** - DO NOT use method references
   - [ ] Create feature-specific components
     - [ ] Component 1: [Name]
+      - [ ] **CRITICAL: Use inline closures for all widget callbacks** - DO NOT use method references
     - [ ] Component 2: [Name]
+      - [ ] **CRITICAL: Use inline closures for all widget callbacks** - DO NOT use method references
 - [ ] **State Integration:**
   - [ ] Wire up state subscription/binding
   - [ ] Add navigation logic
