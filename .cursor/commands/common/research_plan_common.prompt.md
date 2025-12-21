@@ -2027,6 +2027,13 @@ class [ComponentName] {
   // User interaction handlers
 }
 ```
+
+**UI Screens/Pages for Wireframing:**
+(Note: Wireframes will be generated in Step 2.5 of the main workflow)
+- [Screen 1]: [Purpose, main components]
+- [Screen 2]: [Purpose, main components]
+- [Screen 3]: [Purpose, main components]
+[Continue for all user-facing screens]
 ```
 
 ### 5.2 Data Flow Diagrams

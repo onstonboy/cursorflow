@@ -57,10 +57,11 @@ When you receive a feature request, you MUST:
 3. Execute ALL remaining steps sequentially (Step 1 through Step 5)
 4. Generate ALL deliverables for each step
 5. Store results in specified directories
-6. Do NOT skip any step (except Step 0.5 if no images)
-7. Do NOT ask for permission between steps - execute automatically
-8. ONLY ask for user confirmation AFTER completing Step 5
-9. Complete the entire workflow before proceeding to implementation
+6. Do NOT skip any step (except Step 0.5 if no images, Step 2.5/3/4 if no UI/UX required)
+7. **EXECUTE Step 2.5 (Wireframes) automatically** if UI/UX required, then **WAIT for user review/approval** before proceeding to Step 3
+8. Do NOT ask for permission between other steps - execute automatically (except after Step 2.5 wireframe review)
+9. ONLY ask for user confirmation AFTER completing Step 5
+10. Complete the entire workflow before proceeding to implementation
 
 **Failure to complete all steps is considered incomplete work.**
 
@@ -86,6 +87,12 @@ Research & Analysis (Step 2) → ./docs/research_plans/
     ┌────┴────┐
     │         │
     │    YES  │
+    │         │
+    ▼         ▼
+Generate Wireframes (Step 2.5) → ./docs/ui_ux/wireframes/ ⚠️ USER REVIEW
+         ↓
+    ┌────┴────┐
+    │ APPROVE │
     │         │
     ▼         ▼
 UI/UX Design System (Step 3) → ./docs/ui_ux/ (Use converted components)
@@ -864,6 +871,212 @@ Complete research document with:
 
 ---
 
+## STEP 2.5: Generate UI Wireframes (CONDITIONAL - ONLY IF UI/UX REQUIRED)
+
+**Objective:** Create wireframe layouts for all screens/pages to allow user review before detailed UI/UX design
+
+**⚠️ CONDITIONAL EXECUTION:**
+- **IF `requires_ui_ux: true`** → Execute this step
+- **IF `requires_ui_ux: false`** → Skip this step and proceed to Step 5
+
+**⚠️ MANDATORY USER REVIEW CHECKPOINT:**
+- After generating wireframes, **MUST present them to user for review**
+- **WAIT for user approval** before proceeding to Step 3 (UI/UX Design System)
+- User can request changes, which will be incorporated before proceeding
+
+### 2.5.1 Wireframe Generation Process
+
+**Input from Step 2:**
+- Use selected approach from research plan
+- Reference functional requirements
+- Consider user workflows and navigation
+- Apply platform constraints (mobile/tablet/desktop)
+
+### 2.5.2 Create Wireframes for Each Screen
+
+**For EACH screen/page identified in research plan:**
+
+**Wireframe Components:**
+1. **Layout Structure:** Header, navigation, main content area, sidebar (if applicable), footer
+2. **Component Placement:** Position of buttons, inputs, cards, lists, images, etc.
+3. **Content Hierarchy:** Primary content, secondary content, supporting elements
+4. **Navigation Elements:** Menus, tabs, buttons, links, breadcrumbs
+5. **Interactive Elements:** Buttons, inputs, dropdowns, modals, tooltips
+6. **Spacing Relationships:** Margins, padding, alignment between elements
+7. **Responsive Breakpoints:** Layout variations for different screen sizes (if applicable)
+
+**Wireframe Format Requirements:**
+
+**ASCII Art Format (Text Symbols):**
+- Use box-drawing characters (┌ ┐ └ ┘ │ ─ ├ ┤ ┬ ┴ ┼) for structure
+- Use text labels for components ([Button], [Input], [Card], etc.)
+- Show hierarchy through indentation and nesting
+- Include annotations for spacing, alignment, and relationships
+- Mark interactive elements clearly
+- Show responsive variations side-by-side or separately
+
+**Example Wireframe Format:**
+```
+┌─────────────────────────────────────────────────┐
+│                    HEADER                       │
+│  [Logo]              [Nav Items]    [User Menu] │
+├─────────────────────────────────────────────────┤
+│                                                 │
+│  ┌─────────────────────────────────────────┐   │
+│  │  [Search Bar with Filters]              │   │
+│  └─────────────────────────────────────────┘   │
+│                                                 │
+│  ┌───────────┐  ┌───────────┐  ┌───────────┐  │
+│  │  [Card]   │  │  [Card]   │  │  [Card]   │  │
+│  │           │  │           │  │           │  │
+│  │  [Image]  │  │  [Image]  │  │  [Image]  │  │
+│  │  [Title]  │  │  [Title]  │  │  [Title]  │  │
+│  │  [Price]  │  │  [Price]  │  │  [Price]  │  │
+│  │  [Button] │  │  [Button] │  │  [Button] │  │
+│  └───────────┘  └───────────┘  └───────────┘  │
+│                                                 │
+│  ┌─────────────────────────────────────────┐   │
+│  │  [Pagination Controls]                  │   │
+│  └─────────────────────────────────────────┘   │
+│                                                 │
+├─────────────────────────────────────────────────┤
+│                    FOOTER                       │
+│  [Links]  [Social]  [Copyright]                │
+└─────────────────────────────────────────────────┘
+```
+
+### 2.5.3 Wireframe Documentation
+
+**For each wireframe, include:**
+
+1. **Screen/Page Information:**
+   - Screen name and purpose
+   - User flow position (entry point, intermediate, exit point)
+   - Primary user goal for this screen
+
+2. **Layout Description:**
+   - Overall layout structure
+   - Grid system (if applicable)
+   - Column structure and widths
+
+3. **Component Inventory:**
+   - List of all components with labels
+   - Component hierarchy and nesting
+   - Component relationships
+
+4. **User Flow Integration:**
+   - Where user comes from (previous screen)
+   - Where user can go (next screens/actions)
+   - Navigation paths and interactions
+
+5. **Responsive Considerations:**
+   - Mobile layout variations
+   - Tablet layout variations
+   - Desktop layout variations
+   - Breakpoints for layout changes
+
+6. **Accessibility Considerations:**
+   - Focus order
+   - Keyboard navigation paths
+   - Screen reader considerations
+
+### 2.5.4 Generate Complete Wireframe Document
+
+**File naming convention:**
+```
+[FEATURE_NAME]_WIREFRAMES_[DATE].md
+```
+
+**Example:**
+```
+SHOE_SHOP_ECOMMERCE_WIREFRAMES_2025-12-03.md
+```
+
+### 2.5.5 Output Location
+
+**⚠️ MANDATORY: Save wireframes to:**
+```
+./docs/ui_ux/wireframes/[FEATURE_NAME]_WIREFRAMES_[DATE].md
+```
+
+**Deliverable:**
+Complete wireframe document with:
+- ✅ All screen/page wireframes (ASCII art format)
+- ✅ Layout descriptions for each screen
+- ✅ Component inventory and hierarchy
+- ✅ Navigation flow diagrams
+- ✅ Responsive layout variations
+- ✅ User flow integration notes
+- ✅ Accessibility considerations
+
+**Directory Structure After Step 2.5:**
+```
+./docs/
+├── research_plans/
+│   └── [FEATURE_NAME]_RESEARCH_PLAN_[DATE].md
+└── ui_ux/
+    └── wireframes/
+        └── [FEATURE_NAME]_WIREFRAMES_[DATE].md
+```
+
+### 2.5.6 Present Wireframes for User Review
+
+**⚠️ MANDATORY: After generating wireframes, present them to user and WAIT for approval**
+
+**Presentation Format:**
+```markdown
+# Wireframe Review: [Feature Name]
+
+## Generated Wireframes
+
+[Display all wireframes here]
+
+## Screen Inventory
+
+1. **Screen 1:** [Screen Name] - [Purpose]
+2. **Screen 2:** [Screen Name] - [Purpose]
+3. **Screen 3:** [Screen Name] - [Purpose]
+[Continue list...]
+
+## User Flow Overview
+
+[Flow diagram showing screen transitions]
+
+## ⚠️ REVIEW REQUIRED
+
+Please review the wireframes above and provide feedback:
+
+👉 **APPROVE** - Wireframes look good, proceed to detailed UI/UX design (Step 3)
+👉 **REVISE** - I want changes to: [specify which screens/components]
+👉 **CLARIFY** - I have questions about: [specify questions]
+
+**Valid responses:**
+- "APPROVE" / "OK" / "GOOD" / "PROCEED" → Continue to Step 3
+- "REVISE [specific changes]" → Update wireframes based on feedback, then present again
+- "CHANGE [screen/component] [description]" → Make requested changes
+```
+
+### 2.5.7 Handle User Feedback
+
+**IF user APPROVES:**
+- Proceed to Step 3 (UI/UX Design System)
+- Use approved wireframes as layout foundation
+
+**IF user requests REVISIONS:**
+- Update wireframes based on user feedback
+- Regenerate affected wireframe sections
+- Present updated wireframes for review again
+- **WAIT for approval** before proceeding
+
+**IF user has QUESTIONS:**
+- Answer questions clearly
+- Update wireframes if needed based on clarifications
+- Present again for approval
+
+**⚠️ DO NOT proceed to Step 3 until user explicitly approves wireframes**
+
+---
+
 ## STEP 3: Generate UI/UX Design System (CONDITIONAL - ONLY IF UI/UX REQUIRED)
 
 **Objective:** Create comprehensive UI/UX specifications following tech-specific UI/UX design generator prompt
@@ -917,13 +1130,19 @@ Follow the UI/UX design generator prompt file exactly:
 - Step 5: Define Templates & Layouts
 - Step 6: Generate Animation & Interaction Patterns
 
-### 3.2 Use Research Plan Results
+### 3.2 Use Previous Steps' Results
 
-**Input from Step 2:**
+**Input from Step 2 (Research Plan):**
 - Use selected approach from research plan
 - Reference platform requirements
 - Apply design style preferences
 - Consider technical constraints
+
+**Input from Step 2.5 (Wireframes):**
+- Use approved wireframe layouts as foundation
+- Reference layout structure and component hierarchy
+- Apply spacing and positioning from wireframes
+- Ensure design system aligns with wireframe structure
 
 ### 3.3 Generate Complete Design System
 
@@ -1335,6 +1554,14 @@ Complete implementation plans with:
 **Location:** `./docs/research_plans/[FEATURE_NAME]_RESEARCH_PLAN_[DATE].md`
 **Selected Approach:** [Approach name and brief rationale]
 
+### ✅ Step 2.5: UI Wireframes
+**Status:** [Completed/Skipped]
+**Requires UI/UX:** [YES/NO]
+**Output:** [Wireframes for [X] screens with layout structures / N/A - Feature does not require UI/UX]
+**Location:** [`./docs/ui_ux/wireframes/[FEATURE_NAME]_WIREFRAMES_[DATE].md` / N/A]
+**User Review:** [Approved/Revised/Pending]
+**Screens:** [List of screens with wireframes / N/A]
+
 ### ✅ Step 3: UI/UX Design System
 **Status:** [Completed/Skipped]
 **Requires UI/UX:** [YES/NO]
@@ -1405,6 +1632,12 @@ Complete implementation plans with:
 
 ### UI/UX Documentation
 [IF UI/UX Required:]
+📄 `./docs/ui_ux/wireframes/[FEATURE_NAME]_WIREFRAMES_[DATE].md`
+- Wireframe layouts for all screens
+- Layout structure and component placement
+- Navigation flow diagrams
+- Responsive layout variations
+
 📄 `./docs/ui_ux/[FEATURE_NAME]_UI_UX_DESIGN_SYSTEM_[DATE].md`
 - Complete design system
 - Component library
@@ -1558,6 +1791,8 @@ After completing entire workflow:
 ├── research_plans/
 │   └── [FEATURE_NAME]_RESEARCH_PLAN_[DATE].md
 ├── ui_ux/
+│   ├── wireframes/
+│   │   └── [FEATURE_NAME]_WIREFRAMES_[DATE].md
 │   ├── [FEATURE_NAME]_UI_UX_DESIGN_SYSTEM_[DATE].md
 │   ├── [FEATURE_NAME]_UI_IMPLEMENTATION_[PLATFORM]_[DATE].md
 │   └── code_samples/
@@ -1586,12 +1821,13 @@ After completing entire workflow:
 ## Best Practices
 
 ### Do:
-✅ Execute all steps in order (0→1→2→3→4→5→CONFIRM→6)
+✅ Execute all steps in order (0→1→2→2.5→3→4→5→CONFIRM→6)
 ✅ Verify and generate tech-specific commands FIRST (Step 0)
+✅ Generate wireframes for UI/UX features (Step 2.5) and wait for user approval
 ✅ Store all outputs in specified directories
 ✅ Use consistent naming conventions
 ✅ Generate complete documentation at each step
-✅ Wait for user confirmation before implementation
+✅ Wait for user confirmation at wireframe review (Step 2.5) and before implementation (Step 5)
 ✅ Track progress throughout execution
 ✅ Validate at each step
 ✅ Generate comprehensive reports
@@ -1719,7 +1955,8 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
 ✅ **Step 1:** Parse and document user requirements (include converted UI components if Step 0.5 executed)
 ✅ **Step 1.5:** Determine if feature requires UI/UX (analyze requirements carefully)
 ✅ **Step 2:** Execute complete research plan (following tech-specific research plan prompt) → Save to `./docs/research_plans/` (reference converted components if available)
-✅ **Step 3:** [IF UI/UX required] Generate complete UI/UX design (following tech-specific UI/UX design generator prompt) → Save to `./docs/ui_ux/` (use converted HTML/components as reference) [ELSE] Skip UI/UX design step
+✅ **Step 2.5:** [IF UI/UX required] Generate wireframes for all screens → Save to `./docs/ui_ux/wireframes/` → **PRESENT TO USER FOR REVIEW** → **WAIT FOR APPROVAL** before proceeding [ELSE] Skip wireframe step
+✅ **Step 3:** [IF UI/UX required] Generate complete UI/UX design (following tech-specific UI/UX design generator prompt) → Save to `./docs/ui_ux/` (use approved wireframes and converted HTML/components as reference) [ELSE] Skip UI/UX design step
 ✅ **Step 4:** [IF UI/UX required] Create platform-specific UI code (following tech-specific UI/UX bridge prompt) → Save to `./docs/ui_ux/` (convert HTML from Step 0.5 to platform code) [ELSE] Skip UI/UX code step
 ✅ **Step 5:** Generate all implementation plans (following tech-specific implementation plan prompt - 1 main + 6 child) → Save to `./docs/implementation_plans/[FEATURE_NAME]/`
 ✅ **STOP:** Present completion summary and **WAIT FOR USER CONFIRMATION**
@@ -1732,6 +1969,9 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
 ❌ Skip breaking down UI images into components (must analyze comprehensively)
 ❌ Skip converting components to HTML using @ui_ux_bridge (each component must be converted)
 ❌ Skip Step 1.5 UI/UX determination (must analyze requirements carefully)
+❌ Skip Step 2.5 wireframe generation if UI/UX required (must generate wireframes for user review)
+❌ Skip presenting wireframes to user for review (MANDATORY checkpoint)
+❌ Proceed to Step 3 without wireframe approval (must wait for user approval)
 ❌ Skip UI/UX steps if feature actually needs UI/UX (be conservative - if uncertain, include UI/UX)
 ❌ Include UI/UX steps for clearly backend-only features (waste of resources)
 ❌ Proceed to Step 6 without user saying "YES" or "PROCEED"
@@ -1746,8 +1986,11 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
 - Step 0.5 is CONDITIONAL (execute ONLY if UI design images detected in user input)
 - Step 0.5 must break images into components and convert each to HTML using @ui_ux_bridge
 - Step 1.5 is MANDATORY to determine UI/UX requirement (analyze carefully, be conservative)
-- Steps 0-5 are AUTOMATIC (no user confirmation needed)
-- Steps 3 & 4 are CONDITIONAL (only execute if UI/UX required)
+- Step 2.5 is CONDITIONAL (execute ONLY if UI/UX required) and REQUIRES USER REVIEW/APPROVAL
+- Steps 0-2 are AUTOMATIC (no user confirmation needed)
+- Step 2.5 requires USER REVIEW/APPROVAL before proceeding (wireframe checkpoint)
+- Steps 3 & 4 are CONDITIONAL (only execute if UI/UX required) and AUTOMATIC after wireframe approval
+- Step 5 is AUTOMATIC (no user confirmation needed)
 - USER CONFIRMATION is MANDATORY before Step 6
 - All documentation must be complete and stored correctly
 - Implementation execution only happens after user approval
@@ -1755,7 +1998,7 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
 - If uncertain about UI/UX requirement, default to including UI/UX steps (better safe than sorry)
 - Converted HTML/components from Step 0.5 must be used as design reference in subsequent steps
 
-**WORKFLOW = Verify Commands & Rules → [Process UI Images if present → Break into Components → Convert to HTML (@ui_ux_bridge)] → Parse → Determine UI/UX → Research → [Design → Code] (if UI/UX) → Plan → **CONFIRM** → Implement**
+**WORKFLOW = Verify Commands & Rules → [Process UI Images if present → Break into Components → Convert to HTML (@ui_ux_bridge)] → Parse → Determine UI/UX → Research → [Generate Wireframes → **USER REVIEW/APPROVE** → Design → Code] (if UI/UX) → Plan → **CONFIRM** → Implement**
 
 ---
 
@@ -1780,12 +2023,15 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
    - Analysis: "Shoe shopping e-commerce app" → User-facing feature with browsing, filtering, cart, checkout
    - Decision: **Requires UI/UX: YES** (High confidence)
 4. ✅ **Step 2:** Generate research plan → `./docs/research_plans/SHOE_SHOP_RESEARCH_PLAN_2025-12-03.md`
-5. ✅ **Step 3:** Generate UI/UX design → `./docs/ui_ux/SHOE_SHOP_UI_UX_DESIGN_SYSTEM_2025-12-03.md` (UI/UX required)
-6. ✅ **Step 4:** Generate Flutter UI code → `./docs/ui_ux/SHOE_SHOP_UI_IMPLEMENTATION_FLUTTER_2025-12-03.md` (UI/UX required)
-7. ✅ **Step 5:** Generate 7 implementation plans → `./docs/implementation_plans/SHOE_SHOP/`
-8. ⏸️ **PRESENT SUMMARY AND ASK: "Do you want to proceed with implementation?"**
-9. ⏸️ **WAIT FOR USER RESPONSE**
-10. ✅ (If user confirms) Execute all 6 implementation plans in order
+5. ✅ **Step 2.5:** Generate wireframes → `./docs/ui_ux/wireframes/SHOE_SHOP_WIREFRAMES_2025-12-03.md` (UI/UX required)
+6. ⏸️ **PRESENT WIREFRAMES FOR USER REVIEW**
+7. ⏸️ **WAIT FOR USER APPROVAL** (user approves wireframes)
+8. ✅ **Step 3:** Generate UI/UX design → `./docs/ui_ux/SHOE_SHOP_UI_UX_DESIGN_SYSTEM_2025-12-03.md` (UI/UX required, uses approved wireframes)
+9. ✅ **Step 4:** Generate Flutter UI code → `./docs/ui_ux/SHOE_SHOP_UI_IMPLEMENTATION_FLUTTER_2025-12-03.md` (UI/UX required)
+10. ✅ **Step 5:** Generate 7 implementation plans → `./docs/implementation_plans/SHOE_SHOP/`
+11. ⏸️ **PRESENT SUMMARY AND ASK: "Do you want to proceed with implementation?"**
+12. ⏸️ **WAIT FOR USER RESPONSE**
+13. ✅ (If user confirms) Execute all 6 implementation plans in order
 
 **Example: Backend-Only Feature**
 ```
