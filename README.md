@@ -21,6 +21,6 @@ That’s it. Your project now uses the same Cursor setup as this repo.
 
 ---
 
-This repository ontain documentation is extracted from ui-ux-pro-max projects (https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)
+This repository contain documentation is extracted from ui-ux-pro-max projects (https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)
 
 Purpose is provided more context for AI in this flow. 
