@@ -1,3 +1,7 @@
+This documentation is extracted from ui-ux-pro-max projects (https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)
+
+Purpose is provided more context for AI in this flow. 
+
 # Prompt Generator Tool
 
 A Python command-line tool that generates customized prompt files from common templates, tailored to specific programming languages and frameworks.
