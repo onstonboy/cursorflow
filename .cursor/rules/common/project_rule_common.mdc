@@ -196,6 +196,10 @@ class ValidationFailure extends Failure {
     └─────────────────────────────────────┘
     ```
   - **DO NOT proceed with implementation until wireframe is reviewed and approved**
+- **Reference UI/UX ref data and landing page prompts for research and planning** - When planning or researching UI/UX (including wireframes and design approach), MUST reference:
+  - **UI reference data:** `.cursor/uiux_reference/data/` (styles, colors, typography, ux-guidelines, landing.csv, prompts.csv, stacks)
+  - **Landing page design prompts:** `.cursor/uiux_reference/landing_page_prompts/` (full AI-ready design prompts by style; use README.md index and individual style .md files for design-system-level guidance)
+  - Use these to align style, tokens, and patterns before implementation
 - **Follow UI designs exactly** - When UI images or designs are provided, implement them precisely as specified
 - **CRITICAL: Use Inline Closures for Widget Callbacks (Flutter/Similar Frameworks)** - When passing callbacks to widgets/components, ALWAYS use inline closures/anonymous functions instead of method references to avoid `'!_debugLocked': is not true` errors and widget tree locking issues:
   - **DO NOT use method references:**

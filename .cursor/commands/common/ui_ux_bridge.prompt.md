@@ -50,15 +50,15 @@ Flutter/Android/iOS/React Native/SwiftUI/Jetpack Compose/etc.
 
 **⚠️ AI MUST COMPLETE THIS STEP BEFORE PROCEEDING TO PHASE 1**
 
-### Step 0.0: Check UI Styles Reference & UI/UX Reference Data & Match Project Requirements (MANDATORY)
+### Step 0.0: Check UI Styles Reference & UI/UX Reference Data & Landing Page Prompts & Match Project Requirements (MANDATORY)
 
-**⚠️ CRITICAL: AI MUST CHECK BOTH UI STYLES REFERENCE AND UI/UX REFERENCE DATA FIRST**
+**⚠️ CRITICAL: AI MUST CHECK UI STYLES REFERENCE, UI/UX REFERENCE DATA, AND LANDING PAGE PROMPTS (when applicable) FIRST**
 
 **⚠️ CRITICAL: UNIQUENESS REQUIREMENT - MAINTAIN DISTINCT DESIGN IDENTITY**
 
 **Action Required:**
 1. **Read and analyze** `.cursor/commands/common/ui_styles_reference.md`
-2. **Read and analyze** `.cursor/uiux_reference/data/` folder for additional UI/UX context:
+2. **Read and analyze** `.cursor/uiux_reference/data/` folder for UI/UX reference data:
    - `styles.csv` - UI style patterns and specifications
    - `colors.csv` - Color palettes and schemes
    - `typography.csv` - Typography guidelines and font recommendations
@@ -68,13 +68,14 @@ Flutter/Android/iOS/React Native/SwiftUI/Jetpack Compose/etc.
    - `charts.csv` - Data visualization patterns (if applicable)
    - `prompts.csv` - UI/UX prompt templates and examples
    - `stacks/[FRAMEWORK].csv` - Framework-specific UI/UX patterns (check relevant framework for the project)
-3. **Extract project/feature requirements** from the user's request
-4. **Match project type** with suitable UI styles from both references
-5. **Cross-reference** data from both sources to find comprehensive UI/UX solutions
-6. **Research on Internet** (if possible) to validate and find additional inspiration
-7. **Select best-fit UI styles** that match the project requirements, synthesizing information from both sources
-8. **ENSURE UNIQUENESS** - Maintain the DISTINCT design identity from the design system
-9. **Preserve unique elements** - Don't convert to generic implementations, maintain project-specific uniqueness
+3. **Read and analyze** `.cursor/uiux_reference/landing_page_prompts/` when landing/marketing pages or style-led UI are in scope: use `README.md` for the index and the relevant style .md file(s) for full design-system prompts (philosophy, tokens, components, layout ideas)
+4. **Extract project/feature requirements** from the user's request
+5. **Match project type** with suitable UI styles from references and from landing_page_prompts (when applicable)
+6. **Cross-reference** data from ui_styles_reference, uiux_reference/data, and landing_page_prompts to find comprehensive UI/UX solutions
+7. **Research on Internet** (if possible) to validate and find additional inspiration
+8. **Select best-fit UI styles** that match the project requirements, synthesizing information from all sources; when landing pages are in scope, align with or select a design prompt from landing_page_prompts
+9. **ENSURE UNIQUENESS** - Maintain the DISTINCT design identity from the design system
+10. **Preserve unique elements** - Don't convert to generic implementations, maintain project-specific uniqueness
 
 **Process:**
 ```markdown
@@ -100,9 +101,10 @@ Flutter/Android/iOS/React Native/SwiftUI/Jetpack Compose/etc.
    - Checked `charts.csv` for data visualization patterns (if applicable)
    - Checked `prompts.csv` for UI/UX prompt examples
    - Checked `stacks/[FRAMEWORK].csv` for framework-specific patterns
-3. Identified relevant styles based on "Suitable Project Types" attribute from both sources
-4. Cross-referenced data from both sources with project requirements
-5. Synthesized findings from both references for comprehensive UI/UX approach
+3. Reviewed `.cursor/uiux_reference/landing_page_prompts/` (README + relevant style .md files) for full design prompts when landing/marketing or style-led UI is in scope
+4. Identified relevant styles based on "Suitable Project Types" attribute from all sources
+5. Cross-referenced data from ui_styles_reference, uiux_reference/data, and landing_page_prompts with project requirements
+6. Synthesized findings from all references for comprehensive UI/UX approach
 
 **Matching UI Styles Found:**
 - [Style Name 1] - WOW Factor: X/10, Complexity: [Low/Medium/High], Performance: [Excellent/Good/Fair]

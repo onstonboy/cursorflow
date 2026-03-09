@@ -39,6 +39,7 @@ Before executing this workflow, you MUST have access to and reference these prom
    - MUST be referenced for all implementation planning
 
 **MANDATORY ACTION:**
+- **Step 0.0:** Scan `.cursor` for existing rules/commands; if missing or not fit for project, parse user prompt, research official/relevant docs, use common rules/commands, and write fit rules/commands first
 - **Step 0:** Verify and generate tech-specific prompt files if missing
 - Read and understand ALL four prompt files (prefer tech-specific, fallback to common)
 - Reference the appropriate prompt file at each step
@@ -52,16 +53,17 @@ Before executing this workflow, you MUST have access to and reference these prom
 **⚠️ AI MUST COMPLETE ALL STEPS IN EXACT ORDER - NO EXCEPTIONS**
 
 When you receive a feature request, you MUST:
-1. Execute Step 0 (Verify Commands & Project Rules)
-2. **IF UI design images are detected** → Execute Step 0.5 (Process UI Images) → Break into components → Convert each to HTML using @ui_ux_bridge
-3. Execute ALL remaining steps sequentially (Step 1 through Step 5)
-4. Generate ALL deliverables for each step
-5. Store results in specified directories
-6. Do NOT skip any step (except Step 0.5 if no images, Step 2.5/3/4 if no UI/UX required)
-7. **EXECUTE Step 2.5 (Wireframes) automatically** if UI/UX required, then **WAIT for user review/approval** before proceeding to Step 3
-8. Do NOT ask for permission between other steps - execute automatically (except after Step 2.5 wireframe review)
-9. ONLY ask for user confirmation AFTER completing Step 5
-10. Complete the entire workflow before proceeding to implementation
+1. **Execute Step 0.0 (Scan .cursor and Ensure Project-Specific Rules and Commands) FIRST** — see below
+2. Execute Step 0 (Verify Commands & Project Rules)
+3. **IF UI design images are detected** → Execute Step 0.5 (Process UI Images) → Break into components → Convert each to HTML using @ui_ux_bridge
+4. Execute ALL remaining steps sequentially (Step 1 through Step 5)
+5. Generate ALL deliverables for each step
+6. Store results in specified directories
+7. Do NOT skip any step (except Step 0.5 if no images, Step 2.5/3/4 if no UI/UX required)
+8. **EXECUTE Step 2.5 (Wireframes) automatically** if UI/UX required, then **WAIT for user review/approval** before proceeding to Step 3
+9. Do NOT ask for permission between other steps—execute automatically (except after Step 2.5 wireframe review)
+10. ONLY ask for user confirmation AFTER completing Step 5
+11. Complete the entire workflow before proceeding to implementation
 
 **Failure to complete all steps is considered incomplete work.**
 
@@ -70,6 +72,8 @@ When you receive a feature request, you MUST:
 ## Complete Workflow Overview
 
 ```
+Scan .cursor (Step 0.0) → Rules/commands exist and fit project? If not: parse user prompt + research (internet, official docs) + use common → Write fit rules/commands
+         ↓
 Verify Commands (Step 0) → Check commands/specify/ → Generate if missing
          ↓
 Detect UI Images (Step 0.5) → IF images provided:
@@ -113,11 +117,74 @@ Execute Implementation (Step 6)
 
 ---
 
-## STEP 0: Verify & Generate Tech-Specific Commands and Project Rules (MANDATORY - FIRST STEP)
+## STEP 0.0: Scan .cursor and Ensure Project-Specific Rules and Commands (MANDATORY - VERY FIRST STEP)
 
-**Objective:** Ensure all required tech/language/framework-specific command files and project rules exist before proceeding with feature generation
+**Objective:** Before any other action, scan the `.cursor` folder to determine whether rules and commands already exist and match the project. If they do not exist or do not fit the project, derive requirements from the user prompt, research official and relevant documentation, use common rules/commands as base, and write rules or commands that fit the project requirement.
 
-**⚠️ THIS STEP MUST BE EXECUTED FIRST - BEFORE ANY OTHER STEP**
+**⚠️ THIS STEP MUST BE EXECUTED VERY FIRST - BEFORE STEP 0 AND ALL OTHER STEPS**
+
+### 0.0.1 Scan .cursor Folder for Existing Rules and Commands
+
+**MANDATORY: Scan the following locations and inventory what exists**
+
+**Directories to scan:**
+```
+./.cursor/
+├── commands/
+│   ├── specify/          → Tech-specific command prompts (e.g. research_plan_flutter_dart.prompt.md)
+│   └── common/           → Common command prompts (templates)
+└── rules/
+    ├── *.mdc             → Project rules (e.g. project-rule_flutter_dart.mdc)
+    └── common/           → Common project rule (template)
+```
+
+**Check and record:**
+1. List all files in `./.cursor/commands/specify/` (if directory exists)
+2. List all files in `./.cursor/rules/` (excluding subfolder `common/`)
+3. Identify which tech stack(s) existing files target (from filenames: e.g. `_flutter_dart`, `_nextjs_typescript`)
+4. Determine: **Do existing rules/commands match the current project?** (e.g. project uses Next.js but only Flutter rules exist → mismatch)
+
+**Output:** A short scan report: what exists, for which tech, and whether it fits the project (YES/NO with reason).
+
+### 0.0.2 If Rules or Commands Are Missing or Do Not Fit the Project
+
+**IF** the scan shows that required rules or commands are missing, or that existing ones do not match the project (wrong tech stack, outdated, or not aligned with user requirement):
+
+**Then perform the following in order:**
+
+1. **Parse user prompt and requirements**
+   - Extract from the current /cook invocation: technology, framework, language, platform, and any explicit conventions or constraints the user mentioned
+   - If the user request does not state tech stack, infer from project files (e.g. `package.json`, `pubspec.yaml`, `pom.xml`) by scanning the project root
+
+2. **Research relevant documentation**
+   - Search the internet for **official documentation** of the identified tech stack (e.g. Flutter docs, Next.js docs, React Native docs)
+   - Search for **best practices**, style guides, and common patterns for that tech/language
+   - Note framework-specific rules (e.g. state management, routing, testing) that should be reflected in rules or commands
+
+3. **Use common rules and commands as base**
+   - Read `./.cursor/rules/common/project_rule_common.mdc` as the base for project rules
+   - Read the relevant common command files from `./.cursor/commands/common/` (e.g. `research_plan_common.prompt.md`, `ui_ux_bridge.prompt.md`, `implementation_plan_common.prompt.md`) as the base for commands
+
+4. **Write or update rules and commands to fit the project**
+   - **Rules:** Generate or update `./.cursor/rules/project-rule_[TECH]_[LANGUAGE].mdc` so that it matches the project’s tech stack, language, and conventions, using the common rule and researched official/relevant docs
+   - **Commands:** Generate or update tech-specific command files in `./.cursor/commands/specify/` (e.g. `research_plan_[TECH]_[LANGUAGE].prompt.md`, `ui_ux_bridge_[TECH]_[LANGUAGE].prompt.md`, etc.) so that they match the project, using the common commands and researched documentation
+   - Ensure written content is concrete: correct syntax, framework-specific patterns, and references to official docs where helpful
+
+**If rules/commands already exist and fit the project:** Skip generation; proceed to Step 0.
+
+### 0.0.3 Deliverable and Handoff
+
+- **Scan result:** Brief note of what was found in `.cursor` and whether it fits the project
+- **If generation was needed:** List of created/updated rule and command files and how they align with user requirement and researched docs
+- **Action:** Proceed to Step 0 (Verify & Generate Tech-Specific Commands and Project Rules), which will re-verify and generate any still-missing tech-specific files from common templates
+
+---
+
+## STEP 0: Verify & Generate Tech-Specific Commands and Project Rules (MANDATORY - AFTER STEP 0.0)
+
+**Objective:** Ensure all required tech/language/framework-specific command files and project rules exist before proceeding with feature generation (re-verify after Step 0.0; generate from common templates any files still missing).
+
+**⚠️ THIS STEP MUST BE EXECUTED IMMEDIATELY AFTER STEP 0.0 - BEFORE ANY OTHER STEP**
 
 ### 0.1 Identify Required Tech Stack
 
@@ -1087,7 +1154,7 @@ Please review the wireframes above and provide feedback:
 
 **⚠️ MANDATORY: READ AND REFERENCE THE UI/UX DESIGN GENERATOR PROMPT FILE (ONLY IF UI/UX REQUIRED)**
 
-**⚠️ CRITICAL: The UI/UX Design Generator Prompt includes checking `.cursor/commands/common/ui_styles_reference.md` AND `.cursor/uiux_reference/data/` folder first to match project requirements with suitable UI styles. This step is mandatory and must be completed before proceeding.**
+**⚠️ CRITICAL: The UI/UX Design Generator Prompt includes checking `.cursor/commands/common/ui_styles_reference.md`, `.cursor/uiux_reference/data/`, and `.cursor/uiux_reference/landing_page_prompts/` (when applicable) first to match project requirements with suitable UI styles. This step is mandatory and must be completed before proceeding.**
 
 **File Path (from Step 0):**
 - **Primary:** `./.cursor/commands/specify/ui_ux_design_generator_[TECH]_[LANGUAGE].prompt.md`
@@ -1111,6 +1178,11 @@ Please review the wireframes above and provide feedback:
   - `prompts.csv` - UI/UX prompt templates and examples
   - `stacks/[FRAMEWORK].csv` - Framework-specific UI/UX patterns
 - **Action:** The UI/UX Design Generator Prompt will check this reference data folder to provide additional context and comprehensive UI/UX solutions
+
+**Landing Page Design Prompts:**
+- **Location:** `./.cursor/uiux_reference/landing_page_prompts/`
+- **Purpose:** Full AI-ready design prompts by style (30 styles: Monochrome, SaaS, Terminal, etc.); each .md file contains design philosophy, tokens, components, layout ideas. Use README.md for index; use when landing/marketing or style-led UI is in scope.
+- **Action:** When applicable, the UI/UX Design Generator will align with or select a style from this folder for design-system-level guidance
 
 Before proceeding, you MUST:
 1. Read the complete tech-specific UI/UX design generator prompt file (generated in Step 0)
@@ -1195,7 +1267,7 @@ Complete design system with:
 
 **⚠️ MANDATORY: READ AND REFERENCE THE UI/UX BRIDGE PROMPT FILE (ONLY IF UI/UX REQUIRED)**
 
-**⚠️ CRITICAL: The UI/UX Bridge Prompt includes checking `.cursor/commands/common/ui_styles_reference.md` AND `.cursor/uiux_reference/data/` folder first in the PRE-PHASE to match project requirements with suitable UI styles. This step is mandatory and must be completed before proceeding to Phase 1.**
+**⚠️ CRITICAL: The UI/UX Bridge Prompt includes checking `.cursor/commands/common/ui_styles_reference.md`, `.cursor/uiux_reference/data/`, and `.cursor/uiux_reference/landing_page_prompts/` (when applicable) first in the PRE-PHASE to match project requirements with suitable UI styles. This step is mandatory and must be completed before proceeding to Phase 1.**
 
 **File Path (from Step 0):**
 - **Primary:** `./.cursor/commands/specify/ui_ux_bridge_[TECH]_[LANGUAGE].prompt.md`
@@ -1219,6 +1291,11 @@ Complete design system with:
   - `prompts.csv` - UI/UX prompt templates and examples
   - `stacks/[FRAMEWORK].csv` - Framework-specific UI/UX patterns
 - **Action:** The UI/UX Bridge Prompt will check this reference data folder in PRE-PHASE Step 0.0 to provide additional context and comprehensive UI/UX solutions
+
+**Landing Page Design Prompts:**
+- **Location:** `./.cursor/uiux_reference/landing_page_prompts/`
+- **Purpose:** Full AI-ready design prompts by style (30 styles); use when landing/marketing or style-led UI is in scope for design-system alignment.
+- **Action:** The UI/UX Bridge Prompt will check this folder in PRE-PHASE Step 0.0 when applicable
 
 Before proceeding, you MUST:
 1. Read the complete tech-specific UI/UX bridge prompt file (generated in Step 0)
@@ -1887,6 +1964,7 @@ Other Documentation:    ./docs/others/
 
 ### Checkpoint
 ```
+Step 0.0: Scan .cursor for rules/commands; if missing or not fit, parse user prompt + research (internet, official docs) + use common → write fit rules/commands (execute automatically)
 Step 0: Verify and generate tech-specific commands and project rules (execute automatically)
 Steps 1-5: Execute automatically
 After Step 5: STOP and ask user confirmation
@@ -1898,6 +1976,7 @@ Step 6: Execute ONLY if user approves
 ## FINAL REMINDER FOR AI
 
 **MANDATORY PROMPT FILE REFERENCES (from Step 0):**
+- Step 0.0: Scan `.cursor/`; if rules/commands missing or don't fit project → parse user prompt, research official/relevant docs, use common → write fit rules/commands
 - Step 0: Verify and generate tech-specific files in:
   - `./.cursor/commands/specify/` (command files)
   - `./.cursor/rules/` (project rule)
@@ -1943,6 +2022,7 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
 
 **When you receive a feature request, you MUST:**
 
+✅ **Step 0.0:** Scan `.cursor/` for existing rules/commands; if missing or not fit → parse user prompt, research (internet, official docs), use common → write fit rules/commands
 ✅ **Step 0:** Verify tech-specific commands and project rule exist:
    - Commands in `./.cursor/commands/specify/` → Generate missing files from `./.cursor/commands/common/`
    - Project rule in `./.cursor/rules/` → Generate missing file from `./.cursor/rules/common/`
@@ -2010,7 +2090,8 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
 ```
 
 **AI Execution:**
-1. ✅ **Step 0:** Verify commands and project rule for Flutter/Dart
+1. ✅ **Step 0.0:** Scan .cursor; if rules/commands missing or not fit for project → parse user prompt, research docs, use common → write fit rules/commands
+2. ✅ **Step 0:** Verify commands and project rule for Flutter/Dart
    - Check `./.cursor/commands/specify/` → Generate missing files from `./.cursor/commands/common/`
      - Generate: `research_plan_flutter_dart.prompt.md`
      - Generate: `ui_ux_design_generator_flutter_dart.prompt.md`
@@ -2018,36 +2099,37 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
      - Generate: `implementation_plan_flutter_dart.prompt.md`
    - Check `./.cursor/rules/` → Generate missing file from `./.cursor/rules/common/`
      - Generate: `project-rule_flutter_dart.mdc`
-2. ✅ **Step 1:** Parse requirements
-3. ✅ **Step 1.5:** Determine UI/UX requirement
+3. ✅ **Step 1:** Parse requirements
+4. ✅ **Step 1.5:** Determine UI/UX requirement
    - Analysis: "Shoe shopping e-commerce app" → User-facing feature with browsing, filtering, cart, checkout
    - Decision: **Requires UI/UX: YES** (High confidence)
-4. ✅ **Step 2:** Generate research plan → `./docs/research_plans/SHOE_SHOP_RESEARCH_PLAN_2025-12-03.md`
-5. ✅ **Step 2.5:** Generate wireframes → `./docs/ui_ux/wireframes/SHOE_SHOP_WIREFRAMES_2025-12-03.md` (UI/UX required)
-6. ⏸️ **PRESENT WIREFRAMES FOR USER REVIEW**
-7. ⏸️ **WAIT FOR USER APPROVAL** (user approves wireframes)
-8. ✅ **Step 3:** Generate UI/UX design → `./docs/ui_ux/SHOE_SHOP_UI_UX_DESIGN_SYSTEM_2025-12-03.md` (UI/UX required, uses approved wireframes)
-9. ✅ **Step 4:** Generate Flutter UI code → `./docs/ui_ux/SHOE_SHOP_UI_IMPLEMENTATION_FLUTTER_2025-12-03.md` (UI/UX required)
-10. ✅ **Step 5:** Generate 7 implementation plans → `./docs/implementation_plans/SHOE_SHOP/`
-11. ⏸️ **PRESENT SUMMARY AND ASK: "Do you want to proceed with implementation?"**
-12. ⏸️ **WAIT FOR USER RESPONSE**
-13. ✅ (If user confirms) Execute all 6 implementation plans in order
+5. ✅ **Step 2:** Generate research plan → `./docs/research_plans/SHOE_SHOP_RESEARCH_PLAN_2025-12-03.md`
+6. ✅ **Step 2.5:** Generate wireframes → `./docs/ui_ux/wireframes/SHOE_SHOP_WIREFRAMES_2025-12-03.md` (UI/UX required)
+7. ⏸️ **PRESENT WIREFRAMES FOR USER REVIEW**
+8. ⏸️ **WAIT FOR USER APPROVAL** (user approves wireframes)
+9. ✅ **Step 3:** Generate UI/UX design → `./docs/ui_ux/SHOE_SHOP_UI_UX_DESIGN_SYSTEM_2025-12-03.md` (UI/UX required, uses approved wireframes)
+10. ✅ **Step 4:** Generate Flutter UI code → `./docs/ui_ux/SHOE_SHOP_UI_IMPLEMENTATION_FLUTTER_2025-12-03.md` (UI/UX required)
+11. ✅ **Step 5:** Generate 7 implementation plans → `./docs/implementation_plans/SHOE_SHOP/`
+12. ⏸️ **PRESENT SUMMARY AND ASK: "Do you want to proceed with implementation?"**
+13. ⏸️ **WAIT FOR USER RESPONSE**
+14. ✅ (If user confirms) Execute all 6 implementation plans in order
 
 **Example: Backend-Only Feature**
 ```
 User Input: "Create a REST API endpoint for user authentication with JWT tokens"
 
 AI Execution:
-1. ✅ Step 0: Verify commands
-2. ✅ Step 1: Parse requirements
-3. ✅ Step 1.5: Determine UI/UX requirement
+1. ✅ Step 0.0: Scan .cursor; ensure rules/commands exist and fit (if not, research + write from common)
+2. ✅ Step 0: Verify commands
+3. ✅ Step 1: Parse requirements
+4. ✅ Step 1.5: Determine UI/UX requirement
    - Analysis: "REST API endpoint" → Backend-only, no user interface
    - Decision: **Requires UI/UX: NO** (High confidence)
-4. ✅ Step 2: Generate research plan
-5. ⏭️ Step 3: SKIP (UI/UX not required)
-6. ⏭️ Step 4: SKIP (UI/UX not required)
-7. ✅ Step 5: Generate implementation plans
-8. ⏸️ Present summary
+5. ✅ Step 2: Generate research plan
+6. ⏭️ Step 3: SKIP (UI/UX not required)
+7. ⏭️ Step 4: SKIP (UI/UX not required)
+8. ✅ Step 5: Generate implementation plans
+9. ⏸️ Present summary
 ```
 
 ---

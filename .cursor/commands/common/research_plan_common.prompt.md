@@ -962,9 +962,9 @@ When analyzing a feature request, follow this systematic 7-step approach (ALL ST
 
 **⚠️ CRITICAL: AI MUST CHECK BOTH UI STYLES REFERENCE AND UI/UX REFERENCE DATA FIRST**
 
-**Step 1: Check UI Styles Reference & UI/UX Reference Data (MANDATORY)**
+**Step 1: Check UI Styles Reference & UI/UX Reference Data & Landing Page Prompts (MANDATORY)**
 1. **Read and analyze** `.cursor/commands/common/ui_styles_reference.md`
-2. **Read and analyze** `.cursor/uiux_reference/data/` folder for additional UI/UX context:
+2. **Read and analyze** `.cursor/uiux_reference/data/` folder for UI/UX reference data:
    - `styles.csv` - UI style patterns and specifications
    - `colors.csv` - Color palettes and schemes
    - `typography.csv` - Typography guidelines and font recommendations
@@ -974,11 +974,14 @@ When analyzing a feature request, follow this systematic 7-step approach (ALL ST
    - `charts.csv` - Data visualization patterns
    - `prompts.csv` - UI/UX prompt templates and examples
    - `stacks/[FRAMEWORK].csv` - Framework-specific UI/UX patterns (check relevant framework)
-3. **Extract project/feature requirements** from the user's request
-4. **Match project type** with suitable UI styles from both references using the "Suitable Project Types" attribute
-5. **Cross-reference** data from both sources to find comprehensive UI/UX solutions
-6. **Select best-fit UI styles** that match the project requirements
-7. **Document selected styles** with their WOW factor, complexity, and performance ratings
+3. **Read and analyze** `.cursor/uiux_reference/landing_page_prompts/` for full design prompts (when landing/marketing pages or style-led UI are relevant):
+   - `README.md` - Index of 30 design styles (Monochrome, SaaS, Terminal, etc.)
+   - Individual style files (e.g. `01-monochrome.md`, `04-saas.md`) - Full AI-ready design system prompts (philosophy, tokens, components, layout ideas); use to align research plan with a chosen style or to pick a style that fits project requirements
+4. **Extract project/feature requirements** from the user's request
+4. **Match project type** with suitable UI styles from both references and from landing_page_prompts (by style name and description) using the "Suitable Project Types" attribute
+5. **Cross-reference** data from all three sources (ui_styles_reference, uiux_reference/data, landing_page_prompts) to find comprehensive UI/UX solutions
+6. **Select best-fit UI styles** that match the project requirements; when landing/marketing pages are in scope, consider selecting or aligning with a design prompt from landing_page_prompts
+7. **Document selected styles** with their WOW factor, complexity, and performance ratings; if using a landing page prompt style, reference the corresponding .md file
 
 **UI Styles Reference Analysis Process:**
 ```markdown
@@ -1004,10 +1007,11 @@ When analyzing a feature request, follow this systematic 7-step approach (ALL ST
    - Checked `charts.csv` for data visualization patterns (if applicable)
    - Checked `prompts.csv` for UI/UX prompt examples
    - Checked `stacks/[FRAMEWORK].csv` for framework-specific patterns
-3. Identified relevant styles based on "Suitable Project Types" attribute from both sources
-4. Cross-referenced data from both sources with project requirements
-5. Evaluated WOW factor, complexity, and performance ratings from both references
-6. Synthesized findings from both sources for comprehensive UI/UX approach
+3. Reviewed `.cursor/uiux_reference/landing_page_prompts/` (README.md + relevant style .md files) for full design prompts when landing/marketing or style-led UI is in scope
+4. Identified relevant styles based on "Suitable Project Types" attribute from all sources
+5. Cross-referenced data from ui_styles_reference, uiux_reference/data, and landing_page_prompts with project requirements
+6. Evaluated WOW factor, complexity, and performance ratings from references
+7. Synthesized findings from all sources for comprehensive UI/UX approach
 
 **Animation & Effect Research (PRIMARY FOCUS):**
 - **Background Effects:** Animated gradients, particle systems, video backgrounds, parallax, geometric patterns, glass morphism, mesh gradients, noise textures
@@ -1041,6 +1045,7 @@ When analyzing a feature request, follow this systematic 7-step approach (ALL ST
 - **Page Patterns:** [Relevant patterns from landing.csv, products.csv, charts.csv if applicable]
 - **Framework Patterns:** [Framework-specific patterns from stacks/[FRAMEWORK].csv]
 - **Prompt Examples:** [Relevant UI/UX prompts from prompts.csv]
+- **Landing Page Prompts:** [If applicable: selected style(s) from landing_page_prompts/ and key design tokens/layout ideas from the corresponding .md file(s)]
 ```
 
 **Step 2: Internet Research (MANDATORY)**
