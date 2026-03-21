@@ -177,14 +177,16 @@ Execute Implementation (Step 6) — product codebase ONLY after YES/PROCEED
 │   └── common/           → Common command prompts (templates)
 └── rules/
     ├── *.mdc             → Project rules (e.g. project-rule_flutter_dart.mdc)
-    └── common/           → Common project rule (template)
+    ├── common/           → Common project rule (`project_rule_common.mdc`)
+    └── templates/        → Stack + tier scaffolds (`*-project-rule.template.mdc`, `README.md`)
 ```
 
 **Check and record:**
 1. List all files in `./.cursor/commands/specify/` (if directory exists)
-2. List all files in `./.cursor/rules/` (excluding subfolder `common/`)
-3. Identify which tech stack(s) existing files target (from filenames: e.g. `_flutter_dart`, `_nextjs_typescript`)
-4. Determine: **Do existing rules/commands match the current project?** (e.g. project uses Next.js but only Flutter rules exist → mismatch)
+2. List all files in `./.cursor/rules/` (excluding subfolders `common/` and `templates/`)
+3. List files in `./.cursor/rules/templates/` (for stack match when generating `project-rule_*`)
+4. Identify which tech stack(s) existing files target (from filenames: e.g. `_flutter_dart`, `_nextjs_typescript`)
+5. Determine: **Do existing rules/commands match the current project?** (e.g. project uses Next.js but only Flutter rules exist → mismatch)
 
 **Output:** A short scan report: what exists, for which tech, and whether it fits the project (YES/NO with reason).
 
@@ -203,18 +205,21 @@ Execute Implementation (Step 6) — product codebase ONLY after YES/PROCEED
    - Search for **best practices**, style guides, and common patterns for that tech/language
    - Note framework-specific rules (e.g. state management, routing, testing) that should be reflected in rules or commands
 
-3. **Use common rules and commands as base**
-   - Read `./.cursor/rules/common/project_rule_common.mdc` as the base for project rules
+3. **Use common rules, stack templates, and commands as base**
+   - Read `./.cursor/rules/common/project_rule_common.mdc` as the **contract** for project rules (full topic parity required for tech-specific output — see §0.0.2a)
+   - Read `./.cursor/rules/templates/README.md` and the **best-matching** `./.cursor/rules/templates/*-project-rule.template.mdc` for the detected stack (e.g. `flutter-project-rule.template.mdc`, `nextjs-typescript-project-rule.template.mdc`). **Pick one tier** (Small / Medium / Big) from product context (see README); use that tier’s content as **scaffold** — expand with all topics from `project_rule_common.mdc` that the template does not already cover
    - Read the relevant common command files from `./.cursor/commands/common/` (e.g. `research_plan_common.prompt.md`, `ui_ux_bridge.prompt.md`, `implementation_plan_common.prompt.md`) as the base for commands
 
 4. **Write or update rules and commands to fit the project**
-   - **Rules:** Generate or update `./.cursor/rules/project-rule_[TECH]_[LANGUAGE].mdc` so that it matches the project’s tech stack, language, and conventions, using the common rule and researched official/relevant docs
+   - **Rules:** Generate or update `./.cursor/rules/project-rule_[TECH]_[LANGUAGE].mdc` so that it matches the project’s tech stack, language, and conventions, using **`project_rule_common.mdc` + the matching `templates/` file (tier chosen) +** researched official/relevant docs. If **no** template exists for the stack, still meet §0.0.2a from common + research only
    - **Commands:** Generate or update tech-specific command files in `./.cursor/commands/specify/` (e.g. `research_plan_[TECH]_[LANGUAGE].prompt.md`, `ui_ux_bridge_[TECH]_[LANGUAGE].prompt.md`, etc.) so that they match the project, using the common commands and researched documentation
    - Ensure written content is concrete: correct syntax, framework-specific patterns, and references to official docs where helpful
 
 ### 0.0.2a Tech-Specific Project Rule — Full Parity With `project_rule_common.mdc` (MANDATORY WHEN WRITING RULES)
 
 When creating or **substantially updating** `./.cursor/rules/project-rule_[TECH]_[LANGUAGE].mdc`, the file MUST **not** be a short summary. Treat `./.cursor/rules/common/project_rule_common.mdc` as the **complete contract**: every topic there must appear in the tech-specific rule, **adapted** to the user’s stack (framework idioms, folder layout, state library, router, DI, testing tools, linter, and official terminology).
+
+**Stack templates (mandatory when a file matches):** Before drafting, open `./.cursor/rules/templates/README.md` and select the **`*.template.mdc`** whose stack matches the project (Flutter, Swift iOS, Kotlin Android, Java Spring, Node.js TypeScript, Next.js TypeScript). Use the appropriate **Small / Medium / Big** tier as the **starting structure** and stack-specific detail; then **merge and expand** so §0.0.2a checklist is fully satisfied (templates alone are not sufficient — they supplement common + research). If there is **no** template for the stack, state that in `## References consulted` and derive structure from `project_rule_common.mdc` + web research only.
 
 **Mandatory research (use the web):** Before drafting the rule, search for and align with **official** documentation and widely accepted guidance for the stack, e.g. language style guide, framework architecture docs, recommended testing approach, security baseline, and migration/version notes. Incorporate concrete names (packages, CLI commands, config files) from that research — not generic placeholders.
 
@@ -373,16 +378,19 @@ Platform: iOS, Android
 
 **IF the required project rule file is missing OR it fails the parity/depth requirements in §0.0.2a:**
 
-**Source file to reference:**
+**Source files to reference:**
 ```
 ./.cursor/rules/common/project_rule_common.mdc
+./.cursor/rules/templates/README.md
+./.cursor/rules/templates/<matching>-project-rule.template.mdc   # when stack matches a template
 ```
 
 **Generation process:**
 1. Read the **entire** common project rule from `./.cursor/rules/common/project_rule_common.mdc` (do not sample only the beginning).
-2. **Research** the stack on the web (official docs, style guides, testing and security baselines) and fold findings into concrete rules.
-3. Produce a tech-specific rule that satisfies **§0.0.2a** (full section parity, detailed bullets, examples in the project language, `## References consulted`).
-4. Generate tech-specific version with:
+2. Read `./.cursor/rules/templates/README.md`; open the **matching** `*-project-rule.template.mdc` and extract the **chosen tier** (Small / Medium / Big) as scaffold content.
+3. **Research** the stack on the web (official docs, style guides, testing and security baselines) and fold findings into concrete rules.
+4. Produce a tech-specific rule that satisfies **§0.0.2a** (full section parity, detailed bullets, examples in the project language, `## References consulted`), integrating template tier material where it fits and filling every gap against the common file.
+5. Polish the generated file with:
    - Technology-specific syntax examples
    - Language-specific patterns and conventions
    - Framework-specific state management patterns
@@ -424,6 +432,9 @@ project-rule_[TECH]_[LANGUAGE].mdc
 └── rules/
     ├── common/
     │   └── project_rule_common.mdc
+    ├── templates/
+    │   ├── README.md
+    │   └── *-project-rule.template.mdc
     └── project-rule_[TECH]_[LANGUAGE].mdc
 ```
 
@@ -431,7 +442,7 @@ project-rule_[TECH]_[LANGUAGE].mdc
 
 **Before proceeding to Step 1, verify:**
 - ✅ All 4 required tech-specific command files exist in `./.cursor/commands/specify/`
-- ✅ Project rule file exists in `./.cursor/rules/` and meets **§0.0.2a** (parity with `project_rule_common.mdc`, substantive depth, `## References consulted` when newly written)
+- ✅ Project rule file exists in `./.cursor/rules/` and meets **§0.0.2a** (parity with `project_rule_common.mdc`, substantive depth, `## References consulted` when newly written); when a matching file exists under `./.cursor/rules/templates/`, generation **must have used** that template’s **tier** as scaffold per §0.0.2a / §0.7
 - ✅ All files are properly named according to tech/language/framework
 - ✅ Files contain technology-specific adaptations
 - ✅ Files reference correct syntax and patterns for the tech stack
@@ -2068,7 +2079,7 @@ Step 6: Execute ONLY if user approves
 ## FINAL REMINDER FOR AI
 
 **MANDATORY PROMPT FILE REFERENCES (from Step 0):**
-- Step 0.0: Scan `.cursor/`; if rules/commands missing or don't fit project → parse user prompt, research official/relevant docs, use common → write fit rules/commands; tech-specific project rules MUST satisfy **§0.0.2a** (full parity with `project_rule_common.mdc` + web research + `## References consulted`)
+- Step 0.0: Scan `.cursor/`; if rules/commands missing or don't fit project → parse user prompt, research official/relevant docs, use **`project_rule_common.mdc` + `./.cursor/rules/templates/`** (README + matching `*.template.mdc` tier) → write fit rules/commands; tech-specific project rules MUST satisfy **§0.0.2a** (full parity with `project_rule_common.mdc` + web research + `## References consulted`)
 - Step 0: Verify and generate tech-specific files in:
   - `./.cursor/commands/specify/` (command files)
   - `./.cursor/rules/` (project rule)
@@ -2076,7 +2087,7 @@ Step 6: Execute ONLY if user approves
 - Step 3: `./.cursor/commands/specify/ui_ux_design_generator_[TECH]_[LANGUAGE].prompt.md` (or common fallback)
 - Step 4: `./.cursor/commands/specify/ui_ux_bridge_[TECH]_[LANGUAGE].prompt.md` (or common fallback)
 - Step 5: `./.cursor/commands/specify/implementation_plan_[TECH]_[LANGUAGE].prompt.md` (or common fallback)
-- Project Rule: `./.cursor/rules/project-rule_[TECH]_[LANGUAGE].mdc` (or common fallback: `./.cursor/rules/common/project_rule_common.mdc`)
+- Project Rule: `./.cursor/rules/project-rule_[TECH]_[LANGUAGE].mdc` (or common fallback: `./.cursor/rules/common/project_rule_common.mdc`); scaffolds: `./.cursor/rules/templates/`
 
 ---
 
@@ -2117,7 +2128,7 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
 ✅ **Step 0.0:** Scan `.cursor/` for existing rules/commands; if missing or not fit → parse user prompt, research (internet, official docs), use common → write fit rules/commands
 ✅ **Step 0:** Verify tech-specific commands and project rule exist:
    - Commands in `./.cursor/commands/specify/` → Generate missing files from `./.cursor/commands/common/`
-   - Project rule in `./.cursor/rules/` → Generate missing file from `./.cursor/rules/common/`
+   - Project rule in `./.cursor/rules/` → Generate missing file from `./.cursor/rules/common/project_rule_common.mdc` **and** `./.cursor/rules/templates/` (README + matching tier from `*.template.mdc`) per §0.7
 ✅ **Step 0.5:** [IF UI design images detected] Process UI images:
    - Detect UI design images in user input
    - Break image into logical components/sections
@@ -2190,7 +2201,7 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
      - Generate: `ui_ux_design_generator_flutter_dart.prompt.md`
      - Generate: `ui_ux_bridge_flutter_dart.prompt.md`
      - Generate: `implementation_plan_flutter_dart.prompt.md`
-   - Check `./.cursor/rules/` → Generate missing file from `./.cursor/rules/common/`
+   - Check `./.cursor/rules/` → Generate missing file using `./.cursor/rules/common/` + `./.cursor/rules/templates/` per §0.7
      - Generate: `project-rule_flutter_dart.mdc`
 3. ✅ **Step 1:** Parse requirements
 4. ✅ **Step 1.5:** Determine UI/UX requirement
@@ -2212,7 +2223,7 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
 User Input: "Create a REST API endpoint for user authentication with JWT tokens"
 
 AI Execution:
-1. ✅ Step 0.0: Scan .cursor; ensure rules/commands exist and fit (if not, research + write from common; project rule must meet §0.0.2a)
+1. ✅ Step 0.0: Scan .cursor; ensure rules/commands exist and fit (if not, research + write from `project_rule_common.mdc` + `rules/templates/`; project rule must meet §0.0.2a)
 2. ✅ Step 0: Verify commands and project rule
 3. ✅ Step 1: Parse requirements
 4. ✅ Step 1.5: Determine UI/UX requirement

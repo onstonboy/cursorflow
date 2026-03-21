@@ -233,7 +233,7 @@ class PromptGenerator:
             'output_prefix': 'ui_ux_bridge',
         },
         'project_rules': {
-            'template': 'project_rules_common.prompt.md',
+            'template': 'project_rule_common.mdc',
             'output_prefix': 'project_rules',
         },
         'test_rules': {
@@ -248,6 +248,7 @@ class PromptGenerator:
             base_dir = Path(__file__).parent
         self.base_dir = Path(base_dir)
         self.common_dir = self.base_dir / '.cursor' / 'commands' / 'common'
+        self.rules_common_dir = self.base_dir / '.cursor' / 'rules' / 'common'
         self.specify_dir = self.base_dir / '.cursor' / 'commands' / 'specify'
         self.specify_dir.mkdir(parents=True, exist_ok=True)
     
@@ -332,10 +333,20 @@ class PromptGenerator:
     
     def read_template(self, template_name: str) -> str:
         """Read the common template file."""
-        template_path = self.common_dir / template_name
+        if template_name == 'project_rule_common.mdc':
+            template_path = self.rules_common_dir / template_name
+        else:
+            template_path = self.common_dir / template_name
         if not template_path.exists():
             raise FileNotFoundError(f"Template not found: {template_path}")
-        return template_path.read_text(encoding='utf-8')
+        text = template_path.read_text(encoding='utf-8')
+        if template_name == 'project_rule_common.mdc':
+            if text.startswith('---'):
+                parts = text.split('---', 2)
+                if len(parts) >= 3:
+                    text = parts[2].lstrip('\n')
+            text = '---\nagent: agent\n---\n\n' + text
+        return text
     
     def customize_content(self, content: str, lang_config: Dict, 
                          requirements: Optional[str] = None,
