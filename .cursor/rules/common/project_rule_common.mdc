@@ -16,6 +16,11 @@ alwaysApply: true
 - Follow language-specific best practices and conventions
 - Use appropriate linting and formatting tools for the language/framework
 
+## Research and Library Selection for New Features
+- For any new feature required by user prompt, in the **research step**, prioritize supported libraries first
+- Prefer libraries that are **maintainable**, have **continuous support from the author**, and are **best suited to the solution**
+- If no suitable library meets these criteria, write the corresponding code instead of adopting an unmaintained or poorly suited dependency
+
 ## Language/Framework Standards
 - Use immutable data structures where possible
 - Leverage language-specific immutability features (e.g., const, readonly, final, frozen)
@@ -608,3 +613,7 @@ class UserPage extends Component {
 - DO NOT generate summaries or documentation unless requested
 
 Refer to official documentation for the chosen language/framework for more detailed implementation guidelines.
+
+## Stack-specific project rules (`project-rule_[TECH]_[LANGUAGE].mdc`)
+
+This file defines the **full breadth** of standards. Tech-specific rules must **cover the same topics** (adapted naming, paths, libraries, and examples — not a shortened checklist). Use web research on official docs and style guides for the stack. The `/cook` command documents required depth and a section-by-section checklist in `.cursor/commands/cook.prompt.md` (Step 0.0.2a); generated rules should include a `## References consulted` section listing sources used.

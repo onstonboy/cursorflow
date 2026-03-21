@@ -4,7 +4,7 @@ agent: agent
 
 # Complete Feature Development Workflow: From Requirement to Implementation
 
-This document provides a comprehensive, end-to-end workflow for AI to transform user requirements into a complete, ready-to-implement feature specification with full research, UI/UX design, and implementation planning.
+This document provides a comprehensive, end-to-end workflow for AI to transform user requirements into a complete, ready-to-implement feature specification with full research, wireframes (UI or structural), optional UI/UX design and platform UI code when needed, and **seven** implementation-plan documents (one main plus six children). Every `/cook` run must produce the **mandatory paperwork pack** (see **CRITICAL: Mandatory `/cook` Paperwork Pack** below).
 
 ## CRITICAL: Required Prompt Files Reference
 
@@ -48,6 +48,26 @@ Before executing this workflow, you MUST have access to and reference these prom
 
 ---
 
+## CRITICAL: Mandatory `/cook` Paperwork Pack (Every Run)
+
+**Every `/cook` invocation MUST produce the following written artifacts on disk before Step 5 user confirmation. Skipping any of these is incomplete work.**
+
+| # | Artifact | Step | Path pattern |
+|---|----------|------|----------------|
+| 1 | **Research plan** | Step 2 | `./docs/research_plans/[FEATURE_NAME]_RESEARCH_PLAN_[DATE].md` |
+| 2 | **Wireframes** | Step 2.5 | `./docs/ui_ux/wireframes/[FEATURE_NAME]_WIREFRAMES_[DATE].md` |
+| 3 | **Main implementation plan** | Step 5 | `./docs/implementation_plans/[FEATURE_NAME]/[FEATURE_NAME]_IMPLEMENTATION_PLAN_[DATE].md` |
+| 4–9 | **Six child implementation plans** | Step 5 | `..._01_SETUP_` … `..._06_INTEGRATION_` (same folder) |
+
+**Rules:**
+- **Research plan:** Full document per research prompt (all steps), not a summary.
+- **Wireframes:** **Always generated** — even when `requires_ui_ux: false`. For UI features: screen/page ASCII wireframes as today. For non-UI features (APIs, CLIs, jobs, libraries): produce **structural wireframes** — ASCII diagrams for modules, endpoints/commands, data flow, deployment boundaries, state machines, or sequence-style layouts — so the feature still has a visual plan before implementation.
+- **Seven implementation docs:** Exactly **one main + six child** files, each with substantive content per `implementation_plan_*.prompt.md` (no empty shells, no merging children into the main file).
+
+**Optional (conditional on UI/UX):** Design system (Step 3) and platform UI implementation (Step 4) remain conditional on `requires_ui_ux: true`; they are **not** substitutes for the mandatory pack above.
+
+---
+
 ## CRITICAL: Mandatory Sequential Execution
 
 **⚠️ AI MUST COMPLETE ALL STEPS IN EXACT ORDER - NO EXCEPTIONS**
@@ -59,13 +79,14 @@ When you receive a feature request, you MUST:
 4. Execute ALL remaining steps sequentially (Step 1 through Step 5)
 5. Generate ALL deliverables for each step
 6. Store results in specified directories
-7. Do NOT skip any step (except Step 0.5 if no images, Step 2.5/3/4 if no UI/UX required)
-8. **EXECUTE Step 2.5 (Wireframes) automatically** if UI/UX required, then **WAIT for user review/approval** before proceeding to Step 3
+7. Do NOT skip any step (except Step 0.5 if no images, **Step 3/4 only** if no UI/UX required)
+8. **EXECUTE Step 2.5 (Wireframes) for every feature** — UI mode or structural/non-UI mode — then **WAIT for user review/approval** before proceeding to Step 3 (or Step 5 if UI/UX not required)
 9. Do NOT ask for permission between other steps—execute automatically (except after Step 2.5 wireframe review)
-10. ONLY ask for user confirmation AFTER completing Step 5
-11. Complete the entire workflow before proceeding to implementation
+10. **Before Step 5 confirmation:** ensure **all seven** implementation plan files exist (main + six children)
+11. ONLY ask for user confirmation AFTER completing Step 5 (with full paperwork pack)
+12. Complete the entire workflow before proceeding to implementation
 
-**Failure to complete all steps is considered incomplete work.**
+**Failure to complete all steps or the mandatory paperwork pack is considered incomplete work.**
 
 ---
 
@@ -88,27 +109,24 @@ Determine UI/UX Requirement (Step 1.5) → Does feature need UI/UX?
          ↓
 Research & Analysis (Step 2) → ./docs/research_plans/
          ↓
-    ┌────┴────┐
-    │         │
-    │    YES  │
-    │         │
-    ▼         ▼
 Generate Wireframes (Step 2.5) → ./docs/ui_ux/wireframes/ ⚠️ USER REVIEW
+(UI screens OR structural/API/flow ASCII if no UI)
          ↓
     ┌────┴────┐
     │ APPROVE │
-    │         │
-    ▼         ▼
-UI/UX Design System (Step 3) → ./docs/ui_ux/ (Use converted components)
-         ↓
-Platform-Specific Code (Step 4) → ./docs/ui_ux/ (Convert HTML to platform)
-         ↓
     └────┬────┘
          │
-    NO   │
-         │
-         ▼
+    ┌────┴────────────────────────┐
+    │ requires_ui_ux: YES         │ requires_ui_ux: NO
+    ▼                             ▼
+UI/UX Design System (Step 3)      (skip 3 & 4)
+         ↓
+Platform-Specific Code (Step 4)
+         ↓
+    └──────────────┬──────────────┘
+                   ▼
 Implementation Plan (Step 5) → ./docs/implementation_plans/
+         (1 main + 6 child files — mandatory)
          ↓
 USER CONFIRMATION REQUIRED ⚠️
          ↓
@@ -170,7 +188,40 @@ Execute Implementation (Step 6)
    - **Commands:** Generate or update tech-specific command files in `./.cursor/commands/specify/` (e.g. `research_plan_[TECH]_[LANGUAGE].prompt.md`, `ui_ux_bridge_[TECH]_[LANGUAGE].prompt.md`, etc.) so that they match the project, using the common commands and researched documentation
    - Ensure written content is concrete: correct syntax, framework-specific patterns, and references to official docs where helpful
 
-**If rules/commands already exist and fit the project:** Skip generation; proceed to Step 0.
+### 0.0.2a Tech-Specific Project Rule — Full Parity With `project_rule_common.mdc` (MANDATORY WHEN WRITING RULES)
+
+When creating or **substantially updating** `./.cursor/rules/project-rule_[TECH]_[LANGUAGE].mdc`, the file MUST **not** be a short summary. Treat `./.cursor/rules/common/project_rule_common.mdc` as the **complete contract**: every topic there must appear in the tech-specific rule, **adapted** to the user’s stack (framework idioms, folder layout, state library, router, DI, testing tools, linter, and official terminology).
+
+**Mandatory research (use the web):** Before drafting the rule, search for and align with **official** documentation and widely accepted guidance for the stack, e.g. language style guide, framework architecture docs, recommended testing approach, security baseline, and migration/version notes. Incorporate concrete names (packages, CLI commands, config files) from that research — not generic placeholders.
+
+**Section parity checklist** — the tech-specific rule MUST include adapted equivalents for **all** of the following (same scope as the common file; reorder or merge only if the language has no analogue, and explain the mapping):
+
+1. Key Principles  
+2. Research and Library Selection for New Features  
+3. Language/Framework Standards  
+4. Clean Architecture  
+5. Feature-First Organization (directory tree adapted to the repo)  
+6. State Management  
+7. Dependency Injection  
+8. Error Handling (including functional Result/Either-style guidance where applicable)  
+9. Repository Pattern  
+10. Navigation and Routing  
+11. UI and Styling (skip only for headless/backend-only projects; if skipped, state that scope and substitute “public surface / API contract diagrams” and input validation UX for clients)  
+12. Model and Data Entity Organization (including enum handling helpers)  
+13. Performance Optimization  
+14. Code Analysis & Validation (exact commands: e.g. `eslint`, `tsc`, `flutter analyze`, `go vet`)  
+15. Code Quality and Debugging  
+16. Code Organization Standards (variable order, scope preference, method order — with examples in the project language)  
+17. Code Generation (if applicable to stack)  
+18. Implementation Examples (use case, repository, state management, UI/page — minimal but **real** snippets in the project language)
+
+**Depth requirements:**
+- Prefer **detailed** bullets and sub-bullets over one-line platitudes; each major section should reflect **project-specific** paths, libraries, and patterns.
+- Add a final subsection **`## References consulted`** listing official doc titles/URLs and any style guides used while writing the rule.
+
+**When to regenerate:** If an existing `project-rule_*` is thin, omits several sections above, or contradicts the detected stack, expand or replace it to meet this parity — not only when the file is missing.
+
+**If rules/commands already exist and fit the project:** Skip generation; proceed to Step 0. If the rule exists but fails parity/depth above, treat as **not fit** and update it.
 
 ### 0.0.3 Deliverable and Handoff
 
@@ -292,11 +343,11 @@ Platform: iOS, Android
 **Check process:**
 1. List all files in `./.cursor/rules/`
 2. Identify if the required project rule file exists
-3. Identify if the project rule file is missing
+3. If missing **or** too thin vs. §0.0.2a (section parity / depth), plan to generate or expand in §0.7
 
-### 0.7 Generate Missing Project Rule File
+### 0.7 Generate Missing or Insufficient Project Rule File
 
-**IF the required project rule file is missing:**
+**IF the required project rule file is missing OR it fails the parity/depth requirements in §0.0.2a:**
 
 **Source file to reference:**
 ```
@@ -304,13 +355,14 @@ Platform: iOS, Android
 ```
 
 **Generation process:**
-1. Read the common project rule file from `./.cursor/rules/common/project_rule_common.mdc`
-2. Adapt it for the specific tech/language/framework
-3. Generate tech-specific version with:
+1. Read the **entire** common project rule from `./.cursor/rules/common/project_rule_common.mdc` (do not sample only the beginning).
+2. **Research** the stack on the web (official docs, style guides, testing and security baselines) and fold findings into concrete rules.
+3. Produce a tech-specific rule that satisfies **§0.0.2a** (full section parity, detailed bullets, examples in the project language, `## References consulted`).
+4. Generate tech-specific version with:
    - Technology-specific syntax examples
    - Language-specific patterns and conventions
    - Framework-specific state management patterns
-   - Platform-specific UI/UX guidelines
+   - Platform-specific UI/UX guidelines (or explicit non-UI scope per §0.0.2a)
    - Technology-specific code examples
 
 **File naming convention:**
@@ -355,7 +407,7 @@ project-rule_[TECH]_[LANGUAGE].mdc
 
 **Before proceeding to Step 1, verify:**
 - ✅ All 4 required tech-specific command files exist in `./.cursor/commands/specify/`
-- ✅ Project rule file exists in `./.cursor/rules/`
+- ✅ Project rule file exists in `./.cursor/rules/` and meets **§0.0.2a** (parity with `project_rule_common.mdc`, substantive depth, `## References consulted` when newly written)
 - ✅ All files are properly named according to tech/language/framework
 - ✅ Files contain technology-specific adaptations
 - ✅ Files reference correct syntax and patterns for the tech stack
@@ -938,17 +990,17 @@ Complete research document with:
 
 ---
 
-## STEP 2.5: Generate UI Wireframes (CONDITIONAL - ONLY IF UI/UX REQUIRED)
+## STEP 2.5: Generate Wireframes (MANDATORY — UI OR STRUCTURAL)
 
-**Objective:** Create wireframe layouts for all screens/pages to allow user review before detailed UI/UX design
+**Objective:** Produce reviewable ASCII documentation before detailed UI work or implementation planning. **Runs for every `/cook` invocation.**
 
-**⚠️ CONDITIONAL EXECUTION:**
-- **IF `requires_ui_ux: true`** → Execute this step
-- **IF `requires_ui_ux: false`** → Skip this step and proceed to Step 5
+**Execution modes:**
+- **`requires_ui_ux: true`:** Screen/page wireframes for all UI surfaces (see §2.5.2).
+- **`requires_ui_ux: false`:** **Structural wireframes** — same output path — e.g. package/module map, endpoint or CLI map, request/response flow, worker pipeline, auth sequence, failure paths, and integration boundaries. Must be as detailed as UI wireframes are for screens.
 
 **⚠️ MANDATORY USER REVIEW CHECKPOINT:**
 - After generating wireframes, **MUST present them to user for review**
-- **WAIT for user approval** before proceeding to Step 3 (UI/UX Design System)
+- **WAIT for user approval** before proceeding to Step 3 (if UI/UX required) **or** to Step 5 (if UI/UX not required)
 - User can request changes, which will be incorporated before proceeding
 
 ### 2.5.1 Wireframe Generation Process
@@ -956,12 +1008,12 @@ Complete research document with:
 **Input from Step 2:**
 - Use selected approach from research plan
 - Reference functional requirements
-- Consider user workflows and navigation
-- Apply platform constraints (mobile/tablet/desktop)
+- Consider user workflows and navigation (UI) or system/control flow (non-UI)
+- Apply platform constraints (mobile/tablet/desktop) when UI applies
 
-### 2.5.2 Create Wireframes for Each Screen
+### 2.5.2 Create Wireframes for Each Screen (UI mode)
 
-**For EACH screen/page identified in research plan:**
+**When `requires_ui_ux: true` — for EACH screen/page identified in research plan:**
 
 **Wireframe Components:**
 1. **Layout Structure:** Header, navigation, main content area, sidebar (if applicable), footer
@@ -1012,9 +1064,21 @@ Complete research document with:
 └─────────────────────────────────────────────────┘
 ```
 
+### 2.5.2A Structural Wireframes (non-UI mode)
+
+**When `requires_ui_ux: false`,** produce ASCII diagrams and inventories that replace screen wireframes, for example:
+
+- **System/context:** Bounded context, services, and external systems (boxes and arrows).
+- **API or CLI surface:** Each route/command, method, payload shape (tabular ASCII), and auth requirement.
+- **Data flow:** Step-by-step flow from entry point to persistence (success and main error paths).
+- **Layering:** How Clean Architecture layers map to real packages/folders in this repo.
+- **Concurrency / jobs:** Schedules, queues, retries, idempotency (if applicable).
+
+Each diagram must have a short **Purpose**, **Inputs**, **Outputs**, and **Failure modes** subsection (same rigor as screen documentation in §2.5.3).
+
 ### 2.5.3 Wireframe Documentation
 
-**For each wireframe, include:**
+**For UI mode — for each screen wireframe, include:**
 
 1. **Screen/Page Information:**
    - Screen name and purpose
@@ -1047,6 +1111,8 @@ Complete research document with:
    - Keyboard navigation paths
    - Screen reader considerations
 
+**For structural (non-UI) mode:** Map the same rigor to **artifacts** instead of screens — e.g. per-endpoint or per-use-case sections with ASCII diagram, responsibility, dependencies, and validation rules.
+
 ### 2.5.4 Generate Complete Wireframe Document
 
 **File naming convention:**
@@ -1068,13 +1134,8 @@ SHOE_SHOP_ECOMMERCE_WIREFRAMES_2025-12-03.md
 
 **Deliverable:**
 Complete wireframe document with:
-- ✅ All screen/page wireframes (ASCII art format)
-- ✅ Layout descriptions for each screen
-- ✅ Component inventory and hierarchy
-- ✅ Navigation flow diagrams
-- ✅ Responsive layout variations
-- ✅ User flow integration notes
-- ✅ Accessibility considerations
+- ✅ **UI mode:** All screen/page wireframes (ASCII art format); layout descriptions; component inventory and hierarchy; navigation flow diagrams; responsive layout variations; user flow integration notes; accessibility considerations
+- ✅ **Structural mode:** All planned diagrams (system, API/CLI, data flow, layers); inventory of modules/endpoints/commands; failure-path coverage; alignment with research plan approach
 
 **Directory Structure After Step 2.5:**
 ```
@@ -1113,7 +1174,7 @@ Complete wireframe document with:
 
 Please review the wireframes above and provide feedback:
 
-👉 **APPROVE** - Wireframes look good, proceed to detailed UI/UX design (Step 3)
+👉 **APPROVE** - Wireframes look good; proceed to Step 3 (if UI/UX required) or Step 5 (if not)
 👉 **REVISE** - I want changes to: [specify which screens/components]
 👉 **CLARIFY** - I have questions about: [specify questions]
 
@@ -1126,8 +1187,8 @@ Please review the wireframes above and provide feedback:
 ### 2.5.7 Handle User Feedback
 
 **IF user APPROVES:**
-- Proceed to Step 3 (UI/UX Design System)
-- Use approved wireframes as layout foundation
+- If **UI/UX required:** Proceed to Step 3 (UI/UX Design System); use approved wireframes as layout foundation
+- If **UI/UX not required:** Proceed to Step 5 (implementation plans); use approved structural wireframes as plan foundation
 
 **IF user requests REVISIONS:**
 - Update wireframes based on user feedback
@@ -1140,7 +1201,7 @@ Please review the wireframes above and provide feedback:
 - Update wireframes if needed based on clarifications
 - Present again for approval
 
-**⚠️ DO NOT proceed to Step 3 until user explicitly approves wireframes**
+**⚠️ DO NOT proceed to Step 3 or Step 5 until user explicitly approves wireframes**
 
 ---
 
@@ -1462,6 +1523,8 @@ Follow the implementation plan prompt file exactly:
 
 ### 5.3 Generate Complete Implementation Plan
 
+**⚠️ Before presenting the Step 5 completion summary, verify on disk:** exactly **seven** markdown files in `./docs/implementation_plans/[FEATURE_NAME]/` — one main plan plus six child plans (`_01_SETUP_` through `_06_INTEGRATION_`). Missing any file is a failed `/cook` run.
+
 **File naming convention:**
 ```
 [FEATURE_NAME]_IMPLEMENTATION_PLAN_[DATE].md
@@ -1631,13 +1694,14 @@ Complete implementation plans with:
 **Location:** `./docs/research_plans/[FEATURE_NAME]_RESEARCH_PLAN_[DATE].md`
 **Selected Approach:** [Approach name and brief rationale]
 
-### ✅ Step 2.5: UI Wireframes
-**Status:** [Completed/Skipped]
+### ✅ Step 2.5: Wireframes (UI or Structural)
+**Status:** Completed (mandatory every run)
+**Mode:** [UI screen wireframes / Structural API-or-system wireframes]
 **Requires UI/UX:** [YES/NO]
-**Output:** [Wireframes for [X] screens with layout structures / N/A - Feature does not require UI/UX]
-**Location:** [`./docs/ui_ux/wireframes/[FEATURE_NAME]_WIREFRAMES_[DATE].md` / N/A]
+**Output:** [Wireframes for [X] screens / Structural diagrams for [X] artifacts (endpoints, modules, flows)]
+**Location:** `./docs/ui_ux/wireframes/[FEATURE_NAME]_WIREFRAMES_[DATE].md`
 **User Review:** [Approved/Revised/Pending]
-**Screens:** [List of screens with wireframes / N/A]
+**Inventory:** [Screens or structural artifacts listed]
 
 ### ✅ Step 3: UI/UX Design System
 **Status:** [Completed/Skipped]
@@ -1707,14 +1771,13 @@ Complete implementation plans with:
 - Technical specifications
 - Flow diagrams
 
-### UI/UX Documentation
-[IF UI/UX Required:]
+### Wireframes (always)
 📄 `./docs/ui_ux/wireframes/[FEATURE_NAME]_WIREFRAMES_[DATE].md`
-- Wireframe layouts for all screens
-- Layout structure and component placement
-- Navigation flow diagrams
-- Responsive layout variations
+- **UI features:** Screen layouts, navigation, responsive notes, accessibility
+- **Non-UI features:** Structural/API/flow ASCII plans (mandatory equivalent depth)
 
+### UI/UX Documentation
+[IF UI/UX Required — in addition to wireframes:]
 📄 `./docs/ui_ux/[FEATURE_NAME]_UI_UX_DESIGN_SYSTEM_[DATE].md`
 - Complete design system
 - Component library
@@ -1727,12 +1790,12 @@ Complete implementation plans with:
 - Code samples
 
 [IF UI/UX NOT Required:]
-ℹ️ UI/UX documentation skipped - Feature does not require user interface components
+ℹ️ Design system and platform UI code steps skipped — wireframes still produced in structural mode
 
-### Implementation Documentation
+### Implementation Documentation (always: 7 files)
 📄 `./docs/implementation_plans/[FEATURE_NAME]/`
 - Main implementation plan
-- 6 detailed child plans
+- 6 detailed child plans (all required; see §5.4)
 - Code templates
 - Validation checklists
 
@@ -1898,9 +1961,10 @@ After completing entire workflow:
 ## Best Practices
 
 ### Do:
-✅ Execute all steps in order (0→1→2→2.5→3→4→5→CONFIRM→6)
+✅ Execute all steps in order (0→1→2→2.5→3→4→5→CONFIRM→6); Step 2.5 is never skipped
 ✅ Verify and generate tech-specific commands FIRST (Step 0)
-✅ Generate wireframes for UI/UX features (Step 2.5) and wait for user approval
+✅ Generate wireframes for **every** feature (Step 2.5): UI or structural mode; wait for user approval
+✅ Generate **seven** implementation plan files (Step 5) before asking for implementation confirmation
 ✅ Store all outputs in specified directories
 ✅ Use consistent naming conventions
 ✅ Generate complete documentation at each step
@@ -1976,7 +2040,7 @@ Step 6: Execute ONLY if user approves
 ## FINAL REMINDER FOR AI
 
 **MANDATORY PROMPT FILE REFERENCES (from Step 0):**
-- Step 0.0: Scan `.cursor/`; if rules/commands missing or don't fit project → parse user prompt, research official/relevant docs, use common → write fit rules/commands
+- Step 0.0: Scan `.cursor/`; if rules/commands missing or don't fit project → parse user prompt, research official/relevant docs, use common → write fit rules/commands; tech-specific project rules MUST satisfy **§0.0.2a** (full parity with `project_rule_common.mdc` + web research + `## References consulted`)
 - Step 0: Verify and generate tech-specific files in:
   - `./.cursor/commands/specify/` (command files)
   - `./.cursor/rules/` (project rule)
@@ -2035,7 +2099,7 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
 ✅ **Step 1:** Parse and document user requirements (include converted UI components if Step 0.5 executed)
 ✅ **Step 1.5:** Determine if feature requires UI/UX (analyze requirements carefully)
 ✅ **Step 2:** Execute complete research plan (following tech-specific research plan prompt) → Save to `./docs/research_plans/` (reference converted components if available)
-✅ **Step 2.5:** [IF UI/UX required] Generate wireframes for all screens → Save to `./docs/ui_ux/wireframes/` → **PRESENT TO USER FOR REVIEW** → **WAIT FOR APPROVAL** before proceeding [ELSE] Skip wireframe step
+✅ **Step 2.5:** Generate wireframes (UI or structural) → Save to `./docs/ui_ux/wireframes/` → **PRESENT TO USER FOR REVIEW** → **WAIT FOR APPROVAL** → then Step 3–4 if UI/UX required, else go to Step 5
 ✅ **Step 3:** [IF UI/UX required] Generate complete UI/UX design (following tech-specific UI/UX design generator prompt) → Save to `./docs/ui_ux/` (use approved wireframes and converted HTML/components as reference) [ELSE] Skip UI/UX design step
 ✅ **Step 4:** [IF UI/UX required] Create platform-specific UI code (following tech-specific UI/UX bridge prompt) → Save to `./docs/ui_ux/` (convert HTML from Step 0.5 to platform code) [ELSE] Skip UI/UX code step
 ✅ **Step 5:** Generate all implementation plans (following tech-specific implementation plan prompt - 1 main + 6 child) → Save to `./docs/implementation_plans/[FEATURE_NAME]/`
@@ -2043,15 +2107,15 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
 ✅ **Step 6:** Execute implementation ONLY if user approves
 
 **DO NOT:**
-❌ Skip any step (0-5 must complete before asking user, except Step 0.5 if no images, Step 3 & 4 if UI/UX not required)
+❌ Skip any step (0-5 must complete before asking user, except Step 0.5 if no images, Step 3 & 4 if UI/UX not required); **never skip Step 2.5 or any of the seven implementation plan files**
 ❌ Proceed to Step 1 without verifying/generating tech-specific commands and project rule
 ❌ Skip Step 0.5 if UI images are detected (must process images first)
 ❌ Skip breaking down UI images into components (must analyze comprehensively)
 ❌ Skip converting components to HTML using @ui_ux_bridge (each component must be converted)
 ❌ Skip Step 1.5 UI/UX determination (must analyze requirements carefully)
-❌ Skip Step 2.5 wireframe generation if UI/UX required (must generate wireframes for user review)
+❌ Skip Step 2.5 (wireframes are mandatory for every run)
 ❌ Skip presenting wireframes to user for review (MANDATORY checkpoint)
-❌ Proceed to Step 3 without wireframe approval (must wait for user approval)
+❌ Proceed to Step 3 or Step 5 without wireframe approval (must wait for user approval)
 ❌ Skip UI/UX steps if feature actually needs UI/UX (be conservative - if uncertain, include UI/UX)
 ❌ Include UI/UX steps for clearly backend-only features (waste of resources)
 ❌ Proceed to Step 6 without user saying "YES" or "PROCEED"
@@ -2066,7 +2130,7 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
 - Step 0.5 is CONDITIONAL (execute ONLY if UI design images detected in user input)
 - Step 0.5 must break images into components and convert each to HTML using @ui_ux_bridge
 - Step 1.5 is MANDATORY to determine UI/UX requirement (analyze carefully, be conservative)
-- Step 2.5 is CONDITIONAL (execute ONLY if UI/UX required) and REQUIRES USER REVIEW/APPROVAL
+- Step 2.5 is MANDATORY (UI or structural wireframes) and REQUIRES USER REVIEW/APPROVAL
 - Steps 0-2 are AUTOMATIC (no user confirmation needed)
 - Step 2.5 requires USER REVIEW/APPROVAL before proceeding (wireframe checkpoint)
 - Steps 3 & 4 are CONDITIONAL (only execute if UI/UX required) and AUTOMATIC after wireframe approval
@@ -2078,7 +2142,7 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
 - If uncertain about UI/UX requirement, default to including UI/UX steps (better safe than sorry)
 - Converted HTML/components from Step 0.5 must be used as design reference in subsequent steps
 
-**WORKFLOW = Verify Commands & Rules → [Process UI Images if present → Break into Components → Convert to HTML (@ui_ux_bridge)] → Parse → Determine UI/UX → Research → [Generate Wireframes → **USER REVIEW/APPROVE** → Design → Code] (if UI/UX) → Plan → **CONFIRM** → Implement**
+**WORKFLOW = Verify Commands & Rules → [Process UI Images if present → Break into Components → Convert to HTML (@ui_ux_bridge)] → Parse → Determine UI/UX → Research → **Generate Wireframes (always) → USER REVIEW/APPROVE** → [Design → Code] (if UI/UX) → **Plan (1 main + 6 child)** → **CONFIRM** → Implement**
 
 ---
 
@@ -2104,7 +2168,7 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
    - Analysis: "Shoe shopping e-commerce app" → User-facing feature with browsing, filtering, cart, checkout
    - Decision: **Requires UI/UX: YES** (High confidence)
 5. ✅ **Step 2:** Generate research plan → `./docs/research_plans/SHOE_SHOP_RESEARCH_PLAN_2025-12-03.md`
-6. ✅ **Step 2.5:** Generate wireframes → `./docs/ui_ux/wireframes/SHOE_SHOP_WIREFRAMES_2025-12-03.md` (UI/UX required)
+6. ✅ **Step 2.5:** Generate wireframes (UI mode) → `./docs/ui_ux/wireframes/SHOE_SHOP_WIREFRAMES_2025-12-03.md`
 7. ⏸️ **PRESENT WIREFRAMES FOR USER REVIEW**
 8. ⏸️ **WAIT FOR USER APPROVAL** (user approves wireframes)
 9. ✅ **Step 3:** Generate UI/UX design → `./docs/ui_ux/SHOE_SHOP_UI_UX_DESIGN_SYSTEM_2025-12-03.md` (UI/UX required, uses approved wireframes)
@@ -2119,23 +2183,20 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
 User Input: "Create a REST API endpoint for user authentication with JWT tokens"
 
 AI Execution:
-1. ✅ Step 0.0: Scan .cursor; ensure rules/commands exist and fit (if not, research + write from common)
-2. ✅ Step 0: Verify commands
+1. ✅ Step 0.0: Scan .cursor; ensure rules/commands exist and fit (if not, research + write from common; project rule must meet §0.0.2a)
+2. ✅ Step 0: Verify commands and project rule
 3. ✅ Step 1: Parse requirements
 4. ✅ Step 1.5: Determine UI/UX requirement
    - Analysis: "REST API endpoint" → Backend-only, no user interface
    - Decision: **Requires UI/UX: NO** (High confidence)
-5. ✅ Step 2: Generate research plan
-6. ⏭️ Step 3: SKIP (UI/UX not required)
-7. ⏭️ Step 4: SKIP (UI/UX not required)
-8. ✅ Step 5: Generate implementation plans
-9. ⏸️ Present summary
+5. ✅ Step 2: Generate research plan → ./docs/research_plans/...
+6. ✅ Step 2.5: Generate **structural** wireframes (routes, auth flow, layers) → ./docs/ui_ux/wireframes/... → **USER REVIEW/APPROVE**
+7. ⏭️ Step 3: SKIP (UI/UX not required)
+8. ⏭️ Step 4: SKIP (UI/UX not required)
+9. ✅ Step 5: Generate **seven** implementation plans (main + 01–06) → ./docs/implementation_plans/[FEATURE_NAME]/
+10. ⏸️ Present summary and ask for implementation confirmation
 ```
 
 ---
-
-```
-Break down the next task into smaller pieces and update the file in small chucks. Continue with each section until complete.
-```
 
 **End of Workflow Instructions**
