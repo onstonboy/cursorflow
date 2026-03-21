@@ -4,7 +4,7 @@ agent: agent
 
 # Complete Feature Development Workflow: From Requirement to Implementation
 
-This document provides a comprehensive, end-to-end workflow for AI to transform user requirements into a complete, ready-to-implement feature specification with full research, wireframes (UI or structural), optional UI/UX design and platform UI code when needed, and **seven** implementation-plan documents (one main plus six children). Every `/cook` run must produce the **mandatory paperwork pack** (see **CRITICAL: Mandatory `/cook` Paperwork Pack** below).
+This document provides a comprehensive, end-to-end workflow for AI to transform user requirements into a complete, ready-to-implement feature specification with full research, wireframes (UI or structural), optional UI/UX design and platform UI code when needed, and **seven** implementation-plan documents (one main plus six children). Every `/cook` run must produce the **mandatory paperwork pack** (see **CRITICAL: Mandatory `/cook` Paperwork Pack** below). **All paperwork is generated and user-approved before any application feature code is written** (see **CRITICAL: Paperwork First** below).
 
 ## CRITICAL: Required Prompt Files Reference
 
@@ -50,7 +50,7 @@ Before executing this workflow, you MUST have access to and reference these prom
 
 ## CRITICAL: Mandatory `/cook` Paperwork Pack (Every Run)
 
-**Every `/cook` invocation MUST produce the following written artifacts on disk before Step 5 user confirmation. Skipping any of these is incomplete work.**
+**Every `/cook` invocation MUST produce the following written artifacts on disk before the Step 5 checkpoint (user confirms whether to start coding). Do not write application feature code until the user explicitly approves after that summary. Skipping any artifact is incomplete work.**
 
 | # | Artifact | Step | Path pattern |
 |---|----------|------|----------------|
@@ -65,6 +65,30 @@ Before executing this workflow, you MUST have access to and reference these prom
 - **Seven implementation docs:** Exactly **one main + six child** files, each with substantive content per `implementation_plan_*.prompt.md` (no empty shells, no merging children into the main file).
 
 **Optional (conditional on UI/UX):** Design system (Step 3) and platform UI implementation (Step 4) remain conditional on `requires_ui_ux: true`; they are **not** substitutes for the mandatory pack above.
+
+---
+
+## CRITICAL: Paperwork First — No Product Code Until User Approves
+
+**`/cook` is a planning-and-documentation workflow.** The user must be able to review and approve **all paperwork** before **any** feature implementation touches the application codebase.
+
+### What counts as paperwork (allowed before final approval)
+
+- Outputs under `./docs/` for the feature (research, wireframes, UI/UX specs, implementation plans, optional `./docs/ui_ux/code_samples/` from Step 4)
+- Step 0.x updates under `./.cursor/` (rules and command prompts only)
+
+### What counts as product / application implementation (forbidden until Step 6)
+
+**Do not** create, edit, or refactor **application source** for the requested feature until the user has:
+
+1. **Approved wireframes** (Step 2.5 checkpoint), and  
+2. **Approved proceeding to implementation** after the **Step 5** completion summary (explicit YES / PROCEED / equivalent).
+
+**Application source** means project code outside the paperwork paths above — e.g. `lib/`, `src/`, `app/`, `packages/*`, `android/`, `ios/`, service entrypoints, configs that change runtime behavior for the feature, and tests **for** the new feature in the main test tree. **Do not** “just add a quick file” or spike the feature during Steps 1–5.
+
+**Step 4 note:** Platform UI snippets belong in **`./docs/ui_ux/`** (and optional `./docs/ui_ux/code_samples/`) as specification/samples — not wired into the real app until Step 6 after approval.
+
+**Step 6:** Only after user approval may you execute the implementation plans against the real codebase.
 
 ---
 
@@ -84,9 +108,9 @@ When you receive a feature request, you MUST:
 9. Do NOT ask for permission between other steps—execute automatically (except after Step 2.5 wireframe review)
 10. **Before Step 5 confirmation:** ensure **all seven** implementation plan files exist (main + six children)
 11. ONLY ask for user confirmation AFTER completing Step 5 (with full paperwork pack)
-12. Complete the entire workflow before proceeding to implementation
+12. Complete the entire **paperwork** workflow (Steps 0–5) before **any** product implementation; **never** write application feature code until the user approves after Step 5 (see **Paperwork First** above)
 
-**Failure to complete all steps or the mandatory paperwork pack is considered incomplete work.**
+**Failure to complete all steps or the mandatory paperwork pack is considered incomplete work. Implementing product code before user approval after Step 5 is also incomplete / incorrect execution.**
 
 ---
 
@@ -128,9 +152,9 @@ Platform-Specific Code (Step 4)
 Implementation Plan (Step 5) → ./docs/implementation_plans/
          (1 main + 6 child files — mandatory)
          ↓
-USER CONFIRMATION REQUIRED ⚠️
+ALL PAPERWORK COMPLETE → present summary → USER APPROVES IMPLEMENTATION ⚠️
          ↓
-Execute Implementation (Step 6)
+Execute Implementation (Step 6) — product codebase ONLY after YES/PROCEED
 ```
 
 ---
@@ -1320,7 +1344,7 @@ Complete design system with:
 
 ## STEP 4: Generate Platform-Specific UI Code (CONDITIONAL - ONLY IF UI/UX REQUIRED)
 
-**Objective:** Convert UI/UX design to platform-specific code following tech-specific UI/UX bridge prompt
+**Objective:** Convert UI/UX design to platform-specific **documentation and samples** following tech-specific UI/UX bridge prompt — **output stays under `./docs/ui_ux/`** until Step 6 after user approval; do not integrate into the live app in this step.
 
 **⚠️ CONDITIONAL EXECUTION:**
 - **IF `requires_ui_ux: true`** → Execute this step
@@ -1861,6 +1885,8 @@ Please review the generated documentation and confirm:
 
 **DO NOT EXECUTE WITHOUT USER SAYING "YES" OR "PROCEED"**
 
+**Prerequisite:** Steps 0–5 are complete on disk (mandatory paperwork pack + wireframe approval + any UI/UX docs if applicable). **Steps 1–5 must not have modified the application source tree for this feature** — only `./docs/` and `.cursor/` (rules/commands) as allowed in **Paperwork First**.
+
 ### 6.1 Verify User Approval
 
 **IF user said YES:**
@@ -1977,6 +2003,8 @@ After completing entire workflow:
 ### Don't:
 ❌ Skip any step in the workflow (especially Step 0)
 ❌ Proceed to Step 1 without verifying commands
+❌ Implement or refactor **application feature code** during Steps 1–5 (paperwork-only phase; see **Paperwork First**)
+❌ Put Step 4 UI output into the live app tree before Step 6 — keep under `./docs/ui_ux/`
 ❌ Proceed to implementation without user approval
 ❌ Store files in wrong directories
 ❌ Use inconsistent naming
@@ -2119,6 +2147,7 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
 ❌ Skip UI/UX steps if feature actually needs UI/UX (be conservative - if uncertain, include UI/UX)
 ❌ Include UI/UX steps for clearly backend-only features (waste of resources)
 ❌ Proceed to Step 6 without user saying "YES" or "PROCEED"
+❌ Write application/source feature code before Step 6 (after paperwork + approvals)
 ❌ Store files in wrong locations
 ❌ Generate incomplete documentation
 ❌ Skip child plan generation
