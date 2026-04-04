@@ -1,0 +1,615 @@
+---
+alwaysApply: true
+---
+# project-rule
+
+### Project Coding Standards and Architecture Guidelines
+
+## Key Principles
+- Write concise, technical code with accurate examples
+- Use functional and declarative programming patterns where appropriate
+- Prefer composition over inheritance
+- Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError)
+- Structure files logically: main exports, sub-components, helpers, static content, types
+- Apply SOLID principles throughout the codebase
+- Keep functions small and focused (under 30 lines)
+- Follow language-specific best practices and conventions
+- Use appropriate linting and formatting tools for the language/framework
+
+## Research and Library Selection for New Features
+- For any new feature required by user prompt, in the **research step**, prioritize supported libraries first
+- Prefer libraries that are **maintainable**, have **continuous support from the author**, and are **best suited to the solution**
+- If no suitable library meets these criteria, write the corresponding code instead of adopting an unmaintained or poorly suited dependency
+
+## Language/Framework Standards
+- Use immutable data structures where possible
+- Leverage language-specific immutability features (e.g., const, readonly, final, frozen)
+- Use concise syntax for simple functions and methods (arrow functions, expression bodies)
+- Prefer expression bodies for one-line getters and setters
+- Use trailing commas for better formatting and diffs (where supported)
+- Keep lines no longer than 80-120 characters (follow language conventions)
+- Use meaningful naming for classes, methods, and variables following language conventions
+- Use appropriate linting rules and code quality tools for the language/framework
+- Follow language-specific style guides (e.g., PEP 8 for Python, Google Style Guide, etc.)
+
+## Clean Architecture
+- Strictly adhere to the Clean Architecture layers: Presentation, Domain, and Data
+- Follow the dependency rule: dependencies always point inward
+- Domain layer contains entities, repositories (interfaces), and use cases
+- Data layer implements repositories and contains data sources and models
+- Presentation layer contains UI components, state management, and view models
+- Use proper abstractions with interfaces/abstract classes/traits/protocols for each component
+- Every feature should follow this layered architecture pattern
+
+## Feature-First Organization
+- Organize code by features instead of technical layers
+- Each feature is a self-contained module with its own implementation of all layers
+- Core or shared functionality goes in a separate 'core' directory
+- Features should have minimal dependencies on other features
+- Common directory structure for each feature (adapt to language/framework conventions):
+  
+```
+src/ or lib/ or app/
+├── [state_management]/           # State management (Bloc/Redux/MobX/Context/etc.)
+│   ├── state/                     # State implementations
+│   ├── events/ or actions/        # Event/Action implementations
+│   ├── [state_manager]/           # State manager implementations
+├── core/                          # Shared/common code
+│   ├── error/                     # Error handling, failures
+│   ├── network/                   # Network utilities, interceptors
+│   ├── utils/                     # Utility functions and extensions
+├── source/ or data/               # Data management
+│   ├── local/                     # Local data sources
+│   ├── remote/                    # Remote data sources
+│   ├── models/                    # Data models
+├── domain/                        # Domain layer
+│   ├── entities/                  # Business objects
+│   ├── repositories/              # Repository interfaces
+│   ├── use_cases/                 # Use case implementations
+├── [presentation]/                # Presentation layer
+│   ├── [components]/              # UI components (widgets/components/views)
+│   ├── [pages]/ or [screens]/     # Page/screen implementations
+│   └── [view_models]/             # View models (if applicable)
+└── [entry_points]                 # Entry points (main files, index files)
+    ├── main.[ext]                 # Main entry point
+    ├── main_dev.[ext]             # Dev environment entry point
+    └── main_prod.[ext]            # Production environment entry point
+```
+
+## State Management
+- Use appropriate state management pattern for the framework (Bloc/Redux/MobX/Context/Zustand/etc.)
+- For event-driven patterns: implement properly typed Events/Actions and States
+- Use immutability features for state (frozen classes, immutable data structures, etc.)
+- Create granular, focused state managers for specific feature segments
+- Handle loading, error, and success states explicitly
+- Avoid business logic in UI components
+- Use dependency injection for state managers
+- Implement observers/middleware for logging and debugging
+- Separate event handling from UI logic
+- Use descriptive and meaningful event/action names
+- Use singleton instances where appropriate to maintain a single source of truth
+- Use helper classes instead of state managers for simple logic without state management needs
+- States should be immutable
+- Use union types/discriminated unions for state representation (initial, loading, success, error)
+- Emit/dispatch specific, typed error states with failure details
+- Keep state classes small and focused
+- Use appropriate state update patterns (copyWith, spread operators, immutable updates, etc.)
+- Handle side effects appropriately (listeners, middleware, effects)
+- Optimize re-renders/rebuilds with appropriate selectors and memoization
+
+## Dependency Injection
+- Use appropriate dependency injection pattern for the language/framework
+- Use service locators, dependency injection containers, or framework-specific DI (e.g., GetIt, Inversify, Dagger, Koin, etc.)
+- Use annotations/decorators for automatic dependency registration where supported
+- Run code generation tools if required for dependency injection setup
+- Prefer constructor injection over property/setter injection
+- Register dependencies with appropriate lifecycle (singleton, transient, scoped)
+
+## Error Handling
+- Use functional error handling patterns where appropriate (Either, Result, Try, etc.)
+- Create custom Failure/Error classes for domain-specific errors
+- Implement proper error mapping between layers
+- Centralize error handling strategies
+- Provide user-friendly error messages
+- Log errors for debugging and analytics
+- Implement error handling in views using appropriate UI components
+- Display errors clearly with appropriate styling/color for visibility
+- Handle empty states within the displaying screen
+
+### Functional Error Handling Pattern
+- Use Result/Either/Try types for better error control without exceptions (where supported)
+- Left/Error represents failure case, Right/Success represents success case
+- Create a base Failure/Error class and extend it for specific error types
+- Leverage pattern matching/matching methods to handle both success and error cases
+- Use flatMap/bind/map for sequential operations that could fail
+- Create helper functions/extensions to simplify working with Result/Either types
+- Example pattern (adapt to language-specific syntax):
+
+```
+// Define base failure class
+abstract class Failure {
+  final String message;
+  
+  Failure(this.message);
+  
+  // Implement equality comparison as per language conventions
+}
+
+// Specific failure types
+class ServerFailure extends Failure {
+  ServerFailure([String message = 'Server error occurred']) : super(message);
+}
+
+class CacheFailure extends Failure {
+  CacheFailure([String message = 'Cache error occurred']) : super(message);
+}
+
+class NetworkFailure extends Failure {
+  NetworkFailure([String message = 'Network error occurred']) : super(message);
+}
+
+class ValidationFailure extends Failure {
+  ValidationFailure([String message = 'Validation failed']) : super(message);
+}
+
+// Helper functions/extensions for Result/Either handling
+// Adapt to language-specific Result/Either implementation
+// - fold/match method to handle both cases
+// - flatMap/bind for chaining operations
+// - map for transforming success values
+```
+
+## Repository Pattern
+- Repositories act as a single source of truth for data
+- Implement caching strategies when appropriate
+- Handle network connectivity issues gracefully
+- Map data models to domain entities
+- Create proper abstractions with well-defined method signatures
+- Handle pagination and data fetching logic
+
+## Navigation and Routing
+- Use appropriate routing solution for the framework (React Router, Vue Router, Next.js Router, GoRouter, etc.)
+- Use framework-specific navigation patterns and deep linking support
+- Handle navigation side effects appropriately (listeners, middleware, effects, etc.)
+- Implement proper route guards and authentication checks where needed
+
+## UI and Styling
+- **CRITICAL: Scan component/widget/view folders BEFORE implementing any UI** - Check for existing base components and reusable UI elements first
+- **ALWAYS reuse existing components** from component/widget/view folders - Do NOT create new UI if there already exists a suitable one
+- **MANDATORY: Wireframe Description Before Implementation** - Before implementing any UI component or screen, MUST describe the wireframe layout using text symbols/ASCII art for review. The wireframe should clearly show:
+  - Layout structure (header, content, footer, sidebars, etc.)
+  - Component placement and hierarchy
+  - Spacing and alignment relationships
+  - Navigation flow and interactive elements
+  - Responsive breakpoints (if applicable)
+  - Example wireframe format:
+    ```
+    ┌─────────────────────────────────────┐
+    │           HEADER                    │
+    │  [Logo]  [Nav Items]  [User Menu]   │
+    ├─────────────────────────────────────┤
+    │                                     │
+    │  ┌──────────┐  ┌──────────┐        │
+    │  │  Card 1   │  │  Card 2   │        │
+    │  │           │  │           │        │
+    │  └──────────┘  └──────────┘        │
+    │                                     │
+    │           CONTENT AREA              │
+    │                                     │
+    ├─────────────────────────────────────┤
+    │           FOOTER                    │
+    └─────────────────────────────────────┘
+    ```
+  - **DO NOT proceed with implementation until wireframe is reviewed and approved**
+- **Reference UI/UX ref data and landing page prompts for research and planning** - When planning or researching UI/UX (including wireframes and design approach), MUST reference:
+  - **UI reference data:** `.agent/uiux_reference/data/` (styles, colors, typography, ux-guidelines, landing.csv, prompts.csv, stacks)
+  - **Landing page design prompts:** `.agent/uiux_reference/landing_page_prompts/` (full AI-ready design prompts by style; use README.md index and individual style .md files for design-system-level guidance)
+  - Use these to align style, tokens, and patterns before implementation
+- **Follow UI designs exactly** - When UI images or designs are provided, implement them precisely as specified
+- **CRITICAL: Use Inline Closures for Widget Callbacks (Flutter/Similar Frameworks)** - When passing callbacks to widgets/components, ALWAYS use inline closures/anonymous functions instead of method references to avoid `'!_debugLocked': is not true` errors and widget tree locking issues:
+  - **DO NOT use method references:**
+    ```dart
+    // ❌ WRONG - Can cause '!_debugLocked' errors
+    foo(onTap: onTap)
+    
+    void onTap() {
+      // logic of method
+    }
+    ```
+  - **SHOULD use inline closures:**
+    ```dart
+    // ✅ CORRECT - Safe inline closure
+    foo(
+      onTap: () {
+        // logic of on tap here
+      }
+    )
+    ```
+  - **Rationale:** Inline closures prevent widget tree locking issues during build phase and ensure callbacks are properly bound to the widget context
+  - **Applies to:** Flutter, React Native, and similar frameworks where callbacks are passed to widgets/components
+- Use framework's built-in components and create custom components only when necessary
+- Implement responsive design using appropriate layout tools (MediaQuery, breakpoints, CSS Grid, Flexbox, etc.)
+- Use themes/design tokens for consistent styling across the app
+- Follow framework-specific theming conventions
+- Create small, private component classes instead of large inline methods
+- Implement pull-to-refresh functionality where appropriate
+- Set appropriate input attributes and validation for form fields
+- Always include error handling for remote resources (images, assets, etc.)
+
+## Model and Data Entity Organization
+- **Data models used for remote/local data sources** → Place in `/domain/entities` (business objects, use immutability features)
+- **Data models NOT used for remote/local data sources** → Place in `/data/models` (DTOs, internal models)
+- Use appropriate serialization annotations/decorators to generate boilerplate code for models requiring JSON serialization
+- Implement read-only field annotations/decorators where supported
+- Entities in `/domain/entities` should use immutability features (frozen, readonly, const, etc.)
+- Models in `/data/models` should have mapping methods (toDomain(), toEntity(), etc.) if they map to entities
+
+### Enum Handling
+- Use appropriate annotations/decorators for enums when custom JSON representation is needed
+- **ALWAYS create helper functions/extensions** for enums to convert from API/database values to enum instances
+- Helper should handle null safety and provide fallback for unknown values
+- Example pattern (adapt to language-specific syntax):
+
+```
+enum UserStatus {
+  active,
+  inactive,
+  pending,
+}
+
+// REQUIRED: Helper/extension to convert from value to enum
+// Adapt to language-specific enum and extension/helper syntax
+class UserStatusHelper {
+  static String getValue(UserStatus status) {
+    // Return string representation
+  }
+  
+  static UserStatus fromValue(String? value) {
+    // Convert from string to enum with fallback
+    // Handle null safety and unknown values
+  }
+}
+```
+
+## Performance Optimization
+- Use immutability features (const, readonly, frozen, etc.) to optimize re-renders/rebuilds
+- Implement efficient list rendering with virtualized lists (ListView, FlatList, VirtualList, etc.)
+- Minimize component/widget rebuilds with proper state management and memoization
+- Use computation isolation/workers for expensive operations (web workers, isolates, threads, etc.)
+- Implement pagination for large data sets
+- Cache network resources appropriately
+- Profile and optimize render performance
+- Use appropriate image loading and caching strategies for static and remote images
+- Optimize for framework-specific performance metrics (first meaningful paint, time to interactive, etc.)
+
+## Code Analysis & Validation
+- Run appropriate static analysis tools after completing feature implementation (e.g., `flutter analyze`, `eslint`, `tsc --noEmit`, `pylint`, etc.)
+- Fix all analysis errors and warnings before proceeding to next steps
+- Use appropriate linting rules and code quality tools for the language/framework
+- Address all type errors, unused imports, and potential null safety issues
+- Ensure no compilation failures exist before integration
+
+## Code Quality and Debugging
+- Keep functions small and focused (under 30 lines)
+- Apply SOLID principles throughout the codebase
+- Use meaningful naming for classes, methods, and variables following language conventions
+- Document public APIs and complex logic
+- Implement proper null safety/optional handling as per language features
+- Use value objects for domain-specific types
+- Use appropriate logging instead of print/console.log for debugging
+
+## Code Organization Standards
+
+### Variable Declaration Order
+Variables MUST be declared in the following order:
+1. **Static variables** (static const, static final, static readonly, etc.)
+2. **Late variables** (late fields that require initialization, lazy initialization)
+3. **Public variables** (final, const, non-private fields)
+4. **Private variables** (fields with private/underscore access modifiers)
+
+Example (adapt to language-specific syntax):
+```dart
+// Dart example
+class MyClass {
+  static const int maxCount = 10;
+  
+  late SomeService _service;
+  late SomeBloc _bloc;
+  
+  final PageController controller = PageController();
+  int currentIndex = 0;
+  
+  bool _isLoading = false;
+  String _errorMessage = '';
+}
+```
+
+```typescript
+// TypeScript example
+class MyClass {
+  private static readonly MAX_COUNT = 10;
+  
+  private service!: SomeService;
+  private bloc!: SomeBloc;
+  
+  readonly controller = new PageController();
+  currentIndex = 0;
+  
+  private isLoading = false;
+  private errorMessage = '';
+}
+```
+
+### Variable Scope Preference
+- **Prefer class-level (instance) variables over local variables** when the value is used across multiple methods or needs to persist between method calls
+- Use local variables only for temporary values within a single method scope
+- Extract repeated local variable initializations to class-level variables
+
+Example (Prefer this):
+```dart
+class MyClass {
+  PreferencesManager preferencesManager = getInstance<PreferencesManager>();
+  bool isCompleted = false;
+  
+  void checkStatus() {
+    isCompleted = preferencesManager.getItem<bool>(key) ?? false;
+  }
+  
+  void navigate() {
+    if (isCompleted) {
+      // use isCompleted
+    }
+  }
+}
+```
+
+Rather than:
+```dart
+void checkStatus() {
+  final preferencesManager = getInstance<PreferencesManager>();
+  final isCompleted = preferencesManager.getItem<bool>(key) ?? false;
+}
+```
+
+### Method Declaration Order
+Methods MUST be declared in the following order:
+1. **Override methods** (@override, @Override methods like build, render, componentDidMount, initState, dispose, etc.)
+2. **Public UI methods** (public methods that return UI elements - Widget, JSX, View, etc. or build UI)
+3. **Public logic methods** (public methods that handle business logic)
+4. **Private methods** (methods with private/underscore access modifiers)
+
+Example (adapt to language/framework-specific syntax):
+```dart
+class MyWidget extends StatefulWidget {
+  // Variables here (following variable order)
+  
+  @override
+  Widget build(BuildContext context) {
+    // Build UI
+  }
+  
+  @override
+  void initState() {
+    super.initState();
+    initializeData();
+  }
+  
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+  
+  Widget buildHeader() {
+    // Public UI method
+  }
+  
+  void handleButtonClick() {
+    // Public logic method
+  }
+  
+  void navigateToNextPage() {
+    // Public logic method
+  }
+  
+  void _initializeData() {
+    // Private method
+  }
+  
+  Widget _buildItem(BuildContext context) {
+    // Private UI method
+  }
+}
+```
+
+```typescript
+// React/TypeScript example
+class MyComponent extends React.Component {
+  // Variables here (following variable order)
+  
+  render() {
+    // Override UI method
+  }
+  
+  componentDidMount() {
+    // Override lifecycle method
+    this.initializeData();
+  }
+  
+  componentWillUnmount() {
+    // Override lifecycle method
+    this.controller.dispose();
+  }
+  
+  buildHeader() {
+    // Public UI method
+  }
+  
+  handleButtonClick() {
+    // Public logic method
+  }
+  
+  navigateToNextPage() {
+    // Public logic method
+  }
+  
+  private initializeData() {
+    // Private method
+  }
+  
+  private buildItem() {
+    // Private UI method
+  }
+}
+```
+
+## Code Generation
+- Utilize appropriate code generation tools for the language/framework (build_runner, codegen, etc.)
+- Run code generation commands after modifying annotated/decorated classes
+- Follow framework-specific code generation patterns and conventions
+
+## Implementation Examples
+
+### Use Case Implementation Pattern
+```
+// Abstract use case interface
+interface UseCase<Type, Params> {
+  Result<Type> execute(Params params);
+}
+
+// Concrete use case implementation
+class GetUser implements UseCase<User, String> {
+  private final UserRepository repository;
+
+  GetUser(this.repository);
+
+  @Override
+  Result<User> execute(String userId) {
+    return repository.getUser(userId);
+  }
+}
+```
+
+### Repository Implementation Pattern
+```
+// Repository interface
+interface UserRepository {
+  Result<User> getUser(String id);
+  Result<List<User>> getUsers();
+  Result<Unit> saveUser(User user);
+}
+
+// Repository implementation
+class UserRepositoryImpl implements UserRepository {
+  private final UserRemoteDataSource remoteDataSource;
+  private final UserLocalDataSource localDataSource;
+  private final NetworkInfo networkInfo;
+
+  UserRepositoryImpl(
+    UserRemoteDataSource remoteDataSource,
+    UserLocalDataSource localDataSource,
+    NetworkInfo networkInfo
+  ) {
+    this.remoteDataSource = remoteDataSource;
+    this.localDataSource = localDataSource;
+    this.networkInfo = networkInfo;
+  }
+
+  @Override
+  Result<User> getUser(String id) {
+    if (networkInfo.isConnected()) {
+      try {
+        User remoteUser = remoteDataSource.getUser(id);
+        localDataSource.cacheUser(remoteUser);
+        return Success(remoteUser.toDomain());
+      } catch (ServerException e) {
+        return Failure(new ServerFailure());
+      }
+    } else {
+      try {
+        User localUser = localDataSource.getLastUser();
+        return Success(localUser.toDomain());
+      } catch (CacheException e) {
+        return Failure(new CacheFailure());
+      }
+    }
+  }
+}
+```
+
+### State Management Implementation Pattern
+```
+// State definition (use union types/discriminated unions where supported)
+class UserState {
+  // States: initial, loading, loaded, error
+  // Use appropriate pattern matching/switch expressions
+}
+
+// Event/Action definition
+class UserEvent {
+  // Events: getUser, refreshUser
+}
+
+// State manager implementation (adapt to framework-specific pattern)
+class UserStateManager {
+  private final GetUser getUser;
+  private String? currentUserId;
+
+  // Handle events/actions
+  void handleGetUser(String id) {
+    currentUserId = id;
+    emit(LoadingState());
+    Result<User> result = getUser.execute(id);
+    result.fold(
+      (failure) => emit(ErrorState(failure)),
+      (user) => emit(LoadedState(user))
+    );
+  }
+
+  void handleRefreshUser() {
+    if (currentUserId != null) {
+      emit(LoadingState());
+      Result<User> result = getUser.execute(currentUserId);
+      result.fold(
+        (failure) => emit(ErrorState(failure)),
+        (user) => emit(LoadedState(user))
+      );
+    }
+  }
+}
+```
+
+### UI Implementation Pattern
+```
+// Component/Page implementation (adapt to framework-specific syntax)
+class UserPage extends Component {
+  private final String userId;
+  private final UserStateManager stateManager;
+
+  UserPage({required this.userId, required this.stateManager});
+
+  @Override
+  Widget build(BuildContext context) {
+    // Initialize state manager
+    stateManager.handleGetUser(userId);
+
+    return Container(
+      // Use framework-specific state subscription/selectors
+      child: stateManager.state.when(
+        initial: () => EmptyView(),
+        loading: () => LoadingIndicator(),
+        loaded: (user) => UserDetailsView(user: user),
+        error: (failure) => ErrorView(failure: failure)
+      )
+    );
+  }
+}
+```
+
+**Note:** 
+- Adapt all examples to language/framework-specific syntax and conventions
+- Use appropriate type systems, error handling, and state management patterns for the chosen stack
+- DO NOT add comments in code when generating code
+- DO NOT generate summaries or documentation unless requested
+
+Refer to official documentation for the chosen language/framework for more detailed implementation guidelines.
