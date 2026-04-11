@@ -63,6 +63,17 @@ This document defines project-wide rules, architecture standards, and coding con
 - Feature modules should not import each other directly; use shared/domain abstractions.
 ```
 
+### 2.3 Prefer project-common building blocks first
+
+```markdown
+## Prefer project-common building blocks first
+
+- Before new libraries, ad-hoc helpers, duplicate UI, or alternate patterns, **search the repo** for existing **project-common** solutions (`core/`, shared packages, design system, internal utilities, wrappers, config, error types).
+- **Include shared presentation:** base widgets or components, bottom sheets and modals, banners and alerts, dialogs, sheets, toasts or snackbars, list cells, app bars or headers, empty and error states, and any other common views already in the codebase.
+- If nothing suitable exists, **add or extend the canonical shared place** so the next feature reuses it; avoid one-off duplicates scattered across features (including bottom sheets, banners, or widgets that duplicate an established pattern).
+- **Default to these shared solutions** for all new work. **Only** adopt a different library, pattern, or one-off approach when the **user explicitly requests** it (still respecting layer and architecture rules).
+```
+
 ---
 
 ## 3. Coding Standards

@@ -5,6 +5,12 @@ alwaysApply: true
 
 ### Project Coding Standards and Architecture Guidelines
 
+## Prefer project-common building blocks first
+
+- Before new libraries, ad-hoc helpers, duplicate UI, or alternate patterns, **look for what the project already centralizes** (e.g. `core/`, shared packages, design system, internal utilities, wrappers, config, error types). **Include shared presentation:** base **widgets** / components, **bottom sheets** and modals, **banners** and alerts, dialogs, sheets, toasts or snackbars, list cells, app bars or headers, empty and error states, and any other **common views** the repo already exposes.
+- If nothing reusable exists, **introduce or extend the canonical shared place** so the capability is **one obvious home** for later features; avoid scattering near-identical copies across modules (including one-off bottom sheets, banners, or widgets that match an existing pattern).
+- **Use those shared solutions by default** on every change. **Depart from them only when the user explicitly directs** a different library, pattern, or approach (still respecting layer and architecture rules).
+
 ## Key Principles
 - Write concise, technical code with accurate examples
 - Use functional and declarative programming patterns where appropriate
