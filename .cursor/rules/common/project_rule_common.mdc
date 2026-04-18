@@ -141,7 +141,7 @@ src/ or lib/ or app/
 - Implement proper error mapping between layers
 - Centralize error handling strategies
 - Provide user-friendly error messages
-- Log errors for debugging and analytics
+- Log errors for debugging in **development** only when verbose; **production** logging/analytics must follow **dev-only diagnostics** (no raw stacks or debug noise on user-facing paths; redact as required).
 - Implement error handling in views using appropriate UI components
 - Display errors clearly with appropriate styling/color for visibility
 - Handle empty states within the displaying screen
@@ -188,6 +188,19 @@ class ValidationFailure extends Failure {
 // - flatMap/bind for chaining operations
 // - map for transforming success values
 ```
+
+## Security, obfuscation, and pentest readiness
+
+When **planning** or **implementing** any feature—**at every phase** (design, implementation, review, release)—explicitly account for **security**, **obfuscation where the stack supports it**, and **issues commonly found in penetration tests**. Obfuscation and minification **complement** secure design; they do **not** replace it.
+
+- **Secrets:** Never commit or embed API keys, tokens, passwords, or private keys in source, client artifacts, logs, error surfaces, or analytics. Use secret managers, secure env configuration, and short-lived credentials.
+- **Authentication and authorization:** Enforce both on every sensitive operation; do not rely on UI or client-only checks for security decisions on servers or shared data.
+- **Input, output, and data:** Validate and constrain untrusted input; use safe encoding and parameterized APIs to reduce injection and XSS; apply TLS in transit and encryption at rest where required; use platform or vetted crypto, not ad-hoc schemes.
+- **Dependencies:** Prefer maintained dependencies; track and remediate known vulnerabilities on critical paths.
+- **Errors and logging:** Avoid leaking stack traces, internal identifiers, or secrets to end users or logs.
+- **Dev-only diagnostics:** Verbose or debug **logging**, **`print` / `console.log`-style output**, and **stack trace** capture, printing, or inclusion in responses must run **only in development** (debug / non-production builds or environments, per stack). **Production** must disable, strip, no-op, or compile out these paths so they do not run in prod artifacts, user-visible errors, or production client bundles. If production observability is required, use the project’s approved **minimal, redacted** pipeline—not raw debug logs or full stacks in user-facing surfaces.
+- **Release hardening / obfuscation:** Use the stack’s supported release tooling (e.g. minification, symbol stripping, mobile shrinkers/obfuscators) when the project already adopts them, aligned with build and store policies.
+- **Pentest-style coverage:** Design and test against common findings—**broken access control / IDOR**, **injection**, **sensitive data exposure**, **security misconfiguration** (headers, CORS, defaults), **SSRF**, **insecure deserialization**, **abuse and rate limiting** on authentication and costly endpoints, **session and token** lifecycle (rotation, revocation, secure cookie flags). Follow the team’s security baseline or OWASP-style guidance when available.
 
 ## Repository Pattern
 - Repositories act as a single source of truth for data
@@ -326,7 +339,7 @@ class UserStatusHelper {
 - Document public APIs and complex logic
 - Implement proper null safety/optional handling as per language features
 - Use value objects for domain-specific types
-- Use appropriate logging instead of print/console.log for debugging
+- Prefer structured logging over ad-hoc `print` / `console.log`; any verbose log, print, or stack-trace output must be **development-only** (see **Security, obfuscation, and pentest readiness** — dev-only diagnostics).
 
 ## Code Organization Standards
 
@@ -652,6 +665,8 @@ Refer to official documentation for the chosen language/framework for more detai
 - [ ] Happy path and **major error paths** covered by tests where the project tests that layer.
 - [ ] Performance acceptable on target platform (devices, regions, or load profile as applicable).
 - [ ] **Accessibility** considered for user-facing UI changes.
+- [ ] **Security**, **release-time obfuscation** (where applicable), and **pentest-relevant risks** considered for the feature’s scope.
+- [ ] **Verbose log, print, and stack-trace diagnostics** are **development-only**, not shipped or executed in production on client or user-visible surfaces.
 
 ## Planning and implementation checklist (AI)
 
@@ -659,6 +674,8 @@ Refer to official documentation for the chosen language/framework for more detai
 - **Prefer project-common building blocks first** (see subsection under **For AI assistants**), including **shared views** (widgets, sheets, banners, etc.); extend shared code when missing; only override when the user explicitly asks.
 - Apply the stack’s **state management**, **async**, **error**, and **serialization** patterns from the **tech-specific** project rule when one exists.
 - Keep **naming**, **formatting**, and **structure** consistent with surrounding code.
+- In every phase, apply **Security, obfuscation, and pentest readiness** above for the work at hand.
+- Gate **log, print, and stack-trace** diagnostics to **development only**; production must not rely on or expose them per **dev-only diagnostics** above.
 
 ## Stack-specific project rules (`project-rule_[TECH]_[LANGUAGE].mdc`)
 

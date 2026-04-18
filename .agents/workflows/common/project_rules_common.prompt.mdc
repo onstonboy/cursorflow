@@ -183,7 +183,35 @@ src/ (or app/, lib/, etc.)
 
 ---
 
-## 8. Definition of Done (Project-Level)
+## 8. Security, Obfuscation & Pentest Readiness
+
+```markdown
+## Security, Obfuscation & Pentest Readiness
+
+Apply **in every phase** (design, implementation, review, and release): planning and code must account for **security**, **obfuscation where the stack supports it**, and **issues commonly raised in penetration tests**.
+
+**Secure design and implementation (always):**
+- **Secrets:** No API keys, tokens, passwords, or private keys in source, client bundles, logs, error messages, or analytics. Use secure storage, env/secrets managers, and short-lived credentials.
+- **Authn / Authz:** Enforce authentication and least-privilege authorization on every sensitive path; avoid trusting client-only checks for server-side decisions.
+- **Input and output:** Validate and sanitize untrusted input; encode output appropriately for the channel (e.g. HTML/JSON/SQL) to prevent injection and XSS.
+- **Transport and data:** Use TLS for remote calls; apply encryption at rest where required; follow platform crypto APIs and safe defaults (no custom crypto unless justified).
+- **Dependencies:** Prefer maintained libraries; stay aware of known CVEs and upgrade paths for critical dependencies.
+- **Errors and logging:** User-facing messages must not leak stack traces, internal paths, or sensitive data; logs must be scrubbed of secrets.
+- **Dev-only diagnostics:** Verbose **logging**, **`print` / console-style debug output**, and **stack traces** (logged, printed, or returned) must be **enabled only in development** (debug / non-production, per stack). In **production**, disable, strip, no-op, or compile them out— they must not run in prod builds, client release artifacts, or user-visible errors. Production observability, if used, must be minimal and redacted, not raw debug noise or full stacks on client-facing paths.
+
+**Obfuscation (where applicable to the product):**
+- Use the stack’s **release hardening**: minification/tree-shaking for web, stripping debug symbols, bytecode/native obfuscation or R8/ProGuard-style shrinking on mobile when the project already uses them—**without** treating obfuscation as a substitute for secure design.
+
+**Pentest-style mitigation (design and test for):**
+- Common classes: **injection**, **broken access control / IDOR**, **sensitive data exposure**, **misconfiguration** (headers, CORS, default accounts), **SSRF**, **insecure deserialization**, **rate limiting / abuse** on auth and expensive endpoints, **session / token** handling (rotation, revocation, secure cookies).
+- Align with the team’s **security baseline** or OWASP-style checklists when present; add tests or manual verification for high-risk flows (auth, payments, admin).
+
+**Definition of Done tie-in:** No feature is complete without an explicit pass over the bullets above appropriate to its scope.
+```
+
+---
+
+## 9. Definition of Done (Project-Level)
 
 ```markdown
 ## Definition of Done (Project-Level)
@@ -194,6 +222,8 @@ src/ (or app/, lib/, etc.)
 - [ ] Happy-path and major error paths covered by tests.
 - [ ] Performance acceptable on target devices.
 - [ ] Accessibility considered for UI changes.
+- [ ] Security, obfuscation (where applicable), and pentest-relevant risks considered and addressed for the feature’s scope.
+- [ ] Debug logging, print/console noise, and stack traces are **dev-only**, not active in production builds or user-visible prod paths.
 ```
 
 ---
@@ -203,6 +233,8 @@ src/ (or app/, lib/, etc.)
 When planning or implementing any feature for this project, you MUST:
 
 - Respect the layer boundaries and dependency rules.
+- Treat **security, release-time obfuscation where applicable, and pentest-style risks** as part of every phase, not a late add-on.
+- Ensure **log, print, and stack-trace diagnostics are development-only**, never production behavior on client or user-visible surfaces.
 - Use the configured language-specific tools:
   - Async pattern: [async_pattern]
   - Result type: [result_type]
