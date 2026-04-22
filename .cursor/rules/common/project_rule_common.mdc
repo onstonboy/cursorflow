@@ -9,11 +9,21 @@ alwaysApply: true
 
 When **planning** or **implementing** any feature, treat this file as the **canonical** project-wide standard. Respect **layer boundaries** and **dependency rules** in **Clean Architecture** and **Layer dependency rules** below. **Concrete** tooling (async model, Result/Either type, DI library, JSON serializers, linters) is defined in **`.cursor/rules/project-rule_[TECH]_[LANGUAGE].mdc`** when present; that file must stay aligned with every major topic here (see **Stack-specific project rules** at the end). When **authoring** or **regenerating** that tech-specific file (e.g. via `/cook`), use **`.cursor/rules/templates/README.md`** and the matching **`.cursor/rules/templates/*-project-rule.template.mdc`** (pick **Small / Medium / Big** tier) as **scaffold**, then ensure **full parity** with this common file. Prefer matching existing repo patterns over introducing new ones without cause.
 
+### Mandatory pre-implementation discovery (requirements + UI/UX)
+
+- Before implementing **any** feature (even “small” ones), first collect and review **all available inputs**: requirements/spec, existing project docs, existing screens, design reference images, Figma/design system docs, and the repo’s UI/UX reference materials.
+- Do not start building new screens/components until you understand the project’s **existing design system/tokens**, component conventions, and reusable primitives.
+
 ### Prefer project-common building blocks first
 
 - Before new libraries, ad-hoc helpers, duplicate UI, or alternate patterns, **look for what the project already centralizes** (e.g. `core/`, shared packages, design system, internal utilities, wrappers, config, error types). **Include shared presentation:** base **widgets** / components, **bottom sheets** and modals, **banners** and alerts, dialogs, sheets, toasts or snackbars, list cells, app bars or headers, empty and error states, and any other **common views** the repo already exposes.
 - If nothing reusable exists, **introduce or extend the canonical shared place** so the capability is **one obvious home** for later features; avoid scattering near-identical copies across modules (including one-off bottom sheets, banners, or widgets that match an existing pattern).
 - **Use those shared solutions by default** on every change. **Depart from them only when the user explicitly directs** a different library, pattern, or approach (still respecting layer and architecture rules).
+
+### Shared UI kit bootstrap (do this early)
+
+- When starting a new product area/app, create the **common reusable presentation primitives early** (then reuse them everywhere): button, text/typography, inputs, tabs, page view, indicators/loading, dialog, toast/snackbar, banner/alert, bottom sheet, list cells/items, section headers, empty/error states, etc.
+- Prefer adding these to the repo’s **single canonical shared location** (design system / shared UI / core presentation) rather than creating per-feature one-offs.
 
 ### Project overview (optional template)
 
@@ -219,6 +229,7 @@ When **planning** or **implementing** any feature—**at every phase** (design, 
 ## UI and Styling
 - **CRITICAL: Scan component/widget/view folders BEFORE implementing any UI** - Check for existing base components and reusable UI elements first
 - **ALWAYS reuse existing components** from component/widget/view folders - Do NOT create new UI if there already exists a suitable one
+- **Design system first** - When designing new UI/pages/views/components, always reference and conform to the project’s **design system** (tokens for color/typography/spacing/radii, components, interaction states). If the project does not yet have a design system, create one in the canonical shared location before building new screens.
 - **MANDATORY: Wireframe Description Before Implementation** - Before implementing any UI component or screen, MUST describe the wireframe layout using text symbols/ASCII art for review. The wireframe should clearly show:
   - Layout structure (header, content, footer, sidebars, etc.)
   - Component placement and hierarchy
@@ -278,6 +289,11 @@ When **planning** or **implementing** any feature—**at every phase** (design, 
 - Implement pull-to-refresh functionality where appropriate
 - Set appropriate input attributes and validation for form fields
 - Always include error handling for remote resources (images, assets, etc.)
+
+## Database migrations and versioning
+
+- When increasing a database/schema version, first check the **latest released version** (tag/release commit/release notes) and confirm whether the current in-branch version bump has already shipped.
+- If the latest release has **not** included the previous version change yet, **do not** increment the database version again; fold new changes into the pending version where possible. Only increment once the prior bump is released.
 
 ## Model and Data Entity Organization
 - **Data models used for remote/local data sources** → Place in `/domain/entities` (business objects, use immutability features)

@@ -6,6 +6,13 @@ agent: agent
 
 This document provides a comprehensive, end-to-end workflow for AI to transform user requirements into a complete, ready-to-implement feature specification with full research, wireframes (UI or structural), optional UI/UX design and platform UI code when needed, and **seven** implementation-plan documents (one main plus six children). Every `/cook` run must produce the **mandatory paperwork pack** (see **CRITICAL: Mandatory `/cook` Paperwork Pack** below). **All paperwork is generated and user-approved before any application feature code is written** (see **CRITICAL: Paperwork First** below).
 
+## CRITICAL: Every `/cook` run must perform these checks (no exceptions)
+
+- **Pre-implementation discovery (requirements + UI/UX)**: Before writing any plans/design/code-samples, review all available inputs: requirement/spec, existing project docs, existing screens, design reference images, and any design system docs. Also consult the repo UI/UX reference materials under `.cursor/uiux_reference/` when UI/UX is in scope.
+- **Design-system-first UI**: For any UI work, ensure plans and wireframes align to the project design system/tokens. If the project has no design system yet, the `/cook` output must include creating one in the canonical shared location before building screens.
+- **Shared UI kit bootstrap**: Early in the plan (Setup/Core/Presentation), include creation of reusable primitives (button, text/typography, inputs, tabs, indicators/loading, dialog, toast/snackbar, banner/alert, bottom sheet, list cells/items, section headers, empty/error states) and mandate reuse across features.
+- **Database version bump guardrail (when DB is involved)**: If the feature includes DB/schema changes, the `/cook` plan must instruct to check the latest **released** version first and **not** increment DB version again if the previous bump is not yet released.
+
 ## CRITICAL: Required Prompt Files Reference
 
 **⚠️ AI MUST REFERENCE THESE PROMPT FILES FOR ACCURATE ANALYSIS**
@@ -964,6 +971,10 @@ browse shoes, filter by categories, add to cart, and checkout."
 
 **⚠️ MANDATORY: READ AND REFERENCE THE RESEARCH PLAN PROMPT FILE**
 
+**Additional mandatory checks for Step 2 (tie-back to project rules):**
+- If the feature touches **database/schema/migrations**, explicitly include in the research/approach evaluation a **release-aware versioning decision** (check latest release; don’t bump version again if prior bump is not released).
+- If the feature touches **UI/UX**, explicitly inventory existing **design system/tokens** and **shared components** in the repo; plan to extend the canonical shared location rather than creating one-off UI.
+
 **File Path (from Step 0):**
 - **Primary:** `./.cursor/commands/specify/research_plan_[TECH]_[LANGUAGE].prompt.md`
 - **Fallback:** `./.cursor/commands/common/research_plan_common.prompt.md`
@@ -1243,6 +1254,10 @@ Please review the wireframes above and provide feedback:
 ## STEP 3: Generate UI/UX Design System (CONDITIONAL - ONLY IF UI/UX REQUIRED)
 
 **Objective:** Create comprehensive UI/UX specifications following tech-specific UI/UX design generator prompt
+
+**Mandatory requirement (design-system-first):**
+- If a project design system already exists, the output for Step 3 must **conform to it** (tokens + component conventions) and extend it in the canonical shared location.
+- If no design system exists yet, Step 3 must first define and document a **project design system** (tokens + core components) before designing feature screens/components.
 
 **⚠️ CONDITIONAL EXECUTION:**
 - **IF `requires_ui_ux: true`** → Execute this step
