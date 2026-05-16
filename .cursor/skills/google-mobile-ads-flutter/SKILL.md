@@ -3,16 +3,17 @@ name: google-mobile-ads-flutter
 description: >-
   Implement Google Mobile Ads (AdMob) in Flutter with Clean Architecture: UMP
   consent, MobileAds init, banner/interstitial/app open/rewarded/native ads,
-  remote config ad units, premium gating, frequency caps, fullscreen
-  coordination, and error handling. Use when integrating AdMob, google_mobile_ads,
-  UMP consent, app open ads, or mediation-ready ad stacks in Flutter.
+  remote config ad units, premium gating, per-format load throttling, adaptive
+  banners, lazy native loading, show-rate optimization, and error handling. Use
+  when integrating AdMob, google_mobile_ads, UMP consent, app open ads, improving
+  impressions/show rate, or mediation-ready ad stacks in Flutter.
 ---
 
 # Google Mobile Ads (AdMob) — Flutter implementation skill
 
-This skill distills a production-shaped pattern: a **facade `AdManager`**, specialized **`*AdManager` classes** extending **`BaseAdManager`**, **remote-config-driven ad unit IDs**, **release-only monetization** with **test IDs in debug**, **UMP consent before `MobileAds.initialize`**, **global fullscreen coordination**, and **explicit dispose/load-fail/retry** paths.
+Production pattern for this repo: **facade `AdManager`**, specialized **`*AdManager`** extending **`BaseAdManager`**, **remote-config ad units**, **UMP before `MobileAds.initialize`**, **per-format load throttling** (`AdLoadCategory` + `AdLoadThrottle`), **fullscreen coordination**, and **load-only-when-likely-to-show**.
 
-Adapt package names, DI (`get_it` / `injectable` / Riverpod), and remote-config keys to the target project.
+Adapt package names, DI (`get_it` / `injectable`), and remote-config keys to the target project.
 
 ---
 
@@ -20,281 +21,301 @@ Adapt package names, DI (`get_it` / `injectable` / Riverpod), and remote-config 
 
 - Adding or refactoring `google_mobile_ads` integration.
 - Wiring **banner**, **interstitial**, **rewarded**, **app open**, or **native** ads.
-- Handling **GDPR/UMP**, **premium / no-ads**, **ad fatigue** (intervals, session caps), and **mediation** prerequisites.
+- **Low show rate / low impressions per DAU** (AdMob account review feedback).
+- GDPR/UMP, premium gating, frequency caps, mediation setup.
 
 ---
 
-## Dependencies and version constraints
+## Lessons learned (must read before changing ads)
 
-- Add `google_mobile_ads` in `pubspec.yaml`. Pin or note conflicts if using **Yandex** or other mediation SDKs that require a specific `google_mobile_ads` major version.
-- **Android**: `AndroidManifest.xml` — `com.google.android.gms.ads.APPLICATION_ID` with your AdMob app ID.
-- **iOS**: `Info.plist` — `GADApplicationIdentifier` with your AdMob app ID.
-- Optional: **User Messaging Platform (UMP)** for consent (`ConsentInformation`, `ConsentForm`) — initialize ads **after** consent flow completes or fails gracefully.
+These caused real revenue and show-rate drops in production. Avoid repeating them.
+
+| Issue | Symptom in AdMob | Root cause | Fix |
+|-------|------------------|------------|-----|
+| Double `onAdsDismiss` | Low show rate, broken UX after interstitial | Calling `onAdsDismiss` **after** `show()` instead of only in `onAdDismissedFullScreenContent` | Complete user flow **only** in dismiss/fail callbacks |
+| Eager preload on Home/init | Low show rate, wasted requests | Preloading interstitial/native/rewarded before user reaches placement | **Load on intent** (navigation tap, dialog open, visibility) |
+| Single global load timestamp | Formats block each other; missed interstitials | One `LAST_AD_LOAD_TIME` for banner + fullscreen + native | **Per-format throttle** via `AdLoadCategory` |
+| Banner refresh without UI update | Refresh requests but no new impressions in UI | New `BannerAd` in manager; `ValueNotifier` still holds disposed ad | **Compose listener** so every `onAdLoaded` updates UI |
+| Load then show immediately | Interstitial never shows | `Navigator.push` + `show()` in `initState` before load finishes | `ensureInterstitialLoaded()` then `showInterstitialAdsWhenReady()` |
+| Wrong ad unit on preload | Poor fill / wrong placement metrics | Preload path used different config ID than show path | Map **one config ID per `InterstitialAdsType`** everywhere |
+| Session cap not incremented | Unbounded loads or cap never applied | `getCount()` without `count()` after check | Increment cap **when issuing** a load request |
+| Duplicate load while in-flight | Two `InterstitialAd.load` for same placement | Preload + `ensureInterstitialLoaded` overlap | `_isLoading*` flag + `_waitForInterstitialLoad`; skip cap if already loading |
+| `isPremium` frozen on singleton | Ads after IAP until restart | `final bool isPremium` at construction | `bool get isPremium` reading prefs each time |
+| Load when `!canShowAnyAd()` | Wasted fullscreen requests | `ensure` before interval check | `showInterstitialAdsWhenReady` returns early if `!canShowAnyAd()` |
+| Native preload all rows | Low show rate, spam requests | `load()` for every list slot at `initState` | **VisibilityDetector** — load when row is ~visible |
+| Duplicate app-open preload | Redundant requests on cold start | `preloadOpenAd()` + `handlePreloadAppOpenAdModInIntervalTime()` both on Home init | **One** entry point for app-open preload |
 
 ---
 
-## Startup sequence (critical order)
+## Best practices for impressions (without hurting UX)
 
-1. **`WidgetsFlutterBinding.ensureInitialized()`**
-2. Firebase / DI / prefs (if you read premium flag from storage).
-3. **If user is premium (no ads)** → **skip** consent + `MobileAds.instance.initialize()` entirely when your policy is “no SDK load for subscribers.”
-4. **Non-premium, release**: run **UMP** (`ConsentUtils`-style), then inside the completion path call **`await MobileAds.instance.initialize()`**.
-5. Apply **timeout** around consent + init (e.g. 10s): on timeout or exception, still attempt **`MobileAds.instance.initialize()`** so the app works offline / when consent SDK stalls.
-6. **Debug**: optionally `ConsentInformation.instance.reset()` to test forms; use **test ad unit IDs** (see below).
+### 1. Request only when show is likely
 
-Reference flow: consent completion → `_initializeConsentRefComponent()` → `MobileAds.instance.initialize()`.
+> AdMob guidance: preloading at screens users never reach hurts **show rate** and account quality.
+
+- **Interstitial**: load when user taps “Preview” / opens GIF dialog — not on Home `initState`.
+- **Rewarded**: load on **first tap** on gated feature (`showRewardedAd` → load-on-demand), not on config page init.
+- **Native**: load when list row enters viewport (`VisibilityDetector`, `visibleFraction > 0.1`).
+- **App open**: preload once when remote flag enabled + lifecycle show on foreground — avoid duplicate preload calls.
+
+### 2. Separate load throttles by format
+
+Use `AdLoadCategory` + `AdLoadThrottle` (pure logic, unit-testable):
+
+| Category | Used for | Prefs key (example) |
+|----------|----------|---------------------|
+| `banner` | Banner initial + refresh | `LAST_BANNER_AD_LOAD_TIME` |
+| `fullscreen` | Interstitial, app open | `LAST_FULLSCREEN_AD_LOAD_TIME` |
+| `rewarded` | Rewarded | `LAST_REWARDED_AD_LOAD_TIME` |
+| `native` | Native list slots | `LAST_NATIVE_AD_LOAD_TIME` |
+
+```dart
+bool canRequestAdLoad({AdLoadCategory category = AdLoadCategory.fullscreen});
+void recordAdLoadRequest({required AdLoadCategory category});
+Duration remainingLoadCooldown({AdLoadCategory category});
+```
+
+Remote config: `ad_load_min_interval_seconds` (default **30**) — minimum gap between requests **per category**.
+
+### 3. Show fullscreen only when ready
+
+```dart
+// Facade API (delegate to InterstitialAdManager)
+Future<bool> ensureInterstitialLoaded(InterstitialAdsType type, {Duration timeout});
+Future<void> showInterstitialAdsWhenReady(type, {onAdsDismiss, loadTimeout});
+```
+
+Flow:
+
+1. Before navigation to screen that shows interstitial → `await ensureInterstitialLoaded(LED_DISPLAY)`.
+2. On target screen → `showInterstitialAdsWhenReady()` (waits up to ~5s, then show or skip with `onAdsDismiss`).
+
+Preload after dismiss still respects `canShowAnyAd()` and session caps.
+
+**In-flight guard:** per placement `_isLoadingLedDisplay` / `_isLoadingGifGenerating`; `_loadInterstitialAd` no-ops if already loading or loaded; `ensureInterstitialLoaded` waits via `_waitForInterstitialLoad` instead of second `load()`.
+
+**`showInterstitialAdsWhenReady`:** skip load entirely when `!canShowAnyAd()` — call `onAdsDismiss` immediately.
+
+### 4. Adaptive banners + refresh
+
+- Size: `AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(width)` when `is_use_adaptive_banner` (RC, default true).
+- Refresh: `banner_refresh_interval_seconds` (default **30**) via `Timer.periodic`.
+- On refresh: dispose old ad, load new, fire **`onAdLoaded` through composed listener** so `ValueNotifier` updates.
+- If throttled: `_scheduleBannerRefreshRetry` using `remainingLoadCooldown(category: banner)`.
+
+### 5. Preload interstitial rules
+
+- `handleLoadInterstitialAdModInIntervalTime`: load when `canShowAnyAd()`.
+- `handlePreloadInterstitialAdModInIntervalTime`: after dismiss — require `canShowAnyAd()`; on load fail — respect fullscreen throttle only.
+- Session cap: `MAX_INTERSTITIAL_*_COUNT` per placement; increment when **starting** a load, not on show.
+
+### 6. Rewarded placement (AdMob account tips)
+
+- Tie to **premium actions** (save/share, unlock background) — user opts in.
+- Visible entry (toolbar icon / sheet) increases **rewarded show rate**.
+- `showRewardedAd`: if null → `preloadRewardedAd` then show; grant value **only** in `onUserEarnedReward`.
+
+### 7. Never spam requests
+
+- Do not request again within `ad_load_min_interval_seconds` for the same category.
+- Do not preload interstitial + app open + 3 rewarded on the same screen init.
+- Banner refresh uses **banner** category only — does not block interstitial.
 
 ---
 
-## Architecture layers
+## Architecture (this project)
 
 | Piece | Responsibility |
 |--------|----------------|
-| **`BaseAdManager`** | Shared rules: remote-config keys, **test vs prod IDs**, **`shouldShowAds`**, **`canShowAnyAd()`** interval, **`updateLastAdShowTime()`**, **`setAdCurrentlyShowing`**, platform-specific ID getters. |
-| **`BannerAdManager`**, **`InterstitialAdManager`**, **`AppOpenAdManager`**, **`RewardedAdManager`**, **`NativeAdManager`** | Own ad instances, load/show/dispose, format-specific callbacks. |
-| **`AdManager`** | Thin facade: exposes getters, `init*`, `show*`, `dispose*`, delegates to specialized managers. |
-| **`AppLifecycleReactor`** (optional) | Listens to `AppStateEventNotifier.appStateStream`; on **`AppState.foreground`** calls **`showOpenAdIfAvailable()`** for app open ads. |
+| **`BaseAdManager`** | Test/prod IDs, `shouldShowAds`, `canShowAnyAd()`, per-category load throttle, `updateLastAdShowTime()`, fullscreen flag |
+| **`AdLoadThrottle`** | Pure `canRequest` / `remainingCooldown` (unit tests) |
+| **`BannerAdManager`** | Adaptive size, refresh timers, composed `BannerAdListener` |
+| **`InterstitialAdManager`** | Per-type instances, `ensureInterstitialLoaded`, `showInterstitialAdsWhenReady` |
+| **`RewardedAdManager`** | Load-on-demand, per `RewardAdsType` |
+| **`NativeAdManager`** | Map `adId → NativeAd`, throttle per native load |
+| **`AppOpenAdManager`** | Stale cache (4h), fullscreen throttle |
+| **`AdManager`** | Facade — pages call this, not individual managers |
+| **`AppLifecycleReactor`** | Foreground → `showOpenAdIfAvailable()` |
 
-Register managers as **singletons** so preload state survives across routes.
+Register managers as **singletons**.
 
 ---
 
-## Base rules (must implement consistently)
+## Startup sequence
+
+1. `WidgetsFlutterBinding.ensureInitialized()`
+2. DI / prefs (premium flag).
+3. **Premium** → skip UMP + `MobileAds.initialize()` if policy is no SDK for subscribers.
+4. **Non-premium release**: UMP → `await MobileAds.instance.initialize()` (10s timeout, still init on failure).
+5. **Debug**: test ad units via `getTrue*AdId()`; never click prod units in debug.
+
+---
+
+## Base rules
 
 ### `shouldShowAds`
 
-Use a single gate, typically:
-
-- **`kReleaseMode && !isPremium`**
-
-Debug builds use **Google test ad units** via `getTrue*AdId()` so you never accidentally click fraud on real units during development.
-
-### Test ad unit IDs (official samples)
-
-Keep **Android vs iOS** test IDs in `BaseAdManager` statics for: banner, interstitial, rewarded, native. **App open** test id often uses the documented **sample** string (verify against current plugin docs).
-
-### Remote config
-
-Store **per-platform** keys (e.g. `BannerAd_Id_First` / `_iOS`) so you can rotate units without app updates. **Validate**: empty string from remote config should fall back to test ID in debug or skip load in release with logging — avoid passing empty `adUnitId` to `*.load`.
+`kReleaseMode && !isPremium`
 
 ### Global fullscreen guard
 
-Fullscreen formats **interstitial**, **rewarded**, **app open** must cooperate:
-
-- Static **`_isAnyAdCurrentlyShowing`** (or equivalent) set **`true`** in **`onAdShowedFullScreenContent`**, **`false`** on dismiss or failed show.
-- **`canShowAnyAd()`** returns false when `_isAnyAdCurrentlyShowing` is true **or** interval since **`LAST_AD_SHOW_TIME`** is too small.
-
-This prevents overlapping fullscreen ads and weird SDK states.
-
-### Interval between fullscreen impressions
-
-Persist **`LAST_AD_SHOW_TIME`** (epoch ms) when an ad **successfully shows** (`onAdShowedFullScreenContent`), not only on dismiss. Read **`interstitialInterval`** (seconds) from remote config; compare `now - last >= interval * 1000`.
-
-Edge case: **first launch** — `last == null` → allow show if other gates pass.
+- `_isAnyAdCurrentlyShowing` set in `onAdShowedFullScreenContent`, cleared on dismiss/fail.
+- `canShowAnyAd()`: not showing AND `now - LAST_AD_SHOW_TIME >= interstitial_interval` (RC, e.g. 180s).
 
 ### Dispose discipline
 
-- After **dismiss** or **failed to show**: **`ad.dispose()`**, null out reference, **preload** next if policy requires.
-- On **route dispose** / widget `dispose`: dispose **banner** instances tied to that route.
-- **Native**: dispose per slot id when cell scrolls away or page closes; maintain a **map** `id → NativeAd` to avoid duplicate loads for the same slot.
+- After dismiss/fail: `dispose()`, null reference, conditional preload.
+- Route `dispose`: cancel banner timers, `disposeBannerAd*`, `disposeNativeAd(id)` for each loaded slot.
+- Native: remove from manager map when disposing — **do not** only dispose in widget without `disposeNativeAd`.
 
 ---
 
 ## Banner ads
 
-### Loading
+```dart
+// Compose user listener with internal assign + onAdLoaded forward
+BannerAdListener _composeBannerListener({
+  required void Function(BannerAd ad) onAssign,
+  BannerAdListener? userListener,
+});
+```
 
-- Early-return if **`!shouldShowAds`** or banner instance already exists.
-- Build `BannerAd(adUnitId:, size:, request: AdRequest(), listener: ...)`, then **`load()`**.
-- Size: `AdSize.banner` vs `AdSize.fullBanner` from remote config flag.
-
-### UI integration
-
-- Use **`ValueNotifier<BannerAd?>`** and **`ValueNotifier<double>`** for height; in **`onAdLoaded`**, set notifier to the loaded ad and **`ad.size.height`** for layout.
-- Reserve height **0** when premium, ads off, or ad not loaded — avoids layout jump; optional placeholder height using **`getSmartBannerHeight(MediaQuery)`** helper for consistent spacing while loading.
-
-### Errors
-
-- Implement **`onAdFailedToLoad`** in `BannerAdListener`: log `LoadAdError` (code, domain, message); optionally retry with backoff — avoid infinite tight loops.
-
-### Edge cases
-
-- **Hot restart**: dispose old `BannerAd` before creating a new one.
-- **Tablet / orientation**: smart height helper uses width/height thresholds — adjust for your design.
+UI: `ValueNotifier<BannerAd?>` + height notifier; update in **`onAdLoaded`** every time (including refresh).
 
 ---
 
 ## Interstitial ads
 
-### Placement types
+### Critical show flow
 
-Use an **enum** (e.g. `LED_DISPLAY` vs `GIF_GENERATING`) with **separate `InterstitialAd?` fields** if different placements need different ad unit configs.
+```dart
+// WRONG — fires dismiss before ad closes
+_interstitialAd?.show();
+onAdsDismiss?.call(); // NEVER
 
-### Show gate
+// RIGHT — dismiss only in FullScreenContentCallback
+onAdDismissedFullScreenContent: (_) {
+  dispose(); null; onAdsDismiss?.call(); schedulePreload();
+}
+```
 
-If **`!shouldShowAds`** or **`!canShowAnyAd()`** → invoke **`onAdsDismiss`** (or “continue flow”) **immediately** and return — user should never wait on a missing ad.
+### Placement pattern (LED Board)
 
-### Show flow
+```dart
+// Config page — before push
+await adManager.ensureInterstitialLoaded(InterstitialAdsType.LED_DISPLAY);
 
-1. If no loaded ad → trigger **preload** path and **return** (or optionally load-then-show with a loading UX — not in minimal pattern).
-2. Set **`fullScreenContentCallback`** **before** **`show()`**:
-   - **`onAdShowedFullScreenContent`**: `setAdCurrentlyShowing(true)`, `updateLastAdShowTime()`.
-   - **`onAdFailedToShowFullScreenContent`**: `setAdCurrentlyShowing(false)`, dispose, null reference, **retry preload** with `isLoadFail: true` if using backoff.
-   - **`onAdDismissedFullScreenContent`**: `setAdCurrentlyShowing(false)`, dispose, null reference, **`onAdsDismiss`**, schedule **preload**.
-3. Wrap **`show()`** in **try/catch** — log in debug only; SDK can throw in edge race conditions.
+// LED board — on enter
+await adManager.showInterstitialAdsWhenReady(
+  InterstitialAdsType.LED_DISPLAY,
+  onAdsDismiss: () { /* continue */ },
+);
 
-### Preload and session caps
+// GIF dialog — preload on dialog open; show when user confirms
+adManager.handlePreloadInterstitialAdModInIntervalTime(
+  adsType: InterstitialAdsType.GIF_GENERATING,
+);
+// on confirm → showInterstitialAdsWhenReady(GIF_GENERATING, ...)
+```
 
-- Maintain **session counters** per placement; increment only when you intend to **request** a load. Cap with **`MAX_INTERSTITIAL_*_COUNT`** to avoid hammering users in one session.
-- **`handleLoadInterstitialAdModInIntervalTime`**: only load when **`canShowAnyAd()`** is true.
-- **`handlePreloadInterstitialAdModInIntervalTime`**: after dismiss or load fail, optionally delay retries using **`isLoadFail`** branch — mirror **app open** backoff pattern (store last attempt time in prefs).
-
-### Load errors
-
-- **`onAdFailedToLoad`**: log `LoadAdError`; optionally chain **`handlePreloadInterstitialAdModInIntervalTime(..., isLoadFail: true)`**.
-
-### Pitfall to avoid
-
-- Do **not** call **`onAdsDismiss`** both inside **`onAdDismissedFullScreenContent`** and again unconditionally after **`show()`** — that double-invokes completion. Complete user flow **only** from dismiss callback (and from early-return paths when no ad).
+Use **correct config ID per `InterstitialAdsType`** in both load and preload paths.
 
 ---
 
 ## App open ads
 
-### Load API variant
-
-This project uses **`AppOpenAd.loadWithAdManagerAdRequest`** with **`AdManagerAdRequest()`** — appropriate for **Ad Manager** inventory. For standard AdMob-only, use the **`AppOpenAd.load`** overload that matches your account type (verify plugin API).
-
-### State
-
-- Track **`_isShowingOpenAd`**, **`_appOpenLoadTime`**, **`maxCacheDuration`** (e.g. 4 hours). If cached ad is **stale**, dispose, null, reload.
-
-### Show gate
-
-- Respect **`isShowAppOpenAds`** remote flag, **`shouldShowAds`**, **`canShowAnyAd()`**, and **not** already showing.
-
-### Failed load backoff
-
-- On **`onAdFailedToLoad`**, call **`handlePreloadAppOpenAdModInIntervalTime(isLoadFail: true)`** which writes **`APP_OPEN_AD_LOAD_TIME`** and only retries after **interval** elapsed (reuse same seconds as interstitial or dedicated remote key).
-
-### Lifecycle
-
-- **`AppLifecycleReactor`**: on foreground, **`showOpenAdIfAvailable()`**. Ensure cold start does not fight splash/navigation — some apps delay first app open until after home screen is visible.
+- Single preload on Home: `if (isShowAppOpenAds()) preloadOpenAd()` inside `_handleLoadAppOpenAd()` only.
+- Throttle: `AdLoadCategory.fullscreen`.
+- Stale ad: reload if older than `maxCacheDuration` (4h).
 
 ---
 
 ## Rewarded ads
 
-### Multiple units by feature
-
-Use **`RewardAdsType`** enum mapping to:
-
-- Remote config **first / second / third** ad unit ids.
-- Feature flags: e.g. **`isShowRewardAdsSavingLed`**, **`isShowRewardAdsBackgroundImage`**.
-
-### Preload
-
-- **`preloadRewardedAd(type:, onAdLoaded:, onAdFailed:)`** — early exit if **`!_shouldShowAdForType`**, or ad already loaded.
-
-### Show
-
-- If **`!shouldShow`** or **no loaded ad** → **`onAdFailed`** (caller grants or denies reward policy-side).
-- Set **`fullScreenContentCallback`**; on dismiss, **`preloadRewardedAd`** if **`isPreloadNext`**.
-
-### Reward callback
-
-- Use **`ad.show(onUserEarnedReward: ...)`** — **only** grant in-app value when this fires (subject to your compliance rules).
-
-### Edge cases
-
-- User backgrounds app during reward → handle via lifecycle if needed.
-- Failed show → clear instance, **`onAdFailed`**, optional reload.
+- Preload **on demand** inside `showRewardedAd` when instance is null.
+- Throttle: `AdLoadCategory.rewarded`.
+- Optional `preloadRewardedAd` after successful dismiss if `isPreloadNext`.
 
 ---
 
 ## Native ads
 
-### Loading
+```dart
+VisibilityDetector(
+  key: Key('native_ad_visibility_$adIndex'),
+  onVisibilityChanged: (info) {
+    if (info.visibleFraction > 0.1) _loadNativeAdAtIndex(adIndex);
+  },
+  child: placeholderSizedBox,
+);
+```
 
-- **`NativeAd`** with **`NativeTemplateStyle`** (small template is common for list rows).
-- Cache by **stable `adId`** (e.g. list index or composite key) to prevent duplicate requests for the same row.
-
-### Widget
-
-- Wrap with **`AdWidget(ad: nativeAd)`** inside a sized **`Container`**; clip for rounded corners.
-
-### List placement
-
-- Optional helpers: **random position per group** of N items (`calculateAdPositions`) to vary native insertion points.
-
-### Errors
-
-- **`onAdFailedToLoad`**: **`ad.dispose()`**, remove from map, call **`onAdFailed`**.
+Track `_requestedAdIndices` to avoid duplicate loads. On widget `dispose`: `nativeAdManager.disposeNativeAd('native_ad_$index')`.
 
 ---
 
-## Consent (UMP) — behaviors to handle
+## Remote config keys (Firebase)
+
+| Key | Default | Purpose |
+|-----|---------|---------|
+| `interstitial_interval` | 180 | Min seconds between fullscreen **shows** |
+| `ad_load_min_interval_seconds` | 30 | Min seconds between **loads** per category |
+| `banner_refresh_interval_seconds` | 30 | Banner auto-refresh |
+| `is_use_adaptive_banner` | true | Anchored adaptive banner size |
+| `is_show_app_open_ads` | false | App open toggle |
+| Per-format ad unit keys | — | Platform-specific unit IDs |
+
+Publish RC keys before expecting production behavior.
+
+---
+
+## Consent (UMP)
 
 | Situation | Action |
 |-----------|--------|
-| Consent form available + required | Show form; on error, still init ads if policy allows |
-| Consent not required | Init ads |
-| `requestConsentInfoUpdate` error | Fall through to `MobileAds.initialize()` |
-| Timeout | Still init ads |
-| Debug | Reset consent in debug for repeatable tests; use EEA debug geography **only** in debug builds |
-
-Remove hard-coded production device IDs from shipping code or gate them behind **`kDebugMode`**.
-
----
-
-## Premium and purchase restoration
-
-- On **`IS_PURCHASE_NO_AD`** / entitlement change **at runtime**: stop scheduling new loads; dispose visible ads; lifecycle reactor should no-op when ads disabled.
-
----
-
-## Logging and analytics
-
-- Log **`LoadAdError.code`**, **`domain`**, **`message`** — helps map to **no fill**, **invalid request**, **network**.
-- Optionally send non-PII events: load_failed, show_failed, dismissed.
+| Form required | Show form; on error fall through if policy allows |
+| Not required | Init ads |
+| Timeout / error | Still `MobileAds.initialize()` |
 
 ---
 
 ## Testing checklist
 
-- [ ] Debug: all formats show **Google test ads**.
-- [ ] Release internal build: **real units** on **test devices** registered in AdMob.
-- [ ] Airplane mode: consent/init timeout → app usable; no crash on show.
-- [ ] Rapid navigation: no double fullscreen; flags reset on dismiss.
-- [ ] Premium toggle: ads disappear; no new loads.
-- [ ] App open: cold start + resume from background.
-- [ ] Interstitial: interval enforced between placements.
+- [ ] Debug: Google **test** units only.
+- [ ] No `onAdsDismiss` after `show()` — grep for anti-pattern.
+- [ ] Interstitial: load on preview tap → ad shows on LED board (or graceful skip).
+- [ ] Banner: refresh updates `ValueNotifier` (no disposed `AdWidget`).
+- [ ] Banner refresh does not block interstitial load (separate throttle keys).
+- [ ] Native: scroll list — ads load only for visible rows.
+- [ ] Rapid navigation: no double fullscreen; flags reset.
+- [ ] Premium: no new loads; dispose visible ads.
+- [ ] Unit tests: `AdLoadThrottle` cooldown logic.
+- [ ] Run `flutter analyze` on `lib/core/common/utils/*_ad_manager.dart`.
 
 ---
 
-## Minimal dependency wiring (pseudo)
+## Agent implementation checklist
 
-```dart
-// After consent / timeout path:
-await MobileAds.instance.initialize();
-
-// Optional:
-MobileAds.instance.updateRequestConfiguration(
-  RequestConfiguration(testDeviceIds: ['YOUR_DEVICE_ID']),
-);
-```
-
-Use **test devices** in debug to avoid invalid traffic warnings.
+1. Consent → `MobileAds.initialize` with timeout.
+2. `BaseAdManager` + `AdLoadCategory` throttle — **never** one global load timestamp.
+3. Facade + per-format singleton managers; explicit dispose.
+4. **Load on intent**, not on distant screen init.
+5. Interstitial: `ensureInterstitialLoaded` + `showInterstitialAdsWhenReady`; **never** double `onAdsDismiss`.
+6. Banner: adaptive size + composed listener + refresh with UI update.
+7. Native: visibility-based load + `disposeNativeAd` on list dispose.
+8. Publish Firebase RC keys for throttle/refresh/adaptive flags.
+9. A/B `interstitial_interval` in AdMob/RC for revenue vs retention.
 
 ---
 
-## Summary for agents implementing a new project
+## Reference files in this repo
 
-1. **Consent → MobileAds.initialize** with timeout and fallback.
-2. **`BaseAdManager`**: test IDs, remote IDs, `shouldShowAds`, interval + fullscreen flag, prefs timestamps.
-3. **One facade + per-format managers**; singletons; explicit dispose.
-4. **Banners**: notifiers + listener; **Interstitials/Rewarded/App open**: `FullScreenContentCallback` + try/catch on show.
-5. **Never** fire completion callbacks twice for one impression.
-6. **Platform manifests** and **AdMob app IDs** must be set or ads silently fail.
+| File | Purpose |
+|------|---------|
+| `lib/core/common/enum/ad_load_category.dart` | Throttle categories |
+| `lib/core/common/utils/ad_load_throttle.dart` | Pure throttle logic |
+| `lib/core/common/utils/base_ad_manager.dart` | Shared gates + RC |
+| `lib/core/common/utils/*_ad_manager.dart` | Format-specific logic |
+| `test/core/common/utils/ad_load_throttle_test.dart` | Throttle unit tests |
 
-This skill is a **template**; align with latest **`google_mobile_ads`** breaking changes and your mediation vendor’s required init order.
+Align with latest `google_mobile_ads` API and mediation vendor init order.
