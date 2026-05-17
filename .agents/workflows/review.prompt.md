@@ -25,6 +25,8 @@ This document provides a structured approach for AI to review code changes, iden
 7. Present issues in a clear, organized format
 8. Allow user to select which issues to fix
 9. **Validate against project architecture and coding standards**
+10. **Run the Triple-Pass Review (Step 2)** — three full, sequential review passes before generating the issue report. Do **not** collapse passes into a single skim.
+11. **Review changed files AND all related/impacted files** from Step 1.2 — not git-diff-only scope.
 
 ---
 
@@ -101,13 +103,13 @@ This document provides a structured approach for AI to review code changes, iden
 
 ---
 
-### Step 1: Identify Changes to Review (MANDATORY)
+### Step 1: Identify Review Scope — Changes + Related Files (MANDATORY)
 
-**Objective:** Identify all code changes that need to be reviewed
+**Objective:** Identify **all files that must be reviewed**: (1) files with git changes, and (2) **every related/impacted file** that could break, regress, or invalidate those changes. **Do not limit review to diff-only files.**
 
 **⚠️ AI MUST COMPLETE THIS STEP AFTER LOADING PROJECT RULES**
 
-#### 1.1 Detect Changed Files
+#### 1.1 Detect Changed Files (seed set)
 
 **Action Required:**
 1. **Check git status** to identify staged and unstaged changes
@@ -157,28 +159,182 @@ git diff -U10 HEAD
 - Net Change: [+/-N]
 ```
 
-#### 1.2 Prioritize Review Scope
+#### 1.2 Discover Related & Impacted Files (MANDATORY)
 
-**Review Priority Order:**
+**Objective:** Expand the seed set (1.1) into the **full review scope** by finding all files whose behavior, contract, or integration could be affected by the changes — even if they have **no git diff**.
+
+**⚠️ AI MUST BUILD THE RELATED-FILES LIST BEFORE STEP 2**
+
+**For each changed file, discover related files by tracing:**
+
+| Relationship | What to find | Examples |
+|--------------|--------------|----------|
+| **Downstream (imports / uses)** | Files the changed file imports or calls | Repositories, use cases, models, utilities, widgets |
+| **Upstream (callers / dependents)** | Files that import or reference changed symbols | Screens calling a changed service, tests importing changed class |
+| **Contract surface** | Interfaces, base classes, public APIs, exports | Abstract repo, bloc interface, `index.ts` / barrel exports |
+| **Implementations** | Concrete classes implementing a changed interface | `*Impl`, adapters, platform-specific code |
+| **Feature siblings** | Same feature module: presentation, domain, data, DI | `feature/foo/presentation`, `feature/foo/domain`, etc. |
+| **Composition / wiring** | DI modules, providers, routes, app entry | `injection.dart`, `routes`, `main`, module registrars |
+| **Shared / cross-cutting** | Core utilities, extensions, error types, constants used by changes | `core/`, shared widgets, mappers |
+| **Tests** | Unit/widget/integration tests for changed or related code | `*_test.dart`, `*.spec.ts`, snapshots |
+| **Config & assets** | Env, build config, feature flags, localization keys tied to changes | `pubspec`, `AndroidManifest`, `strings.xml`, RC keys |
+| **Generated / mirrored** | Codegen outputs or duplicates that must stay in sync | `.g.dart`, `.freezed.dart`, OpenAPI clients |
+
+**Discovery actions (run as needed):**
+```bash
+# List changed files (seed set)
+git diff --name-only HEAD
+
+# Find who imports a changed module (adjust path/symbol per stack)
+rg "import.*path/to/changed" --glob '!**/node_modules/**'
+rg "from ['\"].*changed_file" --glob '!**/node_modules/**'
+
+# Find references to a renamed/moved symbol, class, or function
+rg "ChangedClassName|changedFunction|changed_route" .
+
+# Same feature folder
+ls path/to/feature/
+```
+
+**Also read (do not skip):**
+- Call sites of any **modified public method, widget, hook, or API**
+- **Opposite layer** in the same feature (e.g. presentation change → review domain + data; data change → review domain + presentation)
+- **Navigation / routing** targets if UI or deep links changed
+- **State propagation** paths (events, providers, blocs, stores) upstream and downstream of the change
+
+**Process:**
+```markdown
+### Related Files Report
+
+**Seed files (git changed):** [count]
+**Related files added to scope:** [count]
+**Total review scope:** [count] files
+
+| File | Relationship to change | Why included |
+|------|-------------------------|--------------|
+| path/to/caller.ext | Upstream caller | Imports and calls `ChangedService` |
+| path/to/impl.ext | Implementation | Implements changed `Repository` interface |
+| path/to/feature_test.ext | Test | Covers changed use case |
+| ... | ... | ... |
+
+**Files considered but excluded:** [optional — file + reason]
+```
+
+**Scope rule:** When in doubt, **include** the file in review scope. False positives are cheaper than missed regressions.
+
+#### 1.3 Prioritize Review Scope
+
+**Review the full scope (changed + related) in this priority order:**
 1. **Critical Files:** Security-related, authentication, authorization, data handling
-2. **Core Logic:** Business logic, domain models, services
-3. **API/Interfaces:** Controllers, API endpoints, public interfaces
-4. **Data Layer:** Database queries, repositories, data models
-5. **Configuration:** Environment configs, build configs, dependencies
-6. **Tests:** Test files and test coverage changes
-7. **Documentation:** README, comments, documentation files
+2. **Changed files** (git diff) — direct edits
+3. **Upstream callers & downstream dependencies** of changed symbols
+4. **Core Logic:** Business logic, domain models, services (including unchanged siblings in same feature)
+5. **API/Interfaces:** Controllers, API endpoints, public interfaces, contracts
+6. **Data Layer:** Database queries, repositories, data models, mappers
+7. **Composition / wiring:** DI, routes, app bootstrap
+8. **Tests:** Tests for changed and related code; snapshot/golden files
+9. **Configuration:** Environment configs, build configs, feature flags
+10. **Documentation:** README, comments, documentation files
 
-**Deliverable:** Complete list of files to review with priority order
+**Deliverable:** Prioritized **full review scope** table (changed + related files) with relationship and priority
 
 ---
 
-### Step 2: Analyze Code Changes (MANDATORY)
+### Step 2: Triple-Pass Code Review (MANDATORY)
 
-**Objective:** Deep analysis of each changed file for potential issues against project rules and best practices
+**Objective:** Review the **full scope from Step 1** (git-changed files **plus** all related/impacted files) **three independent times** with escalating focus — correctness first, then bugs/edge cases/crashes, then risk and feature verification. The goal is to confirm changes are correct, related code still integrates, free of issues, edge-case safe, non-crashing, low-risk, and that **all affected features work as intended**.
 
-**⚠️ AI MUST ANALYZE EACH FILE THOROUGHLY AGAINST PROJECT RULES**
+**⚠️ AI MUST COMPLETE ALL THREE PASSES BEFORE STEP 3**
 
-#### 2.1 Review Categories
+**Review scope (required):**
+- **In scope:** Every file in the Step 1 deliverable (changed + related), prioritized per 1.3.
+- **Out of scope:** Only files explicitly excluded in the Related Files Report with a documented reason.
+
+**Pass gates (non-negotiable):**
+- Complete **Pass 1** in full and write its Pass Report before starting Pass 2.
+- Complete **Pass 2** in full and write its Pass Report before starting Pass 3.
+- Complete **Pass 3** in full and write its Pass Report before Step 3.
+- **Do not** merge passes into one quick read. Each pass re-reads **every in-scope file** (changed + related) with a different lens.
+- Pass 2 must explicitly re-check Pass 1 findings and search for issues Pass 1 missed.
+- Pass 3 must explicitly re-check Pass 1–2 findings and validate end-to-end feature behavior.
+
+#### 2.0 Pass Report Template (use after EACH pass)
+
+```markdown
+### Pass [1|2|3] Report — [Pass Name]
+
+**Pass focus:** [One-line focus statement]
+**Files in scope:** [total] (changed: [n], related: [n])
+**Files re-reviewed this pass:** [count] / [list or "full scope"]
+**New issues this pass:** [count]
+**Carried from prior pass(es):** [count still open / resolved]
+
+| # | Severity | File | Summary | New this pass? |
+|---|----------|------|---------|----------------|
+| | | | | Yes / No |
+
+**Pass verdict:** ✅ No new issues / ⚠️ Issues found / 🔴 Blockers found
+
+**Explicit checks run this pass:**
+- [ ] [Check 1]
+- [ ] [Check 2]
+```
+
+#### 2.1 Pass 1 — Correctness, Completeness & Project Compliance
+
+**Focus:** Are the changes **correct** and **complete** relative to requirements, project rules, and intended behavior?
+
+**Mandatory checks:**
+- [ ] Every **in-scope** file read (changed + related); not diff-only
+- [ ] **Integration:** callers and callees still match changed contracts (signatures, types, nullability)
+- [ ] Changes match stated feature/requirements; no missing pieces
+- [ ] Architecture style and **layer dependency** rules respected
+- [ ] Files in correct directories; feature module structure intact
+- [ ] Coding standards: naming, immutability, error-handling pattern, async pattern
+- [ ] Happy-path logic is sound; types and contracts consistent
+- [ ] Renames/deletes: no broken imports, references, or routes
+- [ ] State management pattern used correctly (no business logic trapped in UI)
+
+**Deliverable:** Pass 1 Report (template 2.0)
+
+#### 2.2 Pass 2 — Bugs, Edge Cases, Crashes & Error Paths
+
+**Focus:** What **breaks** under non-ideal conditions? Hunt bugs, edge cases, and **crash** vectors Pass 1 may have missed.
+
+**Mandatory checks:**
+- [ ] **Null / empty / undefined / missing data** on every new code path
+- [ ] **Boundary values:** 0, -1, empty list/map, max length, first/last item
+- [ ] **Invalid or unexpected input** and missing validation
+- [ ] **Error paths:** network failure, timeout, 4xx/5xx, parse errors, permission denied
+- [ ] **Async / concurrency:** races, double-submit, callback after dispose/unmount
+- [ ] **Resource lifecycle:** streams, controllers, subscriptions, files, DB connections closed
+- [ ] **Crash vectors:** force-unwrap, index out of range, cast failures, `!` assertions
+- [ ] **Platform lifecycle:** widget/component mounted checks, navigation during async
+- [ ] Re-verify every Pass 1 finding; confirm or escalate severity
+
+**Deliverable:** Pass 2 Report (template 2.0)
+
+#### 2.3 Pass 3 — Risk, Security, Regressions & Feature Verification
+
+**Focus:** **Security and operational risk**, regression impact, and proof that **features work end-to-end**.
+
+**Mandatory checks:**
+- [ ] **Security:** injection, XSS, authZ/authN, secrets, sensitive data in logs/errors
+- [ ] **Risk:** data loss, corruption, wrong defaults, idempotency, race on writes
+- [ ] **Performance:** N+1, blocking main thread, unbounded memory/growth
+- [ ] **Regression:** related files from Step 1.2, adjacent features, shared utilities, global state, config flags
+- [ ] **Integration:** API contracts, navigation, deep links, cross-module events
+- [ ] **Feature walkthrough:** for each affected user flow, step through:
+  - Entry → loading → success → error → empty → retry → exit
+  - Confirm UI/state/API stay consistent at each step
+- [ ] **Tests:** required tests present; critical paths not left untested
+- [ ] Re-verify all Pass 1–2 issues; merge duplicates in Step 3
+
+**Deliverable:** Pass 3 Report (template 2.0)
+
+**Triple-pass completion gate:** Proceed to Step 3 only when all three Pass Reports exist and Pass 3 verdict is documented (even if verdict is ✅ clean).
+
+#### 2.4 Review Categories (apply across all passes)
 
 **Categories to Check:**
 
@@ -265,19 +421,20 @@ git diff -U10 HEAD
    - **Error handling violations:** Not using project's error handling patterns (Result types, etc.)
    - **Feature module structure violations:** Feature not following expected module structure
 
-#### 2.2 Analysis Process
+#### 2.5 Per-File Analysis (within each pass)
 
-**For Each Changed File:**
+**For each file in the full review scope — changed and related (repeat during Pass 1, 2, and 3 with that pass's focus):**
 
 ```markdown
 ### File Analysis: [path/to/file.ext]
 
+**Scope:** 📝 Changed (git) / 🔗 Related (no diff — include reason from Step 1.2)
 **File Type:** [Source/Test/Config/etc.]
 **Language:** [Language]
-**Lines Changed:** +X / -Y
+**Lines Changed:** +X / -Y (or N/A if related-only)
 
-**Summary of Changes:**
-[Brief description of what was changed and why (if discernible)]
+**Summary / relevance:**
+[For changed: what changed and why. For related: how it connects to the change and what to verify.]
 
 **Issues Found:**
 [List issues with severity - see Issue Report Format below]
@@ -287,9 +444,16 @@ git diff -U10 HEAD
 
 ### Step 3: Generate Issue Report (MANDATORY)
 
-**Objective:** Create comprehensive issue report with all findings
+**Objective:** Consolidate findings from **all three review passes** (Pass 1–3 Reports) into one comprehensive issue report. Deduplicate issues; keep the highest severity. Include a Triple-Pass Review summary.
 
 **⚠️ AI MUST PRESENT ALL ISSUES CLEARLY BEFORE ANY FIXES**
+
+**Prerequisites:** Step 1 Related Files Report + Pass 1, Pass 2, and Pass 3 Reports (Step 2.0) must be complete.
+
+**Consolidation rules:**
+- Merge duplicate findings across passes into a single issue; note which pass(es) caught it.
+- If passes disagree on severity, use the **higher** severity.
+- If all three passes report no issues, state explicitly what was verified in each pass (do not skip the summary).
 
 #### 3.1 Issue Report Format
 
@@ -301,8 +465,23 @@ git diff -U10 HEAD
 **Review ID:** CR-[TIMESTAMP]
 **Date:** [Date]
 **Reviewer:** AI Code Reviewer
+**Files in scope:** [X] (changed: [n], related: [n])
 **Files Reviewed:** [X] files
 **Total Issues Found:** [Y] issues
+**Review passes completed:** 3 / 3 (required)
+
+---
+
+## 🔁 Triple-Pass Review Summary
+
+| Pass | Focus | Verdict | New issues |
+|------|-------|---------|------------|
+| 1 | Correctness & project compliance | ✅ / ⚠️ / 🔴 | [n] |
+| 2 | Bugs, edge cases & crashes | ✅ / ⚠️ / 🔴 | [n] |
+| 3 | Risk, security & feature verification | ✅ / ⚠️ / 🔴 | [n] |
+
+**Feature flows verified:** [List each affected feature/flow and Pass 3 outcome]
+**Overall triple-pass verdict:** ✅ Ready / ⚠️ Issues to address / 🔴 Blocked
 
 ---
 
@@ -337,6 +516,7 @@ git diff -U10 HEAD
 ### Issue #1: [Issue Title]
 
 **Severity:** 🔴 CRITICAL
+**Detected in pass:** [1 / 2 / 3] (and re-verified in pass(es): [...])
 **Category:** [Security/Bug/Performance/etc.]
 **File:** `path/to/file.ext`
 **Line(s):** [Line number(s)]
@@ -778,9 +958,28 @@ git diff -U10 HEAD
 
 ## Review Checklist
 
+### Triple-Pass Checklist (MANDATORY)
+
+**Pass 1 — Correctness & compliance:**
+- [ ] Full scope reviewed (changed + related files from Step 1)
+- [ ] Callers/callees still align with changed contracts
+- [ ] Requirements/feature intent met; nothing missing
+- [ ] Project rules, architecture, layers, structure
+
+**Pass 2 — Bugs, edge cases & crashes:**
+- [ ] Null/empty/boundary/error/async/lifecycle paths checked
+- [ ] Crash vectors identified or ruled out
+- [ ] Pass 1 findings re-verified
+
+**Pass 3 — Risk & features:**
+- [ ] Security and operational risk assessed
+- [ ] Regressions and integrations considered
+- [ ] Each affected feature flow walked end-to-end
+- [ ] Pass 1–2 findings re-verified
+
 ### Quick Review Checklist
 
-**🟤 Project Rules Compliance (CHECK FIRST):**
+**🟤 Project Rules Compliance (CHECK FIRST — Pass 1):**
 - [ ] Follows project's architecture style (Clean Architecture/Layered/etc.)
 - [ ] Respects layer dependency rules (no forbidden imports)
 - [ ] Files in correct directories per project structure
@@ -826,7 +1025,7 @@ git diff -U10 HEAD
 
 ### Review Scope Configuration
 
-**By default, review ALL changed files. User can customize:**
+**By default, review ALL changed files AND all related/impacted files from Step 1.2. User can customize:**
 
 ```markdown
 ### Custom Review Scope
@@ -863,8 +1062,11 @@ git diff -U10 HEAD
 ### Do:
 ✅ **Load project rules FIRST** before reviewing any code
 ✅ **Validate against project architecture** and layer dependencies
-✅ Review all changed code thoroughly
+✅ Run all **three review passes** sequentially with a Pass Report each time
+✅ Discover and review **related/impacted files**, not only git-changed files
+✅ Review full in-scope code thoroughly (re-read each pass with a different lens)
 ✅ Check for project rules compliance
+✅ Walk through affected **feature flows** in Pass 3 (loading, error, success, edge cases)
 ✅ Check for security issues
 ✅ Provide specific, actionable solutions
 ✅ Explain why something is an issue
@@ -887,6 +1089,9 @@ git diff -U10 HEAD
 ❌ Overlook performance implications
 ❌ Forget to verify fixes
 ❌ Rush through the review
+❌ **Review only git-diff files** — always include related/impacted files from Step 1.2
+❌ **Collapse triple-pass review into a single pass**
+❌ **Skip Pass 2 (edge cases/crashes) or Pass 3 (risk/feature verification)**
 ❌ **Suggest fixes that violate project rules**
 
 ---
@@ -897,9 +1102,9 @@ git diff -U10 HEAD
 
 1. **Trigger Review:** User asks for code review
 2. **Execute Step 0:** Load project rules and standards (MANDATORY FIRST)
-3. **Execute Step 1:** Identify all changes to review
-4. **Execute Step 2:** Analyze each changed file for issues (against project rules AND best practices)
-5. **Execute Step 3:** Generate comprehensive issue report with project rules compliance
+3. **Execute Step 1:** Identify git changes **and** all related/impacted files (full review scope)
+4. **Execute Step 2:** Run **Triple-Pass Review** (Pass 1 → Pass 2 → Pass 3); produce a Pass Report after each pass
+5. **Execute Step 3:** Consolidate all pass findings into comprehensive issue report with Triple-Pass Summary
 6. **Execute Step 4:** Present findings and WAIT for user decision
 7. **Execute Step 5:** Apply approved fixes ONLY after user confirms
 8. **Generate Final Report:** Summary of all actions taken
@@ -914,9 +1119,9 @@ Structured markdown report with issues, solutions, project rules compliance stat
 **When performing a code review, you MUST:**
 
 ✅ **Step 0:** Load project rules from `.agents/rules/`, `.agentsrules`, and project config files (FIRST!)
-✅ **Step 1:** Identify all code changes (git diff, git status)
-✅ **Step 2:** Analyze each file for ALL issue categories INCLUDING project rules compliance
-✅ **Step 3:** Generate detailed issue report with severity levels and project rules compliance status
+✅ **Step 1:** Identify git changes **and** related/impacted files (full review scope)
+✅ **Step 2:** Run **three full review passes** (correctness → bugs/edge cases/crashes → risk/features); one Pass Report per pass
+✅ **Step 3:** Consolidate pass findings into detailed issue report with Triple-Pass Summary and severity levels
 ✅ **Step 4:** **WAIT** for user to decide which issues to fix
 ✅ **Step 5:** Apply ONLY the approved fixes
 ✅ Report all findings clearly with actionable solutions
@@ -927,7 +1132,10 @@ Structured markdown report with issues, solutions, project rules compliance stat
 🚫 **NEVER** skip the issue presentation step
 🚫 **NEVER** apply fixes without confirmation
 🚫 **NEVER** skip loading project rules
+🚫 **NEVER** limit review to git-changed files only — include related files from Step 1.2
+🚫 **NEVER** skip or merge the three review passes — all three are mandatory
 ✅ **ALWAYS** check project rules BEFORE reviewing code
+✅ **ALWAYS** complete Pass 1, then Pass 2, then Pass 3 before the issue report
 ✅ **ALWAYS** validate code against project architecture and standards
 ✅ **ALWAYS** wait for user decision
 ✅ **ALWAYS** provide clear fix options
