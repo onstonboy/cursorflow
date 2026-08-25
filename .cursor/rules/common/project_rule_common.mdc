@@ -290,6 +290,24 @@ When **planning** or **implementing** any feature—**at every phase** (design, 
 - Set appropriate input attributes and validation for form fields
 - Always include error handling for remote resources (images, assets, etc.)
 
+## Localization (l10n / i18n)
+
+All user-facing copy — labels, buttons, titles, empty/error states, dialogs, toasts, onboarding, permissions prompts, and help text — must be **smooth**, **easy to understand**, and **friendly** to the end user.
+
+- **Tone:** Warm, clear, and human. Prefer plain language over jargon, legalese, or developer-speak. Sound helpful, not robotic or condescending.
+- **Clarity:** One idea per sentence when possible. Prefer short, scannable phrases for UI chrome; slightly fuller sentences only when the user needs context (errors, empty states, confirmations).
+- **Actionable:** Tell the user what happened and what they can do next (especially errors and empty states). Avoid blame (“You failed…”) and opaque codes in the UI.
+- **Consistent:** Reuse the same wording for the same concepts (e.g. Save / Cancel / Retry / Continue) across screens and locales.
+- **Natural per locale:** Translate for meaning and natural phrasing, not word-for-word. Respect pluralization, gender/grammar where the stack supports it, and locale-appropriate date/number formats.
+- **No hard-coded UI strings** in production paths when the project uses l10n — use the stack’s localization resources (ARB, xcstrings, next-intl, etc.). Keys should be descriptive; default/source strings must already meet the quality bar above.
+- **Do not** ship raw exception messages, stack traces, or internal identifiers as user-visible localization.
+
+Examples (adapt wording to product voice):
+- ❌ `ERR_NETWORK_TIMEOUT` / `Failed to execute request` / `Null pointer`
+- ✅ `We couldn’t connect. Check your internet and try again.`
+- ❌ `No data` / `Empty list`
+- ✅ `Nothing here yet. Add your first item to get started.`
+
 ## Database migrations and versioning
 
 - When increasing a database/schema version, first check the **latest released version** (tag/release commit/release notes) and confirm whether the current in-branch version bump has already shipped.
@@ -681,6 +699,7 @@ Refer to official documentation for the chosen language/framework for more detai
 - [ ] Happy path and **major error paths** covered by tests where the project tests that layer.
 - [ ] Performance acceptable on target platform (devices, regions, or load profile as applicable).
 - [ ] **Accessibility** considered for user-facing UI changes.
+- [ ] **Localization** copy is smooth, easy to understand, and user-friendly (see **Localization (l10n / i18n)**).
 - [ ] **Security**, **release-time obfuscation** (where applicable), and **pentest-relevant risks** considered for the feature’s scope.
 - [ ] **Verbose log, print, and stack-trace diagnostics** are **development-only**, not shipped or executed in production on client or user-visible surfaces.
 
@@ -690,6 +709,7 @@ Refer to official documentation for the chosen language/framework for more detai
 - **Prefer project-common building blocks first** (see subsection under **For AI assistants**), including **shared views** (widgets, sheets, banners, etc.); extend shared code when missing; only override when the user explicitly asks.
 - Apply the stack’s **state management**, **async**, **error**, and **serialization** patterns from the **tech-specific** project rule when one exists.
 - Keep **naming**, **formatting**, and **structure** consistent with surrounding code.
+- Keep all **user-facing localization** smooth, easy to understand, and friendly (see **Localization (l10n / i18n)**).
 - In every phase, apply **Security, obfuscation, and pentest readiness** above for the work at hand.
 - Gate **log, print, and stack-trace** diagnostics to **development only**; production must not rely on or expose them per **dev-only diagnostics** above.
 
