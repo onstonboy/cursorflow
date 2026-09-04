@@ -1,0 +1,186 @@
+---
+description: Copy to project-rule.mdc; pick ONE tier. Next.js (App Router) + React + TypeScript web apps.
+alwaysApply: false
+---
+# Next.js / React / TypeScript project-rule (template)
+
+Replace `{{APP_NAME}}` and path aliases (`@/`). Assumes **App Router** (`app/`). **Keep only one tier** in the active rule.
+
+---
+
+## How to choose a tier
+
+| Tier | When to use |
+|------|-------------|
+| **Small** | Landing + few pages, marketing site, internal dashboard |
+| **Medium** | Production SaaS web app, authenticated product UI |
+| **Big** | Enterprise web, strict SEO/compliance, monorepo, edge + multi-region |
+
+---
+
+## Tier: Small project
+
+### S1. Scope
+
+- **App Router** with **Server Components** by default; **`use client`** only where needed (interactivity, browser APIs).
+- **Co-locate** components with routes or a single `components/` folder.
+
+### S2. Layout
+
+```
+app/
+├── layout.tsx
+├── page.tsx
+├── (routes...)/
+components/
+lib/
+public/
+```
+
+### S3. Data fetching
+
+- **`fetch`** in Server Components with **`next: { revalidate }`** or **`cache: 'no-store'`** as appropriate.
+- **Env**: `process.env` — **only** `NEXT_PUBLIC_*` exposed to client.
+
+### S4. Styling
+
+- **Tailwind CSS** or **CSS Modules** — one primary system; **consistent** spacing scale.
+
+### S5. Forms and validation
+
+- **Server Actions** or **Route Handlers** with **Zod** validation for mutations.
+
+### S6. Quality
+
+- **`next build`** succeeds; **ESLint** `next/core-web-vitals`.
+- **Basic** **metadata** (`metadata` export) for SEO on public pages.
+
+### S7. Checklist (small)
+
+- [ ] No secrets in client bundles.
+- [ ] Error UI (`error.tsx`) and not-found (`not-found.tsx`) where product needs polish.
+- [ ] Images use **`next/image`** when from remote allowlist.
+
+---
+
+## Tier: Medium project
+
+### M1. Architecture
+
+- **Feature folders** under `app/` or parallel `features/<name>/` with **ui**, **actions**, **schemas`:
+
+```
+features/
+├── billing/
+│   ├── components/
+│   ├── actions.ts
+│   └── schema.ts
+├── auth/
+core/
+├── db/                    # Prisma / Drizzle client
+├── auth/
+└── utils/
+```
+
+- **Server vs client** boundary explicit: shared **types** in `types/`; no server-only imports in client components.
+
+### M2. TypeScript and React
+
+- **Strict** TS; **React 19** / **18** patterns per project — **no** deprecated lifecycle in new code.
+- **Hooks** rules enforced by ESLint; **keys** stable on lists.
+
+### M3. Auth and session
+
+- **Auth.js (NextAuth)** or **Clerk** / **Auth0** — **one** provider pattern; **session** access only through documented helpers.
+- **Middleware** for route protection; **CSRF** considered for cookie sessions.
+
+### M4. Data layer
+
+- **Prisma** or **Drizzle** with **migrations**; **repository** or **dao** optional thin layer over ORM for testability.
+- **React Query / TanStack Query** for **client** data that needs caching/refetch (when using client fetchers).
+
+### M5. API routes
+
+- **Route Handlers** (`app/api/.../route.ts`) return **typed** JSON; **Zod** parse **body** and **query**.
+- **Rate limit** sensitive endpoints (Upstash, Redis).
+
+### M6. Performance
+
+- **`loading.tsx`** and **Suspense** boundaries for perceived performance.
+- **Dynamic imports** for heavy client-only widgets.
+- **Analytics** (Vercel, PostHog, etc.) loaded with **privacy** in mind.
+
+### M7. Testing
+
+- **Vitest** + **React Testing Library** for units; **Playwright** for **E2E** critical paths in CI.
+
+### M8. i18n and a11y
+
+- **next-intl** or equivalent if multi-language; **focus management** on route change where needed.
+- **Semantic HTML**; **labels** on form controls.
+
+### M9. Deploy environments, error tracking, and feature flags (medium baseline)
+
+Production-oriented medium web apps treat these as **standard**.
+
+- **Environments (`dev` / `staging` / `prod`)**: **Vercel** preview vs production (or self-hosted equivalents) with **separate** env vars in the host dashboard. Use **`VERCEL_ENV`** / **`NODE_ENV`** plus named vars (`NEXT_PUBLIC_API_URL`, server-only `API_SECRET`) — **never** ship prod-only secrets to **preview**. Document **local** `.env.local` vs **CI**; **branch** → **staging** mapping when using preview deployments.
+- **Crash and performance**: **Sentry** (or **OpenTelemetry** + vendor) for **server** and **browser** with **release** / **git SHA**; **Web Vitals** reporting (Vercel Analytics, Speed Insights, or custom). Review **staging/preview** error and **LCP/INP** regressions before promoting to **production**.
+- **Feature flags**: **LaunchDarkly**, **Vercel Flags**, **PostHog**, **GrowthBook**, etc. — **document** flag keys, defaults per environment, owners; **server-side** evaluation for sensitive behavior; **cleanup** stale flags.
+
+### M10. Checklist (medium)
+
+- [ ] Server/client boundaries documented for new features.
+- [ ] Auth checks on all protected server actions and routes.
+- [ ] CI: lint, typecheck, test, build.
+- [ ] CSP headers or middleware security headers configured for prod.
+- [ ] **Environments**: verified on **preview/staging** before prod; no prod secrets in client bundles.
+- [ ] **Error / Web Vitals**: release tracking enabled; PII policy followed in client events.
+- [ ] **Feature flags**: new flags documented with owner and removal plan.
+
+---
+
+## Tier: Big project
+
+### B1. Monorepo and design system
+
+- **Turborepo** / **Nx**: `apps/web`, `packages/ui`, `packages/config-eslint`.
+- **Design system** package versioned; **visual regression** (Chromatic, etc.) if brand-critical.
+
+### B2. Rendering strategy
+
+- Document **per-route** choice: **static**, **ISR**, **dynamic**, **edge** — **no** accidental full dynamic on marketing pages.
+- **`unstable_cache`** / **`fetch` cache** semantics reviewed for **stale** data risk.
+
+### B3. Observability and reliability
+
+- **Builds on medium baseline** (§M9): **OpenTelemetry** end-to-end where required; **formal** release health gates on errors and **Core Web Vitals**; **feature-flag** rollout playbooks with **rollback** tied to metrics.
+
+### B4. Security and compliance
+
+- **Content Security Policy** strict; **Subresource Integrity** where applicable.
+- **GDPR/CCPA**: consent banners, **data export** flows if product requires.
+- **Penetration test** remediation backlog tracked.
+
+### B5. SEO and international
+
+- **`sitemap.ts`**, **`robots.ts`**, **hreflang** for multi-region.
+- **Structured data** where product benefits.
+
+### B6. Checklist (big)
+
+- [ ] Performance budgets (LCP, CLS) monitored per release.
+- [ ] Incident response and rollback for deployments.
+- [ ] Accessibility audit cadence (WCAG target documented).
+- [ ] ADRs for rendering, auth, and data-fetch strategy changes.
+
+---
+
+## References
+
+- [Next.js documentation](https://nextjs.org/docs)
+- [React documentation](https://react.dev/)
+- [Web.dev performance](https://web.dev/performance/)
+
+---
+
+_End — retain one tier only in your real `project-rule.mdc`._

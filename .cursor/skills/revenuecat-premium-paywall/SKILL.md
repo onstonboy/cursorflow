@@ -9,7 +9,10 @@ description: Implement RevenueCat premium entitlement + paywall flows in Flutter
 
 When implementing RevenueCat premium gating:
 
-1. Read the full reference guide at `@.cursor/skills/REVENUECAT_PREMIUM_PAYWALL_GUIDE.md` (same file as [`../REVENUECAT_PREMIUM_PAYWALL_GUIDE.md`](../REVENUECAT_PREMIUM_PAYWALL_GUIDE.md)).
+1. Read the full reference guide ([`../REVENUECAT_PREMIUM_PAYWALL_GUIDE.md`](../REVENUECAT_PREMIUM_PAYWALL_GUIDE.md)). Same content is mirrored for each agent:
+   - Cursor: `@.cursor/skills/REVENUECAT_PREMIUM_PAYWALL_GUIDE.md`
+   - Codex / Antigravity: `@.agents/skills/REVENUECAT_PREMIUM_PAYWALL_GUIDE.md`
+   - Claude Code: `@.claude/skills/REVENUECAT_PREMIUM_PAYWALL_GUIDE.md`
 2. Confirm the product model:
    - Entitlement id (recommended: `premium`)
    - Offering/paywall strategy (default offering, packages)
@@ -89,5 +92,8 @@ When asked to “add RevenueCat premium paywall” to a Flutter app, produce:
 
 ## Reference
 
-- Full implementation guide: `@.cursor/skills/REVENUECAT_PREMIUM_PAYWALL_GUIDE.md` (also available as [`../REVENUECAT_PREMIUM_PAYWALL_GUIDE.md`](../REVENUECAT_PREMIUM_PAYWALL_GUIDE.md))
+- Full implementation guide: [`../REVENUECAT_PREMIUM_PAYWALL_GUIDE.md`](../REVENUECAT_PREMIUM_PAYWALL_GUIDE.md)
+  - Cursor: `@.cursor/skills/REVENUECAT_PREMIUM_PAYWALL_GUIDE.md`
+  - Codex / Antigravity: `@.agents/skills/REVENUECAT_PREMIUM_PAYWALL_GUIDE.md`
+  - Claude Code: `@.claude/skills/REVENUECAT_PREMIUM_PAYWALL_GUIDE.md`
 

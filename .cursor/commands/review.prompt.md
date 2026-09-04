@@ -45,6 +45,7 @@ This document provides a structured approach for AI to review code changes, iden
    - `.cursor/rules/` directory (all `.mdc` and `.md` files)
    - `.cursorrules` file in project root
    - `.cursor/rules/common/project_rule_common.mdc` (canonical project rules)
+   - `project_rules_common.prompt.md` in `.cursor/commands/common/`
    - Any `CONTRIBUTING.md`, `CODING_STANDARDS.md`, or similar files
    - `package.json`, `pyproject.toml`, or other config files for linting rules
 

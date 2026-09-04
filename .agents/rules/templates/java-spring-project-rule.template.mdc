@@ -1,0 +1,181 @@
+---
+description: Copy to project-rule.mdc; pick ONE tier. Java / Spring Boot (REST APIs, business backends).
+alwaysApply: false
+---
+# Java / Spring Boot project-rule (template)
+
+Replace `{{APP_NAME}}`, base packages (`com.company.app`), and infrastructure names. **Keep only one tier** in the active rule.
+
+---
+
+## How to choose a tier
+
+| Tier | When to use |
+|------|-------------|
+| **Small** | Internal API, BFF, CRUD service, small team |
+| **Medium** | Customer-facing SaaS backend, standard SLAs |
+| **Big** | Enterprise, multi-team, compliance, high scale |
+
+---
+
+## Tier: Small project
+
+### S1. Scope
+
+- **Single deployable** JAR; **layered packages** `controller` → `service` → `repository` are enough.
+- **Spring Boot** with **Spring Web**; **Spring Data JPA** if relational DB; **H2** or **Testcontainers** for dev/test.
+- **Validation** with **`jakarta.validation`** on DTOs.
+
+### S2. Layout
+
+```
+src/main/java/com/company/{{APP_NAME}}/
+├── {{AppName}}Application.java
+├── config/
+├── controller/
+├── service/
+├── repository/
+├── domain/              # entities (JPA) optional here or under model/
+└── dto/
+```
+
+### S3. API style
+
+- **REST** with consistent **HTTP verbs** and **status codes**.
+- **Problem Details** (`spring-boot-starter-web` + `ErrorController` or `@ControllerAdvice`) for errors — even a simple JSON `{ "message" }` is fine if consistent.
+
+### S4. Config and secrets
+
+- **`application.yml`** profiles: `dev`, `prod`; **secrets** from **env** or **vault** — never committed.
+
+### S5. Testing
+
+- **`@WebMvcTest`** for controllers; **`@DataJpaTest`** for repos if JPA; smoke **`@SpringBootTest`** optional.
+
+### S6. Checklist (small)
+
+- [ ] Health endpoint (`/actuator/health` if actuator enabled).
+- [ ] Input validation on all external inputs.
+- [ ] SQL injection safe (JPA parameterized).
+
+---
+
+## Tier: Medium project
+
+### M1. Architecture
+
+- **Clear boundaries**: controllers thin; **services** own transactions and orchestration; **repositories** data access only.
+- **DTOs** for API; **entities** for persistence; **mapping** explicit (MapStruct or manual) — avoid exposing entities in JSON.
+- **Package by feature** acceptable when it improves cohesion:
+
+```
+feature/
+├── order/
+│   ├── OrderController.java
+│   ├── OrderService.java
+│   ├── OrderRepository.java
+│   └── dto/
+```
+
+### M2. Spring practices
+
+- **`@Transactional`** on service layer with correct **readOnly** for queries.
+- **`@ControllerAdvice`** for **domain exceptions** → HTTP mapping.
+- **OpenAPI** (`springdoc-openapi`) generated and kept in sync with controllers.
+
+### M3. Persistence
+
+- **Flyway** or **Liquibase** for migrations; **no** manual DDL in prod.
+- **Indexes** and **N+1** awareness; **`@EntityGraph`** / **fetch joins** where needed.
+
+### M4. Security
+
+- **Spring Security** with **JWT** or **OAuth2 Resource Server**; **role/scope** checks on sensitive endpoints.
+- **CORS** explicit; **rate limiting** (Bucket4j, gateway) for public APIs.
+
+### M5. Observability
+
+- **Micrometer** + **Prometheus** or vendor APM; **correlation ID** filter (MDC).
+- **Structured logging** (JSON) in prod; **log levels** per package.
+
+### M6. Testing
+
+- **Testcontainers** for integration tests against real DB/Redis.
+- **Contract tests** optional (Spring Cloud Contract) if many consumers.
+
+### M7. Java style
+
+- **Java 17+** LTS; **records** for DTOs where appropriate.
+- **Immutability** for DTOs; **Builder** only when complexity warrants.
+- **Checkstyle** or **Spotless** in CI.
+
+### M8. Profiles, error tracking, and feature flags (medium baseline)
+
+Production-oriented medium services treat these as **standard**.
+
+- **Profiles (`dev` / `staging` / `prod`)**: **Spring profiles** (`spring.profiles.active`) with **`application-{profile}.yml`**; **no** production secrets in repo — **env**, **vault**, or **secret manager**. **Datasource URLs**, feature integrations, and **log levels** differ per profile; document how CI runs each profile for tests.
+- **Crash and performance**: JVM **metrics** via **Actuator** + **Micrometer** (Prometheus stack) or vendor **APM** (Datadog, New Relic, Elastic). **Error tracking** (**Sentry** for Java, or log-based alerts) with **release** / **git SHA** tags. Define **SLOs** for error rate and **p95** latency on **staging** before prod deploys.
+- **Feature flags**: **LaunchDarkly**, **Unleash**, **Flagsmith**, or **internal** flag service — evaluate in **service layer**; **document** flag keys, defaults per profile, owners, and **cleanup** after rollout.
+
+### M9. Checklist (medium)
+
+- [ ] All public endpoints authenticated unless explicitly public and documented.
+- [ ] Migrations reviewed; rollback strategy for risky changes.
+- [ ] CI: compile, tests, static analysis (SpotBugs / Checkstyle as agreed).
+- [ ] **Profiles**: changes validated under **dev / staging** config before prod.
+- [ ] **Observability**: dashboards or alerts cover **golden signals** for critical endpoints.
+- [ ] **Feature flags**: new flags documented; safe defaults when flag service is down (if applicable).
+
+---
+
+## Tier: Big project
+
+### B1. Modular monolith or services
+
+- **Modular monolith** with **Spring Modulith** or **strict packages** before splitting microservices.
+- If **microservices**: **bounded contexts**, **idempotent** consumers, **saga** / **outbox** for distributed consistency where needed.
+
+### B2. Reliability
+
+- **Bulkheads**, **timeouts**, **retries** with jitter on outbound calls; **circuit breakers** (Resilience4j).
+- **Idempotency-Key** for critical **POST** operations (payments, orders).
+
+### B3. Security and compliance
+
+- **OWASP** ASVS-aligned practices; **dependency** scanning (OWASP Dependency-Check, Snyk).
+- **Audit log** for sensitive actions; **PII** minimization and **encryption at rest** where required.
+- **Secrets** rotation; **mTLS** service-to-service if policy requires.
+
+### B4. Data and events
+
+- **Event-driven** integration with **outbox pattern** or **transactional messaging**; **schema** for events versioned.
+- **Read replicas**, **caching** (Redis) with **invalidation** strategy documented.
+
+### B5. Operations
+
+- **Builds on medium baseline** (§M8): formal **SLOs** / **error budgets**, **on-call** runbooks, and **mandatory** gates on metrics before **canary** completion.
+- **Blue/green** or **canary** deploys; **DB migration** safety (expand/contract).
+
+### B6. Testing
+
+- **Pact** or equivalent for **consumer-driven contracts** between services.
+- **Load tests** on critical paths before major releases.
+
+### B7. Checklist (big)
+
+- [ ] Threat model updated for auth and data flows.
+- [ ] DR and backup RTO/RPO documented.
+- [ ] Performance and capacity baselines tracked.
+- [ ] ADRs for integration and data ownership.
+
+---
+
+## References
+
+- [Spring Boot documentation](https://docs.spring.io/spring-boot/documentation.html)
+- [Spring Security](https://docs.spring.io/spring-security/reference/)
+- [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html) (or team standard)
+
+---
+
+_End — retain one tier only in your real `project-rule.mdc`._

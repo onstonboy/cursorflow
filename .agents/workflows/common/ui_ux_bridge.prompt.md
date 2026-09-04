@@ -57,8 +57,8 @@ Flutter/Android/iOS/React Native/SwiftUI/Jetpack Compose/etc.
 **⚠️ CRITICAL: UNIQUENESS REQUIREMENT - MAINTAIN DISTINCT DESIGN IDENTITY**
 
 **Action Required:**
-1. **Read and analyze** `.agent/commands/common/ui_styles_reference.md`
-2. **Read and analyze** `.agent/uiux_reference/data/` folder for UI/UX reference data:
+1. **Read and analyze** `.agents/workflows/common/ui_styles_reference.md`
+2. **Read and analyze** `.agents/uiux_reference/data/` folder for UI/UX reference data:
    - `styles.csv` - UI style patterns and specifications
    - `colors.csv` - Color palettes and schemes
    - `typography.csv` - Typography guidelines and font recommendations
@@ -68,7 +68,7 @@ Flutter/Android/iOS/React Native/SwiftUI/Jetpack Compose/etc.
    - `charts.csv` - Data visualization patterns (if applicable)
    - `prompts.csv` - UI/UX prompt templates and examples
    - `stacks/[FRAMEWORK].csv` - Framework-specific UI/UX patterns (check relevant framework for the project)
-3. **Read and analyze** `.agent/uiux_reference/landing_page_prompts/` when landing/marketing pages or style-led UI are in scope: use `README.md` for the index and the relevant style .md file(s) for full design-system prompts (philosophy, tokens, components, layout ideas)
+3. **Read and analyze** `.agents/uiux_reference/landing_page_prompts/` when landing/marketing pages or style-led UI are in scope: use `README.md` for the index and the relevant style .md file(s) for full design-system prompts (philosophy, tokens, components, layout ideas)
 4. **Extract project/feature requirements** from the user's request
 5. **Match project type** with suitable UI styles from references and from landing_page_prompts (when applicable)
 6. **Cross-reference** data from ui_styles_reference, uiux_reference/data, and landing_page_prompts to find comprehensive UI/UX solutions
@@ -90,8 +90,8 @@ Flutter/Android/iOS/React Native/SwiftUI/Jetpack Compose/etc.
 - Complexity Constraints: [Low, Medium, High]
 
 **UI Styles Reference Check:**
-1. Reviewed `.agent/commands/common/ui_styles_reference.md`
-2. Reviewed `.agent/uiux_reference/data/` folder:
+1. Reviewed `.agents/workflows/common/ui_styles_reference.md`
+2. Reviewed `.agents/uiux_reference/data/` folder:
    - Checked `styles.csv` for style patterns
    - Checked `colors.csv` for color schemes
    - Checked `typography.csv` for typography guidelines
@@ -101,7 +101,7 @@ Flutter/Android/iOS/React Native/SwiftUI/Jetpack Compose/etc.
    - Checked `charts.csv` for data visualization patterns (if applicable)
    - Checked `prompts.csv` for UI/UX prompt examples
    - Checked `stacks/[FRAMEWORK].csv` for framework-specific patterns
-3. Reviewed `.agent/uiux_reference/landing_page_prompts/` (README + relevant style .md files) for full design prompts when landing/marketing or style-led UI is in scope
+3. Reviewed `.agents/uiux_reference/landing_page_prompts/` (README + relevant style .md files) for full design prompts when landing/marketing or style-led UI is in scope
 4. Identified relevant styles based on "Suitable Project Types" attribute from all sources
 5. Cross-referenced data from ui_styles_reference, uiux_reference/data, and landing_page_prompts with project requirements
 6. Synthesized findings from all references for comprehensive UI/UX approach
@@ -605,7 +605,7 @@ body {
     font-weight: var(--font-weight-medium);
     border: none;
     border-radius: var(--radius-md);
-    agent: pointer;
+    cursor: pointer;
     transition: all var(--transition-base);
     text-decoration: none;
 }
@@ -636,7 +636,7 @@ body {
 
 .component-name__button:disabled {
     opacity: 0.5;
-    agent: not-allowed;
+    cursor: not-allowed;
     pointer-events: none;
 }
 

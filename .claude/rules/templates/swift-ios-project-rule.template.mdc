@@ -1,0 +1,203 @@
+---
+description: Copy to project-rule.mdc; pick ONE tier (Small / Medium / Big). iOS Swift (SwiftUI-first).
+alwaysApply: false
+---
+# Swift / iOS project-rule (template)
+
+Replace `{{APP_NAME}}`, bundle IDs, and module names. **Keep only one tier** (Small, Medium, or Big) when creating the active rule.
+
+---
+
+## How to choose a tier
+
+| Tier | When to use |
+|------|-------------|
+| **Small** | MVP, internal app, 1–3 devs, fast iteration |
+| **Medium** | Production consumer/B2B app, ongoing product team |
+| **Big** | Enterprise, compliance, many modules/teams, long lifecycle |
+
+---
+
+## Tier: Small project
+
+### S1. Scope
+
+- Prefer **clarity** over heavy architecture. **SwiftUI** + **`@Observable` / `ObservableObject`** or simple **MVVM** is enough.
+- One **target**, one **module** unless Apple mandates extensions (widgets, etc.).
+- **SwiftLint** optional; **SwiftFormat** optional — if used, run in CI or pre-commit.
+
+### S2. Layout
+
+```
+{{APP_NAME}}/
+├── App/
+│   └── {{APP_NAME}}App.swift
+├── Views/
+├── ViewModels/          # optional; views may hold light state
+├── Services/            # API, keychain, analytics
+├── Models/
+└── Resources/
+```
+
+### S3. Concurrency and networking
+
+- Prefer **`async/await`** and **`URLSession`** (or Alamofire if already in project).
+- **MainActor** for UI updates; avoid blocking the main thread.
+- Use **`Codable`**; handle **decoding errors** with user-visible fallbacks.
+
+### S4. State and navigation
+
+- **`NavigationStack`** with simple routing enum or string tags acceptable.
+- **UserDefaults** for trivial prefs; **Keychain** for tokens (use a small wrapper).
+
+### S5. Testing and quality
+
+- **Xcode build** must succeed with **no warnings** policy only if team agrees; otherwise fix critical warnings.
+- **Unit tests** for parsing, pricing, auth helpers — where mistakes hurt users.
+- No secrets in source; **XCConfig** + CI for API keys.
+
+### S6. Checklist (small)
+
+- [ ] No force-unwraps in production paths without documented reason.
+- [ ] Sensitive data in Keychain; not logged.
+- [ ] Basic error UI for network failures.
+
+---
+
+## Tier: Medium project
+
+### M1. Scope and architecture
+
+- **MVVM** or **MVVM-C** as default: Views → ViewModels → Services/Repositories.
+- **Dependencies point inward**: UI does not call URLSession directly from every view — use **protocol-oriented** services (`AuthServiceProtocol`, etc.).
+- **Feature folders** encouraged:
+
+```
+Features/
+├── Home/
+│   ├── HomeView.swift
+│   ├── HomeViewModel.swift
+│   └── HomeCoordinator.swift   # if using coordinators
+├── Profile/
+└── ...
+Core/
+├── Networking/
+├── Persistence/
+├── DesignSystem/
+└── Utilities/
+```
+
+### M2. Swift style
+
+- **`private` / `fileprivate`** by default; widen access deliberately.
+- Prefer **`struct`** for models and value types; **`class`** for identity or Objective-C interop.
+- **Line length** ~120 or team standard; use **SwiftFormat** config in repo.
+- **Explicit `self`** only when required; avoid **implicitly unwrapped** optionals in new code.
+
+### M3. Networking and data
+
+- **Typed endpoints** (enum or struct per resource); central **APIClient** with interceptors (auth refresh, logging).
+- **DTOs** separate from **domain models** when API shape ≠ app concepts; map in repository layer.
+- **Pagination** and **cancellation** (`Task` cancel) for lists.
+
+### M4. Navigation
+
+- **Coordinator** or **Router** pattern for deep links and auth flows if complexity grows.
+- **Single place** for **session** state (logged in / out) driving root `View` swap.
+
+### M5. Error handling
+
+- **Typed errors** (`enum AppError: LocalizedError`) or **Result** in service layer.
+- Map to **alert** / **toast** / **inline** consistently with design system.
+
+### M6. Dependency injection
+
+- **Constructor injection** for ViewModels and services; avoid **singletons** except for `APIClient` / `Analytics` if documented.
+- Consider **Factory** or lightweight container if object graphs grow.
+
+### M7. UI
+
+- **Design tokens**: colors, typography, spacing in one module.
+- **Accessibility**: Dynamic Type, VoiceOver labels on interactive controls, contrast.
+- **Images**: async load + placeholder; **Kingfisher** or **Nuke** if remote images are heavy.
+
+### M8. Testing
+
+- **Unit tests**: ViewModels (with mocked services), parsers, reducers.
+- **UI tests**: critical journeys (login, checkout) on CI simulator.
+- **Snapshot tests** optional for design-system components.
+
+### M9. Security
+
+- **Certificate pinning** when product requires; document bypass for debug only.
+- **App Transport Security** exceptions documented and minimal.
+
+### M10. Schemes, crash reporting, and feature flags (medium baseline)
+
+Production-oriented medium apps treat these as **standard**.
+
+- **Environments (`dev` / `staging` / `prod`)**: **Xcode schemes** + **xcconfig** per configuration; **separate** bundle identifiers / app groups where the product needs side-by-side installs or different API hosts. **API base URLs**, analytics keys, and flag SDK keys read from **build settings** or **generated** `Info.plist` entries — not a single hard-coded prod URL in source.
+- **Crash and performance**: **Firebase Crashlytics**, **Sentry**, or equivalent in **Release**; **dSYM** upload / **symbolication** automated in CI. Add **performance** instrumentation (Firebase Performance, MetricKit summaries, or custom OS_signpost traces) for **launch** and **critical** user journeys; watch **staging** metrics before promoting.
+- **Feature flags**: **Firebase Remote Config**, **LaunchDarkly**, **Unleash**, or internal API — **document** flag keys, defaults per environment, owners, and **cleanup** after full rollout.
+
+### M11. Checklist (medium)
+
+- [ ] Feature folders; no cyclic imports.
+- [ ] Services behind protocols; mockable in tests.
+- [ ] Localization for user-facing strings (`Localizable.xcstrings` / strings files).
+- [ ] CI runs build + unit tests.
+- [ ] **Schemes/config**: behavior verified on the correct **dev / staging / prod** configuration.
+- [ ] **Crash/performance**: release symbols wired; no PII in breadcrumbs/logs.
+- [ ] **Feature flags**: new flags documented with removal plan when temporary.
+
+---
+
+## Tier: Big project
+
+### B1. Modularization
+
+- **Swift Package** or **Xcode native modules** per **feature** or **bounded context**; **App** target is thin shell.
+- **Internal** access control across packages; **public** only for intentional SDK surface.
+- **Graph lint** (e.g. import rules) to prevent **forbidden** cross-feature dependencies.
+
+### B2. Architecture discipline
+
+- **Clean / hexagonal** boundaries: Domain (pure Swift) ← Data ← Presentation.
+- **Use cases** as explicit types when business rules are complex or audited.
+- **Event-driven** internal bus only if team has operational experience (avoid over-engineering).
+
+### B3. Quality and release
+
+- **Strict warnings**; **SwiftLint** rules in CI with **no** silent disables.
+- **Integration tests** + **UI tests** on **multiple OS versions**; **performance** tests for hot paths.
+- **Builds on medium baseline** (§M10): tighten **release promotion** with **mandatory** crash-free / performance gates, **on-call** ownership of dashboards, and **remote kill switch** policy for high-risk flags.
+
+### B4. Security and compliance
+
+- **Biometric** / **passkey** flows reviewed; **jailbreak** / **debugger** detection if required by policy.
+- **Privacy manifest** and **nutrition labels** accurate; **ATT** / tracking documented.
+- **Data retention** and **export** if GDPR/CCPA applies.
+
+### B5. Observability
+
+- **Structured logging** with correlation IDs for API calls (no PII).
+- **Analytics** schema versioned; **experiments** documented.
+
+### B6. Checklist (big)
+
+- [ ] Module graph documented; no illegal cross-feature imports.
+- [ ] Release train with staged rollout and monitoring.
+- [ ] Security sign-off for auth and payments.
+- [ ] ADRs for major architectural decisions.
+
+---
+
+## References
+
+- [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/)
+- [Swift API Design Guidelines](https://www.swift.org/documentation/api-design-guidelines/)
+- [Swift Concurrency](https://docs.swift.org/swift-book/LanguageGuide/Concurrency.html)
+
+---
+
+_End — retain one tier only in your real `project-rule.mdc`._

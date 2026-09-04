@@ -17,7 +17,7 @@ This document provides a structured approach for AI to review code changes, iden
 **⚠️ AI MUST FOLLOW THESE RULES:**
 
 1. Execute ALL steps in order
-2. **READ PROJECT RULES FIRST** - Check `.agents/rules/` and `.rules` for project-specific standards
+2. **READ PROJECT RULES FIRST** - Check `.agents/rules/` and `.agentsrules` for project-specific standards
 3. Generate detailed issue reports with severity levels
 4. Provide actionable solutions for each issue
 5. **WAIT FOR USER APPROVAL** before implementing any fix
@@ -44,7 +44,8 @@ This document provides a structured approach for AI to review code changes, iden
 1. **Check for project rules** in the following locations (in order of priority):
    - `.agents/rules/` directory (all `.mdc` and `.md` files)
    - `.agentsrules` file in project root
-   - `project_rules_common.prompt.md` in workflows folder
+   - `.agents/rules/common/project_rule_common.mdc` (canonical project rules)
+   - `project_rules_common.prompt.md` in `.agents/workflows/common/`
    - Any `CONTRIBUTING.md`, `CODING_STANDARDS.md`, or similar files
    - `package.json`, `pyproject.toml`, or other config files for linting rules
 

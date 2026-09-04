@@ -6,6 +6,13 @@ agent: agent
 
 This document provides a comprehensive, end-to-end workflow for AI to transform user requirements into a complete, ready-to-implement feature specification with full research, wireframes (UI or structural), optional UI/UX design and platform UI code when needed, and **seven** implementation-plan documents (one main plus six children). Every `/cook` run must produce the **mandatory paperwork pack** (see **CRITICAL: Mandatory `/cook` Paperwork Pack** below). **All paperwork is generated and user-approved before any application feature code is written** (see **CRITICAL: Paperwork First** below).
 
+## CRITICAL: Every `/cook` run must perform these checks (no exceptions)
+
+- **Pre-implementation discovery (requirements + UI/UX)**: Before writing any plans/design/code-samples, review all available inputs: requirement/spec, existing project docs, existing screens, design reference images, and any design system docs. Also consult the repo UI/UX reference materials under `.agents/uiux_reference/` when UI/UX is in scope.
+- **Design-system-first UI**: For any UI work, ensure plans and wireframes align to the project design system/tokens. If the project has no design system yet, the `/cook` output must include creating one in the canonical shared location before building screens.
+- **Shared UI kit bootstrap**: Early in the plan (Setup/Core/Presentation), include creation of reusable primitives (button, text/typography, inputs, tabs, indicators/loading, dialog, toast/snackbar, banner/alert, bottom sheet, list cells/items, section headers, empty/error states) and mandate reuse across features.
+- **Database version bump guardrail (when DB is involved)**: If the feature includes DB/schema changes, the `/cook` plan must instruct to check the latest **released** version first and **not** increment DB version again if the previous bump is not yet released.
+
 ## CRITICAL: Required Prompt Files Reference
 
 **⚠️ AI MUST REFERENCE THESE PROMPT FILES FOR ACCURATE ANALYSIS**
@@ -39,7 +46,7 @@ Before executing this workflow, you MUST have access to and reference these prom
    - MUST be referenced for all implementation planning
 
 **MANDATORY ACTION:**
-- **Step 0.0:** Scan `.agents` for existing rules/workflows; if missing or not fit for project, parse user prompt, research official/relevant docs, use common rules/workflows, and write fit rules/workflows first
+- **Step 0.0:** Scan `.cursor` for existing rules/commands; if missing or not fit for project, parse user prompt, research official/relevant docs, use common rules/commands, and write fit rules/commands first
 - **Step 0:** Verify and generate tech-specific prompt files if missing
 - Read and understand ALL four prompt files (prefer tech-specific, fallback to common)
 - Reference the appropriate prompt file at each step
@@ -97,8 +104,8 @@ Before executing this workflow, you MUST have access to and reference these prom
 **⚠️ AI MUST COMPLETE ALL STEPS IN EXACT ORDER - NO EXCEPTIONS**
 
 When you receive a feature request, you MUST:
-1. **Execute Step 0.0 (Scan .agents and Ensure Project-Specific Rules and workflows) FIRST** — see below
-2. Execute Step 0 (Verify workflows & Project Rules)
+1. **Execute Step 0.0 (Scan .cursor and Ensure Project-Specific Rules and Commands) FIRST** — see below
+2. Execute Step 0 (Verify Commands & Project Rules)
 3. **IF UI design images are detected** → Execute Step 0.5 (Process UI Images) → Break into components → Convert each to HTML using @ui_ux_bridge
 4. Execute ALL remaining steps sequentially (Step 1 through Step 5)
 5. Generate ALL deliverables for each step
@@ -117,9 +124,9 @@ When you receive a feature request, you MUST:
 ## Complete Workflow Overview
 
 ```
-Scan .agents (Step 0.0) → Rules/workflows exist and fit project? If not: parse user prompt + research (internet, official docs) + use common → Write fit rules/workflows
+Scan .cursor (Step 0.0) → Rules/commands exist and fit project? If not: parse user prompt + research (internet, official docs) + use common → Write fit rules/commands
          ↓
-Verify workflows (Step 0) → Check workflows/specify/ → Generate if missing
+Verify Commands (Step 0) → Check commands/specify/ → Generate if missing
          ↓
 Detect UI Images (Step 0.5) → IF images provided:
          ↓
@@ -159,38 +166,40 @@ Execute Implementation (Step 6) — product codebase ONLY after YES/PROCEED
 
 ---
 
-## STEP 0.0: Scan .agents and Ensure Project-Specific Rules and workflows (MANDATORY - VERY FIRST STEP)
+## STEP 0.0: Scan .cursor and Ensure Project-Specific Rules and Commands (MANDATORY - VERY FIRST STEP)
 
-**Objective:** Before any other action, scan the `.agents` folder to determine whether rules and workflows already exist and match the project. If they do not exist or do not fit the project, derive requirements from the user prompt, research official and relevant documentation, use common rules/workflows as base, and write rules or workflows that fit the project requirement.
+**Objective:** Before any other action, scan the `.cursor` folder to determine whether rules and commands already exist and match the project. If they do not exist or do not fit the project, derive requirements from the user prompt, research official and relevant documentation, use common rules/commands as base, and write rules or commands that fit the project requirement.
 
 **⚠️ THIS STEP MUST BE EXECUTED VERY FIRST - BEFORE STEP 0 AND ALL OTHER STEPS**
 
-### 0.0.1 Scan .agents Folder for Existing Rules and workflows
+### 0.0.1 Scan .cursor Folder for Existing Rules and Commands
 
 **MANDATORY: Scan the following locations and inventory what exists**
 
 **Directories to scan:**
 ```
 ./.agents/
-├── workflows/
+├── commands/
 │   ├── specify/          → Tech-specific command prompts (e.g. research_plan_flutter_dart.prompt.md)
 │   └── common/           → Common command prompts (templates)
 └── rules/
     ├── *.mdc             → Project rules (e.g. project-rule_flutter_dart.mdc)
-    └── common/           → Common project rule (template)
+    ├── common/           → Common project rule (`project_rule_common.mdc`)
+    └── templates/        → Stack + tier scaffolds (`*-project-rule.template.mdc`, `README.md`)
 ```
 
 **Check and record:**
 1. List all files in `./.agents/workflows/specify/` (if directory exists)
-2. List all files in `./.agents/rules/` (excluding subfolder `common/`)
-3. Identify which tech stack(s) existing files target (from filenames: e.g. `_flutter_dart`, `_nextjs_typescript`)
-4. Determine: **Do existing rules/workflows match the current project?** (e.g. project uses Next.js but only Flutter rules exist → mismatch)
+2. List all files in `./.agents/rules/` (excluding subfolders `common/` and `templates/`)
+3. List files in `./.agents/rules/templates/` (for stack match when generating `project-rule_*`)
+4. Identify which tech stack(s) existing files target (from filenames: e.g. `_flutter_dart`, `_nextjs_typescript`)
+5. Determine: **Do existing rules/commands match the current project?** (e.g. project uses Next.js but only Flutter rules exist → mismatch)
 
 **Output:** A short scan report: what exists, for which tech, and whether it fits the project (YES/NO with reason).
 
-### 0.0.2 If Rules or workflows Are Missing or Do Not Fit the Project
+### 0.0.2 If Rules or Commands Are Missing or Do Not Fit the Project
 
-**IF** the scan shows that required rules or workflows are missing, or that existing ones do not match the project (wrong tech stack, outdated, or not aligned with user requirement):
+**IF** the scan shows that required rules or commands are missing, or that existing ones do not match the project (wrong tech stack, outdated, or not aligned with user requirement):
 
 **Then perform the following in order:**
 
@@ -201,20 +210,23 @@ Execute Implementation (Step 6) — product codebase ONLY after YES/PROCEED
 2. **Research relevant documentation**
    - Search the internet for **official documentation** of the identified tech stack (e.g. Flutter docs, Next.js docs, React Native docs)
    - Search for **best practices**, style guides, and common patterns for that tech/language
-   - Note framework-specific rules (e.g. state management, routing, testing) that should be reflected in rules or workflows
+   - Note framework-specific rules (e.g. state management, routing, testing) that should be reflected in rules or commands
 
-3. **Use common rules and workflows as base**
-   - Read `./.agents/rules/common/project_rule_common.mdc` as the base for project rules
-   - Read the relevant common command files from `./.agents/workflows/common/` (e.g. `research_plan_common.prompt.md`, `ui_ux_bridge.prompt.md`, `implementation_plan_common.prompt.md`) as the base for workflows
+3. **Use common rules, stack templates, and commands as base**
+   - Read `./.agents/rules/common/project_rule_common.mdc` as the **contract** for project rules (full topic parity required for tech-specific output — see §0.0.2a)
+   - Read `./.agents/rules/templates/README.md` and the **best-matching** `./.agents/rules/templates/*-project-rule.template.mdc` for the detected stack (e.g. `flutter-project-rule.template.mdc`, `nextjs-typescript-project-rule.template.mdc`). **Pick one tier** (Small / Medium / Big) from product context (see README); use that tier’s content as **scaffold** — expand with all topics from `project_rule_common.mdc` that the template does not already cover
+   - Read the relevant common command files from `./.agents/workflows/common/` (e.g. `research_plan_common.prompt.md`, `ui_ux_bridge.prompt.md`, `implementation_plan_common.prompt.md`) as the base for commands
 
-4. **Write or update rules and workflows to fit the project**
-   - **Rules:** Generate or update `./.agents/rules/project-rule_[TECH]_[LANGUAGE].mdc` so that it matches the project’s tech stack, language, and conventions, using the common rule and researched official/relevant docs
-   - **workflows:** Generate or update tech-specific command files in `./.agents/workflows/specify/` (e.g. `research_plan_[TECH]_[LANGUAGE].prompt.md`, `ui_ux_bridge_[TECH]_[LANGUAGE].prompt.md`, etc.) so that they match the project, using the common workflows and researched documentation
+4. **Write or update rules and commands to fit the project**
+   - **Rules:** Generate or update `./.agents/rules/project-rule_[TECH]_[LANGUAGE].mdc` so that it matches the project’s tech stack, language, and conventions, using **`project_rule_common.mdc` + the matching `templates/` file (tier chosen) +** researched official/relevant docs. If **no** template exists for the stack, still meet §0.0.2a from common + research only
+   - **Commands:** Generate or update tech-specific command files in `./.agents/workflows/specify/` (e.g. `research_plan_[TECH]_[LANGUAGE].prompt.md`, `ui_ux_bridge_[TECH]_[LANGUAGE].prompt.md`, etc.) so that they match the project, using the common commands and researched documentation
    - Ensure written content is concrete: correct syntax, framework-specific patterns, and references to official docs where helpful
 
 ### 0.0.2a Tech-Specific Project Rule — Full Parity With `project_rule_common.mdc` (MANDATORY WHEN WRITING RULES)
 
 When creating or **substantially updating** `./.agents/rules/project-rule_[TECH]_[LANGUAGE].mdc`, the file MUST **not** be a short summary. Treat `./.agents/rules/common/project_rule_common.mdc` as the **complete contract**: every topic there must appear in the tech-specific rule, **adapted** to the user’s stack (framework idioms, folder layout, state library, router, DI, testing tools, linter, and official terminology).
+
+**Stack templates (mandatory when a file matches):** Before drafting, open `./.agents/rules/templates/README.md` and select the **`*.template.mdc`** whose stack matches the project (Flutter, Swift iOS, Kotlin Android, Java Spring, Node.js TypeScript, Next.js TypeScript). Use the appropriate **Small / Medium / Big** tier as the **starting structure** and stack-specific detail; then **merge and expand** so §0.0.2a checklist is fully satisfied (templates alone are not sufficient — they supplement common + research). If there is **no** template for the stack, state that in `## References consulted` and derive structure from `project_rule_common.mdc` + web research only.
 
 **Mandatory research (use the web):** Before drafting the rule, search for and align with **official** documentation and widely accepted guidance for the stack, e.g. language style guide, framework architecture docs, recommended testing approach, security baseline, and migration/version notes. Incorporate concrete names (packages, CLI commands, config files) from that research — not generic placeholders.
 
@@ -245,17 +257,17 @@ When creating or **substantially updating** `./.agents/rules/project-rule_[TECH]
 
 **When to regenerate:** If an existing `project-rule_*` is thin, omits several sections above, or contradicts the detected stack, expand or replace it to meet this parity — not only when the file is missing.
 
-**If rules/workflows already exist and fit the project:** Skip generation; proceed to Step 0. If the rule exists but fails parity/depth above, treat as **not fit** and update it.
+**If rules/commands already exist and fit the project:** Skip generation; proceed to Step 0. If the rule exists but fails parity/depth above, treat as **not fit** and update it.
 
 ### 0.0.3 Deliverable and Handoff
 
-- **Scan result:** Brief note of what was found in `.agents` and whether it fits the project
+- **Scan result:** Brief note of what was found in `.cursor` and whether it fits the project
 - **If generation was needed:** List of created/updated rule and command files and how they align with user requirement and researched docs
-- **Action:** Proceed to Step 0 (Verify & Generate Tech-Specific workflows and Project Rules), which will re-verify and generate any still-missing tech-specific files from common templates
+- **Action:** Proceed to Step 0 (Verify & Generate Tech-Specific Commands and Project Rules), which will re-verify and generate any still-missing tech-specific files from common templates
 
 ---
 
-## STEP 0: Verify & Generate Tech-Specific workflows and Project Rules (MANDATORY - AFTER STEP 0.0)
+## STEP 0: Verify & Generate Tech-Specific Commands and Project Rules (MANDATORY - AFTER STEP 0.0)
 
 **Objective:** Ensure all required tech/language/framework-specific command files and project rules exist before proceeding with feature generation (re-verify after Step 0.0; generate from common templates any files still missing).
 
@@ -277,9 +289,9 @@ Framework: Bloc
 Platform: iOS, Android
 ```
 
-### 0.2 Check workflows/specify/ Directory
+### 0.2 Check commands/specify/ Directory
 
-**MANDATORY: Check for existing tech-specific workflows**
+**MANDATORY: Check for existing tech-specific commands**
 
 **Directory to check:**
 ```
@@ -373,16 +385,19 @@ Platform: iOS, Android
 
 **IF the required project rule file is missing OR it fails the parity/depth requirements in §0.0.2a:**
 
-**Source file to reference:**
+**Source files to reference:**
 ```
 ./.agents/rules/common/project_rule_common.mdc
+./.agents/rules/templates/README.md
+./.agents/rules/templates/<matching>-project-rule.template.mdc   # when stack matches a template
 ```
 
 **Generation process:**
 1. Read the **entire** common project rule from `./.agents/rules/common/project_rule_common.mdc` (do not sample only the beginning).
-2. **Research** the stack on the web (official docs, style guides, testing and security baselines) and fold findings into concrete rules.
-3. Produce a tech-specific rule that satisfies **§0.0.2a** (full section parity, detailed bullets, examples in the project language, `## References consulted`).
-4. Generate tech-specific version with:
+2. Read `./.agents/rules/templates/README.md`; open the **matching** `*-project-rule.template.mdc` and extract the **chosen tier** (Small / Medium / Big) as scaffold content.
+3. **Research** the stack on the web (official docs, style guides, testing and security baselines) and fold findings into concrete rules.
+4. Produce a tech-specific rule that satisfies **§0.0.2a** (full section parity, detailed bullets, examples in the project language, `## References consulted`), integrating template tier material where it fits and filling every gap against the common file.
+5. Polish the generated file with:
    - Technology-specific syntax examples
    - Language-specific patterns and conventions
    - Framework-specific state management patterns
@@ -410,7 +425,7 @@ project-rule_[TECH]_[LANGUAGE].mdc
 **Updated Directory Structure After Step 0:**
 ```
 ./.agents/
-├── workflows/
+├── commands/
 │   ├── common/
 │   │   ├── research_plan_common.prompt.md
 │   │   ├── ui_ux_design_generator.prompt.md
@@ -424,6 +439,9 @@ project-rule_[TECH]_[LANGUAGE].mdc
 └── rules/
     ├── common/
     │   └── project_rule_common.mdc
+    ├── templates/
+    │   ├── README.md
+    │   └── *-project-rule.template.mdc
     └── project-rule_[TECH]_[LANGUAGE].mdc
 ```
 
@@ -431,7 +449,7 @@ project-rule_[TECH]_[LANGUAGE].mdc
 
 **Before proceeding to Step 1, verify:**
 - ✅ All 4 required tech-specific command files exist in `./.agents/workflows/specify/`
-- ✅ Project rule file exists in `./.agents/rules/` and meets **§0.0.2a** (parity with `project_rule_common.mdc`, substantive depth, `## References consulted` when newly written)
+- ✅ Project rule file exists in `./.agents/rules/` and meets **§0.0.2a** (parity with `project_rule_common.mdc`, substantive depth, `## References consulted` when newly written); when a matching file exists under `./.agents/rules/templates/`, generation **must have used** that template’s **tier** as scaffold per §0.0.2a / §0.7
 - ✅ All files are properly named according to tech/language/framework
 - ✅ Files contain technology-specific adaptations
 - ✅ Files reference correct syntax and patterns for the tech stack
@@ -953,6 +971,10 @@ browse shoes, filter by categories, add to cart, and checkout."
 
 **⚠️ MANDATORY: READ AND REFERENCE THE RESEARCH PLAN PROMPT FILE**
 
+**Additional mandatory checks for Step 2 (tie-back to project rules):**
+- If the feature touches **database/schema/migrations**, explicitly include in the research/approach evaluation a **release-aware versioning decision** (check latest release; don’t bump version again if prior bump is not released).
+- If the feature touches **UI/UX**, explicitly inventory existing **design system/tokens** and **shared components** in the repo; plan to extend the canonical shared location rather than creating one-off UI.
+
 **File Path (from Step 0):**
 - **Primary:** `./.agents/workflows/specify/research_plan_[TECH]_[LANGUAGE].prompt.md`
 - **Fallback:** `./.agents/workflows/common/research_plan_common.prompt.md`
@@ -1159,7 +1181,7 @@ SHOE_SHOP_ECOMMERCE_WIREFRAMES_2025-12-03.md
 **Deliverable:**
 Complete wireframe document with:
 - ✅ **UI mode:** All screen/page wireframes (ASCII art format); layout descriptions; component inventory and hierarchy; navigation flow diagrams; responsive layout variations; user flow integration notes; accessibility considerations
-- ✅ **Structural mode:** All planned diagrams (system, API/CLI, data flow, layers); inventory of modules/endpoints/workflows; failure-path coverage; alignment with research plan approach
+- ✅ **Structural mode:** All planned diagrams (system, API/CLI, data flow, layers); inventory of modules/endpoints/commands; failure-path coverage; alignment with research plan approach
 
 **Directory Structure After Step 2.5:**
 ```
@@ -1232,6 +1254,10 @@ Please review the wireframes above and provide feedback:
 ## STEP 3: Generate UI/UX Design System (CONDITIONAL - ONLY IF UI/UX REQUIRED)
 
 **Objective:** Create comprehensive UI/UX specifications following tech-specific UI/UX design generator prompt
+
+**Mandatory requirement (design-system-first):**
+- If a project design system already exists, the output for Step 3 must **conform to it** (tokens + component conventions) and extend it in the canonical shared location.
+- If no design system exists yet, Step 3 must first define and document a **project design system** (tokens + core components) before designing feature screens/components.
 
 **⚠️ CONDITIONAL EXECUTION:**
 - **IF `requires_ui_ux: true`** → Execute this step
@@ -1885,7 +1911,7 @@ Please review the generated documentation and confirm:
 
 **DO NOT EXECUTE WITHOUT USER SAYING "YES" OR "PROCEED"**
 
-**Prerequisite:** Steps 0–5 are complete on disk (mandatory paperwork pack + wireframe approval + any UI/UX docs if applicable). **Steps 1–5 must not have modified the application source tree for this feature** — only `./docs/` and `.agents/` (rules/workflows) as allowed in **Paperwork First**.
+**Prerequisite:** Steps 0–5 are complete on disk (mandatory paperwork pack + wireframe approval + any UI/UX docs if applicable). **Steps 1–5 must not have modified the application source tree for this feature** — only `./docs/` and `.agents/` (rules/commands) as allowed in **Paperwork First**.
 
 ### 6.1 Verify User Approval
 
@@ -1988,7 +2014,7 @@ After completing entire workflow:
 
 ### Do:
 ✅ Execute all steps in order (0→1→2→2.5→3→4→5→CONFIRM→6); Step 2.5 is never skipped
-✅ Verify and generate tech-specific workflows FIRST (Step 0)
+✅ Verify and generate tech-specific commands FIRST (Step 0)
 ✅ Generate wireframes for **every** feature (Step 2.5): UI or structural mode; wait for user approval
 ✅ Generate **seven** implementation plan files (Step 5) before asking for implementation confirmation
 ✅ Store all outputs in specified directories
@@ -2002,7 +2028,7 @@ After completing entire workflow:
 
 ### Don't:
 ❌ Skip any step in the workflow (especially Step 0)
-❌ Proceed to Step 1 without verifying workflows
+❌ Proceed to Step 1 without verifying commands
 ❌ Implement or refactor **application feature code** during Steps 1–5 (paperwork-only phase; see **Paperwork First**)
 ❌ Put Step 4 UI output into the live app tree before Step 6 — keep under `./docs/ui_ux/`
 ❌ Proceed to implementation without user approval
@@ -2056,8 +2082,8 @@ Other Documentation:    ./docs/others/
 
 ### Checkpoint
 ```
-Step 0.0: Scan .agents for rules/workflows; if missing or not fit, parse user prompt + research (internet, official docs) + use common → write fit rules/workflows (execute automatically)
-Step 0: Verify and generate tech-specific workflows and project rules (execute automatically)
+Step 0.0: Scan .cursor for rules/commands; if missing or not fit, parse user prompt + research (internet, official docs) + use common → write fit rules/commands (execute automatically)
+Step 0: Verify and generate tech-specific commands and project rules (execute automatically)
 Steps 1-5: Execute automatically
 After Step 5: STOP and ask user confirmation
 Step 6: Execute ONLY if user approves
@@ -2068,7 +2094,7 @@ Step 6: Execute ONLY if user approves
 ## FINAL REMINDER FOR AI
 
 **MANDATORY PROMPT FILE REFERENCES (from Step 0):**
-- Step 0.0: Scan `.agents/`; if rules/workflows missing or don't fit project → parse user prompt, research official/relevant docs, use common → write fit rules/workflows; tech-specific project rules MUST satisfy **§0.0.2a** (full parity with `project_rule_common.mdc` + web research + `## References consulted`)
+- Step 0.0: Scan `.agents/`; if rules/commands missing or don't fit project → parse user prompt, research official/relevant docs, use **`project_rule_common.mdc` + `./.agents/rules/templates/`** (README + matching `*.template.mdc` tier) → write fit rules/commands; tech-specific project rules MUST satisfy **§0.0.2a** (full parity with `project_rule_common.mdc` + web research + `## References consulted`)
 - Step 0: Verify and generate tech-specific files in:
   - `./.agents/workflows/specify/` (command files)
   - `./.agents/rules/` (project rule)
@@ -2076,7 +2102,7 @@ Step 6: Execute ONLY if user approves
 - Step 3: `./.agents/workflows/specify/ui_ux_design_generator_[TECH]_[LANGUAGE].prompt.md` (or common fallback)
 - Step 4: `./.agents/workflows/specify/ui_ux_bridge_[TECH]_[LANGUAGE].prompt.md` (or common fallback)
 - Step 5: `./.agents/workflows/specify/implementation_plan_[TECH]_[LANGUAGE].prompt.md` (or common fallback)
-- Project Rule: `./.agents/rules/project-rule_[TECH]_[LANGUAGE].mdc` (or common fallback: `./.agents/rules/common/project_rule_common.mdc`)
+- Project Rule: `./.agents/rules/project-rule_[TECH]_[LANGUAGE].mdc` (or common fallback: `./.agents/rules/common/project_rule_common.mdc`); scaffolds: `./.agents/rules/templates/`
 
 ---
 
@@ -2114,10 +2140,10 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
 
 **When you receive a feature request, you MUST:**
 
-✅ **Step 0.0:** Scan `.agents/` for existing rules/workflows; if missing or not fit → parse user prompt, research (internet, official docs), use common → write fit rules/workflows
-✅ **Step 0:** Verify tech-specific workflows and project rule exist:
-   - workflows in `./.agents/workflows/specify/` → Generate missing files from `./.agents/workflows/common/`
-   - Project rule in `./.agents/rules/` → Generate missing file from `./.agents/rules/common/`
+✅ **Step 0.0:** Scan `.agents/` for existing rules/commands; if missing or not fit → parse user prompt, research (internet, official docs), use common → write fit rules/commands
+✅ **Step 0:** Verify tech-specific commands and project rule exist:
+   - Commands in `./.agents/workflows/specify/` → Generate missing files from `./.agents/workflows/common/`
+   - Project rule in `./.agents/rules/` → Generate missing file from `./.agents/rules/common/project_rule_common.mdc` **and** `./.agents/rules/templates/` (README + matching tier from `*.template.mdc`) per §0.7
 ✅ **Step 0.5:** [IF UI design images detected] Process UI images:
    - Detect UI design images in user input
    - Break image into logical components/sections
@@ -2136,7 +2162,7 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
 
 **DO NOT:**
 ❌ Skip any step (0-5 must complete before asking user, except Step 0.5 if no images, Step 3 & 4 if UI/UX not required); **never skip Step 2.5 or any of the seven implementation plan files**
-❌ Proceed to Step 1 without verifying/generating tech-specific workflows and project rule
+❌ Proceed to Step 1 without verifying/generating tech-specific commands and project rule
 ❌ Skip Step 0.5 if UI images are detected (must process images first)
 ❌ Skip breaking down UI images into components (must analyze comprehensively)
 ❌ Skip converting components to HTML using @ui_ux_bridge (each component must be converted)
@@ -2171,7 +2197,7 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
 - If uncertain about UI/UX requirement, default to including UI/UX steps (better safe than sorry)
 - Converted HTML/components from Step 0.5 must be used as design reference in subsequent steps
 
-**WORKFLOW = Verify workflows & Rules → [Process UI Images if present → Break into Components → Convert to HTML (@ui_ux_bridge)] → Parse → Determine UI/UX → Research → **Generate Wireframes (always) → USER REVIEW/APPROVE** → [Design → Code] (if UI/UX) → **Plan (1 main + 6 child)** → **CONFIRM** → Implement**
+**WORKFLOW = Verify Commands & Rules → [Process UI Images if present → Break into Components → Convert to HTML (@ui_ux_bridge)] → Parse → Determine UI/UX → Research → **Generate Wireframes (always) → USER REVIEW/APPROVE** → [Design → Code] (if UI/UX) → **Plan (1 main + 6 child)** → **CONFIRM** → Implement**
 
 ---
 
@@ -2183,14 +2209,14 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
 ```
 
 **AI Execution:**
-1. ✅ **Step 0.0:** Scan .agents; if rules/workflows missing or not fit for project → parse user prompt, research docs, use common → write fit rules/workflows
-2. ✅ **Step 0:** Verify workflows and project rule for Flutter/Dart
+1. ✅ **Step 0.0:** Scan .cursor; if rules/commands missing or not fit for project → parse user prompt, research docs, use common → write fit rules/commands
+2. ✅ **Step 0:** Verify commands and project rule for Flutter/Dart
    - Check `./.agents/workflows/specify/` → Generate missing files from `./.agents/workflows/common/`
      - Generate: `research_plan_flutter_dart.prompt.md`
      - Generate: `ui_ux_design_generator_flutter_dart.prompt.md`
      - Generate: `ui_ux_bridge_flutter_dart.prompt.md`
      - Generate: `implementation_plan_flutter_dart.prompt.md`
-   - Check `./.agents/rules/` → Generate missing file from `./.agents/rules/common/`
+   - Check `./.agents/rules/` → Generate missing file using `./.agents/rules/common/` + `./.agents/rules/templates/` per §0.7
      - Generate: `project-rule_flutter_dart.mdc`
 3. ✅ **Step 1:** Parse requirements
 4. ✅ **Step 1.5:** Determine UI/UX requirement
@@ -2212,8 +2238,8 @@ This workflow orchestrates multiple steps, each of which must produce comprehens
 User Input: "Create a REST API endpoint for user authentication with JWT tokens"
 
 AI Execution:
-1. ✅ Step 0.0: Scan .agents; ensure rules/workflows exist and fit (if not, research + write from common; project rule must meet §0.0.2a)
-2. ✅ Step 0: Verify workflows and project rule
+1. ✅ Step 0.0: Scan .cursor; ensure rules/commands exist and fit (if not, research + write from `project_rule_common.mdc` + `rules/templates/`; project rule must meet §0.0.2a)
+2. ✅ Step 0: Verify commands and project rule
 3. ✅ Step 1: Parse requirements
 4. ✅ Step 1.5: Determine UI/UX requirement
    - Analysis: "REST API endpoint" → Backend-only, no user interface

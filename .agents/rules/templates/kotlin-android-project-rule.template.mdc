@@ -1,0 +1,188 @@
+---
+description: Copy to project-rule.mdc; pick ONE tier. Kotlin / Android (Jetpack Compose-first).
+alwaysApply: false
+---
+# Kotlin / Android project-rule (template)
+
+Replace `{{APP_NAME}}`, namespaces (`com.company.app`), and module names. **Keep only one tier** when materializing the rule.
+
+---
+
+## How to choose a tier
+
+| Tier | When to use |
+|------|-------------|
+| **Small** | MVP, hackathon, internal app, 1–3 devs |
+| **Medium** | Production Play Store app, product squad |
+| **Big** | Large team, modularized app, compliance, scale |
+
+---
+
+## Tier: Small project
+
+### S1. Scope
+
+- **Single module** `:app` is acceptable.
+- **Jetpack Compose** + **ViewModel** (`androidx.lifecycle`); **Navigation Compose** for screens.
+- **kotlinx.serialization** or **Moshi** for JSON — one choice per project.
+
+### S2. Package layout
+
+```
+com.company.{{APP_NAME}}/
+├── ui/                 # screens + composables
+├── data/               # api, dto, repository impl
+├── domain/             # optional; models + simple use cases
+├── di/                 # optional Koin module or manual factories
+└── {{APP_NAME}}Application.kt
+```
+
+### S3. Conventions
+
+- **Coroutines** + **Flow** for async; **`viewModelScope`** for UI-related work.
+- **Repository** pattern optional but recommended even in small apps for testability.
+- **Material 3** theming; **EdgeToEdge** when targeting current SDK guidelines.
+
+### S4. Quality
+
+- **ktlint** or **detekt** optional; at minimum **Android Lint** + **compile** clean.
+- **Unit tests** for mappers and non-trivial business rules.
+
+### S5. Security
+
+- **Encrypted** storage for tokens (**EncryptedSharedPreferences** or **DataStore** + encryption where needed).
+- **ProGuard/R8** minify enabled for **release** builds.
+
+### S6. Checklist (small)
+
+- [ ] No secrets in `BuildConfig` committed to public repos; use CI secrets.
+- [ ] Process death: critical state restored or acceptable UX documented.
+- [ ] Network errors surfaced to user.
+
+---
+
+## Tier: Medium project
+
+### M1. Architecture
+
+- **Feature-first** modules OR feature packages inside app: `feature/home`, `feature/profile`, `core:ui`, `core:network`.
+- **Clean layering**: `data` implements `domain` repository interfaces; **Compose** only talks to **ViewModels** / **UseCases**.
+- **Hilt** for DI (standard for new Google-aligned projects) or **Koin** if legacy — **one** framework.
+
+### M2. Module example (medium)
+
+```
+:app
+:core:common
+:core:ui
+:core:network
+:feature:auth
+:feature:main
+```
+
+### M3. Networking
+
+- **Retrofit** + **OkHttp** interceptors (auth, logging off in prod).
+- **DTOs** in `data`; mapping to **domain** entities explicit (`toDomain()`).
+- **Paging 3** for large lists; **offline-first** optional with **Room**.
+
+### M4. Local data
+
+- **Room** for structured cache; **DataStore** for preferences.
+- **Migrations** versioned and tested.
+
+### M5. UI (Compose)
+
+- **State hoisting**; **UiState** data classes (`data class HomeUiState(...)`).
+- **Side effects** via `LaunchedEffect` / `DisposableEffect` with clear keys.
+- **Preview** parameters for design-system components.
+- **String resources** for all user-facing text; **plurals** where needed.
+
+### M6. Navigation
+
+- **Type-safe** navigation where using Navigation Compose with routes sealed/graph.
+- **Deep links** documented; **back stack** behavior defined for auth.
+
+### M7. Testing
+
+- **JUnit** + **MockK** / **Mockito** for ViewModels and repositories.
+- **Turbine** for Flow testing.
+- **Compose UI tests** for critical flows on CI emulator.
+
+### M8. Build and quality
+
+- **Version catalog** (`libs.versions.toml`) for dependencies.
+- **detekt** baseline if legacy debt; **no new** high-severity issues.
+- **Baseline profiles** considered for startup-critical apps.
+
+### M9. Product flavors, crash reporting, and feature flags (medium baseline)
+
+Production-oriented medium apps treat these as **standard**.
+
+- **Flavors (`dev` / `staging` / `prod`)**: **Android productFlavors** (and matching **BuildConfig** / resource qualifiers) with **distinct** `applicationId` suffixes or namespaces when side-by-side installs or different backends are required. **Base URLs**, client IDs, and analytics keys injected per flavor — not a single prod constant.
+- **Crash and performance**: **Firebase Crashlytics**, **Sentry**, or equivalent; **mapping files** / **R8 mapping** uploaded for **release** builds. Use **Firebase Performance**, **Android vitals** focus, or **custom tracing** for **cold start** and **critical** screens; validate on **staging** before store rollout.
+- **Feature flags**: **Firebase Remote Config**, **LaunchDarkly**, etc. — **document** keys, **default** values per flavor, owners, and **retirement** after full rollout.
+
+### M10. Checklist (medium)
+
+- [ ] Feature boundaries respected; no `feature:A` depending on `feature:B` internals.
+- [ ] Hilt/Koin graph compiles; no service locators in Composables.
+- [ ] Lint + unit tests in CI.
+- [ ] R8 mapping files uploaded for crash deobfuscation.
+- [ ] **Flavors**: feature tested on the correct **dev / staging / prod** variant.
+- [ ] **Crash/performance**: no PII in crash attributes; regressions called out in PR when known.
+- [ ] **Feature flags**: new flags documented with owner and cleanup plan.
+
+---
+
+## Tier: Big project
+
+### B1. Modularization
+
+- **Strict** feature modules; **api** vs **impl** split when features communicate (interface modules).
+- **Core** libraries for design system, analytics, networking — **stable semver** internal APIs.
+
+### B2. Scale and reliability
+
+- **Worker** / **WorkManager** for guaranteed background work.
+- **Circuit breakers** and **retry policies** for flaky networks; **offline queues** if business requires.
+- **Builds on medium baseline** (§M9): enforce **kill switch** runbooks, **SLOs** on crash rate / ANR, and **staged rollout** tied to observability dashboards.
+
+### B3. Security and compliance
+
+- **Play Integrity** / **SafetyNet** successor APIs where fraud matters.
+- **Certificate pinning** with documented rotation.
+- **Data export/deletion** for privacy regulations.
+
+### B4. Observability
+
+- **Firebase Performance** / **Datadog** / **New Relic** — **one** primary APM; **custom traces** for critical paths.
+- **Structured logs**; **no PII** in log payloads.
+
+### B5. Testing at scale
+
+- **Screenshot** / **paparazzi** for UI modules where agreed.
+- **Large integration** test suite sharded on CI; **flaky test** policy.
+
+### B6. Release
+
+- **Staged rollouts**; **monitoring** dashboards per release; **hotfix** branch process.
+
+### B7. Checklist (big)
+
+- [ ] Module dependency graph linted (e.g. dependency-analysis plugin).
+- [ ] SLOs for crash rate and ANR; alerts wired.
+- [ ] Security review for auth, payments, PII.
+- [ ] ADRs for cross-cutting changes.
+
+---
+
+## References
+
+- [Android architecture](https://developer.android.com/topic/architecture)
+- [Jetpack Compose](https://developer.android.com/jetpack/compose)
+- [Kotlin coding conventions](https://kotlinlang.org/docs/coding-conventions.html)
+
+---
+
+_End — retain one tier only in your real `project-rule.mdc`._

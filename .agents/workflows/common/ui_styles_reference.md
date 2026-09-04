@@ -99,7 +99,7 @@ Creates sense of motion, technology, exploration, and dynamism. Feels alive and 
 - Scientific Computing Tools
 
 ### Interaction Features
-- Can react to mouse movement (particles follow agent)
+- Can react to mouse movement (particles follow cursor)
 - Can draw connection lines between nearby particles
 - Can change colors based on position/distance
 - Can respond to scroll events
@@ -943,7 +943,7 @@ Smooth, rounded, amoeba-like shape that morphs and changes form continuously. Re
 - Morphing: Continuous smooth deformation
 - Duration: 4-8 seconds per morph cycle
 - Colors: Gradient or solid fill
-- Interactivity: Optional - responds to agent
+- Interactivity: Optional - responds to cursor
 - Opacity: Optional transparency variation
 
 ### Use Cases

@@ -59,8 +59,8 @@ When you receive a UI/UX design request, you MUST:
 - ✅ Ensured this design is SIGNIFICANTLY DIFFERENT from other projects
 
 **Action Required:**
-1. **Read and analyze** `.agent/commands/common/ui_styles_reference.md`
-2. **Read and analyze** `.agent/uiux_reference/data/` folder for additional UI/UX context:
+1. **Read and analyze** `.agents/workflows/common/ui_styles_reference.md`
+2. **Read and analyze** `.agents/uiux_reference/data/` folder for additional UI/UX context:
    - `styles.csv` - UI style patterns and specifications
    - `colors.csv` - Color palettes and schemes
    - `typography.csv` - Typography guidelines and font recommendations
@@ -90,8 +90,8 @@ When you receive a UI/UX design request, you MUST:
 - Complexity Constraints: [Low, Medium, High]
 
 **UI Styles Reference Check:**
-1. Reviewed `.agent/commands/common/ui_styles_reference.md`
-2. Reviewed `.agent/uiux_reference/data/` folder:
+1. Reviewed `.agents/workflows/common/ui_styles_reference.md`
+2. Reviewed `.agents/uiux_reference/data/` folder:
    - Checked `styles.csv` for style patterns
    - Checked `colors.csv` for color schemes
    - Checked `typography.csv` for typography guidelines
@@ -406,7 +406,7 @@ When you receive a UI/UX design request, you MUST:
 1. 3D card tilt (mouse-tracking perspective transform)
 2. Glow effects on hover (accent color glow)
 3. Scale + elevation on hover (lift effect)
-4. Particle interaction (particles follow agent)
+4. Particle interaction (particles follow cursor)
 
 **Scroll Engagement:**
 1. Parallax effects (different scroll speeds)

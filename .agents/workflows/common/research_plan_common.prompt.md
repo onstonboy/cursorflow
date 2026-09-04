@@ -132,8 +132,8 @@ When you receive a feature request, you MUST:
 **⚠️ MANDATORY: Reference and use UI/UX Bridge prompt file for conversion**
 
 **Reference File:**
-- **Primary:** `./.agent/commands/specify/ui_ux_bridge_[TECH]_[LANGUAGE].prompt.md`
-- **Fallback:** `./.agent/commands/common/ui_ux_bridge.prompt.md`
+- **Primary:** `./.agents/workflows/specify/ui_ux_bridge_[TECH]_[LANGUAGE].prompt.md`
+- **Fallback:** `./.agents/workflows/common/ui_ux_bridge.prompt.md`
 
 **⚠️ CRITICAL: Read UI/UX Bridge prompt file before proceeding**
 
@@ -932,7 +932,7 @@ When analyzing a feature request, follow this systematic 7-step approach (ALL ST
 - What HTTP client/library? (axios, fetch, OkHttp, Retrofit, HttpClient, etc.)
 - API authentication method (JWT, OAuth, API keys, Session-based)
 - Response format (JSON, XML, Protocol Buffers, MessagePack)
-- Pagination strategy (offset, agent-based, page-based)
+- Pagination strategy (offset, cursor-based, page-based)
 - Rate limiting considerations
 
 **Local Data:**
@@ -963,8 +963,8 @@ When analyzing a feature request, follow this systematic 7-step approach (ALL ST
 **⚠️ CRITICAL: AI MUST CHECK BOTH UI STYLES REFERENCE AND UI/UX REFERENCE DATA FIRST**
 
 **Step 1: Check UI Styles Reference & UI/UX Reference Data & Landing Page Prompts (MANDATORY)**
-1. **Read and analyze** `.agent/commands/common/ui_styles_reference.md`
-2. **Read and analyze** `.agent/uiux_reference/data/` folder for UI/UX reference data:
+1. **Read and analyze** `.agents/workflows/common/ui_styles_reference.md`
+2. **Read and analyze** `.agents/uiux_reference/data/` folder for UI/UX reference data:
    - `styles.csv` - UI style patterns and specifications
    - `colors.csv` - Color palettes and schemes
    - `typography.csv` - Typography guidelines and font recommendations
@@ -974,7 +974,7 @@ When analyzing a feature request, follow this systematic 7-step approach (ALL ST
    - `charts.csv` - Data visualization patterns
    - `prompts.csv` - UI/UX prompt templates and examples
    - `stacks/[FRAMEWORK].csv` - Framework-specific UI/UX patterns (check relevant framework)
-3. **Read and analyze** `.agent/uiux_reference/landing_page_prompts/` for full design prompts (when landing/marketing pages or style-led UI are relevant):
+3. **Read and analyze** `.agents/uiux_reference/landing_page_prompts/` for full design prompts (when landing/marketing pages or style-led UI are relevant):
    - `README.md` - Index of 30 design styles (Monochrome, SaaS, Terminal, etc.)
    - Individual style files (e.g. `01-monochrome.md`, `04-saas.md`) - Full AI-ready design system prompts (philosophy, tokens, components, layout ideas); use to align research plan with a chosen style or to pick a style that fits project requirements
 4. **Extract project/feature requirements** from the user's request
@@ -996,8 +996,8 @@ When analyzing a feature request, follow this systematic 7-step approach (ALL ST
 - Complexity Constraints: [Low, Medium, High]
 
 **UI Styles Reference Check:**
-1. Reviewed `.agent/commands/common/ui_styles_reference.md`
-2. Reviewed `.agent/uiux_reference/data/` folder:
+1. Reviewed `.agents/workflows/common/ui_styles_reference.md`
+2. Reviewed `.agents/uiux_reference/data/` folder:
    - Checked `styles.csv` for style patterns
    - Checked `colors.csv` for color schemes
    - Checked `typography.csv` for typography guidelines
@@ -1007,7 +1007,7 @@ When analyzing a feature request, follow this systematic 7-step approach (ALL ST
    - Checked `charts.csv` for data visualization patterns (if applicable)
    - Checked `prompts.csv` for UI/UX prompt examples
    - Checked `stacks/[FRAMEWORK].csv` for framework-specific patterns
-3. Reviewed `.agent/uiux_reference/landing_page_prompts/` (README.md + relevant style .md files) for full design prompts when landing/marketing or style-led UI is in scope
+3. Reviewed `.agents/uiux_reference/landing_page_prompts/` (README.md + relevant style .md files) for full design prompts when landing/marketing or style-led UI is in scope
 4. Identified relevant styles based on "Suitable Project Types" attribute from all sources
 5. Cross-referenced data from ui_styles_reference, uiux_reference/data, and landing_page_prompts with project requirements
 6. Evaluated WOW factor, complexity, and performance ratings from references
@@ -1246,7 +1246,7 @@ When analyzing a feature request, follow this systematic 7-step approach (ALL ST
 
 **Pagination Strategies:**
 - **Offset-Based Pagination:** Traditional page numbers (LIMIT/OFFSET)
-- **agent-Based Pagination:** Using agent/token for next page (more efficient)
+- **Cursor-Based Pagination:** Using cursor/token for next page (more efficient)
 - **Infinite Scroll:** Automatically load more as user scrolls
 - **Load More Button:** User-triggered pagination
 - **Virtual Scrolling:** Render only visible items (for large lists)
