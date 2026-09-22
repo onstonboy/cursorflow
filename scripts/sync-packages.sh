@@ -2,8 +2,16 @@
 # Sync all CursorFlow packages from .cursor (source of truth) to other agents.
 #
 # Targets:
-#   .agents/  — Codex + Antigravity (commands → workflows)
-#   .claude/  — Claude Code
+#   .agents/     — Codex + Antigravity (commands → workflows)
+#   .claude/     — Claude Code
+#   .devin/      — Devin CLI
+#   .trae/       — Trae
+#   .grok/       — Grok (xAI)
+#   .opencode/   — OpenCode
+#   .qwen/       — Qwen Code
+#   .kimi-code/  — Kimi Code CLI
+#   .omp/        — Oh My Pi (omp)
+#   .pi/         — Pi coding agent
 #
 # Usage:
 #   ./scripts/sync-packages.sh
@@ -28,8 +36,8 @@ fi
 rewrite_file() {
   local src_file="$1"
   local dest_file="$2"
-  local agent_root="$3"       # e.g. .agents or .claude
-  local commands_name="$4"    # e.g. workflows or commands
+  local agent_root="$3"
+  local commands_name="$4"
 
   python3 - "$src_file" "$dest_file" "$agent_root" "$commands_name" <<'PY'
 import pathlib, sys
@@ -37,14 +45,26 @@ import pathlib, sys
 src_path, dest_path, agent_root, commands_name = sys.argv[1:5]
 text = pathlib.Path(src_path).read_text(encoding="utf-8")
 
-# Longest / most specific replacements first
+root_md = {
+    ".agents": "AGENTS.md",
+    ".claude": "CLAUDE.md",
+    ".devin": "AGENTS.md",
+    ".trae": "AGENTS.md",
+    ".grok": "AGENTS.md",
+    ".opencode": "AGENTS.md",
+    ".qwen": "QWEN.md",
+    ".kimi-code": "AGENTS.md",
+    ".omp": "AGENTS.md",
+    ".pi": "AGENTS.md",
+}.get(agent_root, "AGENTS.md")
+
 replacements = [
     (".cursor/commands", f"{agent_root}/{commands_name}"),
     (".cursor/uiux_reference", f"{agent_root}/uiux_reference"),
     (".cursor/skills", f"{agent_root}/skills"),
     (".cursor/rules", f"{agent_root}/rules"),
     (".cursor/docs", f"{agent_root}/docs"),
-    (".cursorrules", ".agentsrules" if agent_root == ".agents" else "CLAUDE.md"),
+    (".cursorrules", root_md),
     ("@.cursor/", f"@{agent_root}/"),
     (".cursor/", f"{agent_root}/"),
 ]
@@ -81,7 +101,6 @@ sync_package() {
   rm -rf "${dest}"
   mkdir -p "${dest}"
 
-  # Copy tree; rewrite text files in place when requested
   while IFS= read -r -d '' file; do
     local rel_file="${file#${src_dir}/}"
     local out="${dest}/${rel_file}"
@@ -103,24 +122,82 @@ sync_package() {
   echo "synced → ${dest}"
 }
 
+# Sync the standard package set for one agent root.
+# Args: agent_root commands_dir_name [packages...]
+# packages default: rules commands skills uiux_reference docs
+# Special: pass "commands:workflows" style already handled via commands_dir_name
+sync_agent() {
+  local agent_root="$1"
+  local commands_name="$2"
+  shift 2
+  local packages=("$@")
+  if [[ ${#packages[@]} -eq 0 ]]; then
+    packages=(rules commands skills uiux_reference docs)
+  fi
+
+  echo "--- ${agent_root} ---"
+  local pkg dest do_rewrite
+  for pkg in "${packages[@]}"; do
+    do_rewrite=1
+    case "${pkg}" in
+      docs) do_rewrite=0 ;;
+    esac
+    if [[ "${pkg}" == "commands" ]]; then
+      dest="${ROOT}/${agent_root}/${commands_name}"
+    else
+      dest="${ROOT}/${agent_root}/${pkg}"
+    fi
+    sync_package "${pkg}" "${dest}" "${agent_root}" "${commands_name}" "${do_rewrite}"
+  done
+}
+
 echo "source of truth: ${SRC}"
 
-# --- Codex / Antigravity (.agents) ---
-sync_package "rules"          "${ROOT}/.agents/rules"          ".agents" "workflows" 1
-sync_package "commands"       "${ROOT}/.agents/workflows"      ".agents" "workflows" 1
-sync_package "skills"         "${ROOT}/.agents/skills"         ".agents" "workflows" 1
-sync_package "uiux_reference" "${ROOT}/.agents/uiux_reference" ".agents" "workflows" 1
-# Docs describe all agents — copy verbatim (no path rewrite)
-sync_package "docs"           "${ROOT}/.agents/docs"           ".agents" "workflows" 0
+# Codex / Antigravity
+sync_agent ".agents" "workflows"
 
-# --- Claude Code (.claude) ---
-sync_package "rules"          "${ROOT}/.claude/rules"          ".claude" "commands" 1
-sync_package "commands"       "${ROOT}/.claude/commands"       ".claude" "commands" 1
-sync_package "skills"         "${ROOT}/.claude/skills"         ".claude" "commands" 1
-sync_package "uiux_reference" "${ROOT}/.claude/uiux_reference" ".claude" "commands" 1
-sync_package "docs"           "${ROOT}/.claude/docs"           ".claude" "commands" 0
+# Claude Code
+sync_agent ".claude" "commands"
 
-# Keep old skills-only script name working via note
+# Devin — native rules + skills; commands imported from .claude when present
+sync_agent ".devin" "commands" rules skills uiux_reference docs
+
+# Trae
+sync_agent ".trae" "commands"
+
+# Grok — rules + skills; slash workflows live as skills
+sync_agent ".grok" "commands" rules skills uiux_reference docs
+
+# OpenCode
+sync_agent ".opencode" "commands"
+
+# Qwen Code
+sync_agent ".qwen" "commands"
+
+# Kimi Code — skills are first-class; keep rules/commands/uiux for AGENTS.md pointers
+sync_agent ".kimi-code" "commands"
+
+# Oh My Pi (omp)
+sync_agent ".omp" "commands"
+
+# Pi coding agent
+sync_agent ".pi" "commands" rules skills uiux_reference docs
+
 if [[ "${DRY_RUN}" -eq 0 ]]; then
+  # OpenCode: point instructions at mirrored rules (additive; no secrets)
+  OPENCODE_JSON="${ROOT}/.opencode/opencode.json"
+  if [[ ! -f "${OPENCODE_JSON}" ]]; then
+    cat > "${OPENCODE_JSON}" <<'EOF'
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    ".opencode/rules/**/*.md",
+    ".opencode/rules/**/*.mdc"
+  ]
+}
+EOF
+    echo "wrote → ${OPENCODE_JSON}"
+  fi
+
   echo "done. edit under .cursor/, then re-run this script."
 fi

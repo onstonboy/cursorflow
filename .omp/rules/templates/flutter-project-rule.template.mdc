@@ -1,0 +1,349 @@
+---
+description: Copy to project-rule.mdc and customize (app name, packages, routing). Set alwaysApply true when active.
+alwaysApply: false
+---
+# Flutter project-rule (template)
+
+Guidelines for AI and contributors. Replace `{{APP_NAME}}`, paths, and optional stacks (Riverpod vs Bloc, etc.) for your repo.
+
+**Pick one tier below** (Small / Medium / Big). Remove the other two tiers when materializing `project-rule.mdc` so the active rule stays focused.
+
+---
+
+## Tier: Small project
+
+Use for MVPs, proofs of concept, internal tools, or very small teams (about 1–3 developers) where shipping quickly matters more than strict layering.
+
+### S1. Scope
+
+- Prefer **readable, consistent** code over perfect architecture.
+- **Light layering**: e.g. `ui/`, `data/`, `models/` under `lib/` or a flat `lib/screens` + `lib/services` split is acceptable.
+- **Reuse** shared widgets in one `widgets/` or `shared/` folder; scan before adding new primitives.
+- Run **`flutter analyze`** before merge; tests only where they prevent real regressions (auth, payments, critical navigation).
+
+### S2. Structure (minimal)
+
+```
+lib/
+├── main.dart
+├── app.dart
+├── screens/ or pages/
+├── widgets/
+├── services/ or repositories/    # API + local glue
+├── models/
+└── core/                         # theme, env, dio client (optional)
+```
+
+### S3. State and DI
+
+- **Provider**, **Riverpod**, **Cubit**, or even **StatefulWidget** are acceptable if the team picks one pattern and sticks to it.
+- Avoid **multiple** state solutions in the same app without a migration plan.
+- DI optional: **GetIt** or constructor injection at the root is enough; skip code-gen if it slows the team.
+
+### S4. Data and errors
+
+- One place for **HTTP** (e.g. Dio) and **JSON parsing**; handle **null** and **network** errors with user-visible messages.
+- Typed **`Failure`** / **`Either`** optional; at minimum use **Result**-style or try/catch with mapped UI states.
+
+### S5. UI and quality
+
+- **const** where easy; **l10n** if the product is user-facing multi-language; otherwise document “English only for MVP.”
+- **Inline closures** for widget callbacks if the project hit Flutter build-phase issues with tear-offs.
+- No secrets in repo; use `--dart-define` or CI for keys.
+
+### S6. Small-project checklist
+
+- [ ] Analyze passes; no obvious layer violations for the chosen simple layout.
+- [ ] Critical user paths manually tested or covered by a few widget/integration tests.
+- [ ] No secrets committed.
+
+---
+
+## Tier: Medium project (default)
+
+Balanced rules for **production business apps** (ongoing product work, small–medium teams). The sections below (**1–18**) are the canonical Medium baseline.
+
+---
+
+## 1. Scope and goals
+
+- Prefer **small, reviewable diffs**; match existing patterns in the repo before introducing new ones.
+- Follow **Clean Architecture**: Presentation → Domain ← Data (dependencies point inward).
+- Organize by **feature first**; shared code lives in `core/` and `widgets/` (or `shared/`).
+- After substantive changes, run **`flutter analyze`** (and tests if the project has them).
+
+---
+
+## 2. Repository layout (feature-first)
+
+Recommended `lib/` shape (adapt names to your app):
+
+```
+lib/
+├── core/                          # Cross-cutting, no feature-specific UI
+│   ├── di/                        # GetIt / injectable registration
+│   ├── error/                     # Failures, exception mappers
+│   ├── network/                   # Dio/client, interceptors
+│   ├── utils/                     # Pure helpers, extensions
+│   └── ...                        # analytics, env, platform bridges
+├── features/
+│   └── <feature_name>/
+│       ├── data/
+│       │   ├── datasources/       # remote_*, local_* implementations
+│       │   ├── models/            # DTOs, *_model.dart, JSON serializable
+│       │   └── repositories/      # *RepositoryImpl
+│       ├── domain/
+│       │   ├── entities/          # Equatable business objects
+│       │   ├── repositories/      # abstract *Repository
+│       │   └── use_cases/         # one class per use case when helpful
+│       └── presentation/
+│           ├── bloc| cubit/      # state management
+│           ├── pages/             # route-level screens
+│           └── widgets/           # feature-private widgets
+├── widgets/                       # App-wide reusable UI (scan before adding new)
+├── l10n/                          # ARB + generated localizations
+├── models/                        # Only if truly shared non-domain DTOs
+├── main.dart
+├── main_common.dart
+├── main_dev.dart
+├── main_prod.dart
+```
+
+**Rules**
+
+- A feature should not import another feature’s `data/` or `presentation/` directly; use `core` contracts or domain-level abstractions if sharing is required.
+- **Domain** must not depend on Flutter UI packages, `BuildContext`, or data implementation details.
+
+---
+
+## 3. Dart and Flutter style
+
+- **const** constructors wherever values are compile-time constant.
+- **Equatable** for value-based equality on states, entities, and immutable DTOs where appropriate.
+- **Trailing commas** for multi-line argument lists and collections.
+- Prefer **expression bodies** for one-liners; keep **functions under ~30 lines**; extract helpers when needed.
+- **Line length**: follow `analysis_options.yaml` (often 80 or 100); do not fight the formatter.
+- **Imports**: `dart:` → `package:` → relative; sorted; no unused imports.
+- Use **`log` from `dart:developer`** (or project logger) instead of `print`.
+- **Null safety**: no implicit downcasts; prefer early returns over deep nesting.
+
+---
+
+## 4. State management (flutter_bloc — adjust if using Riverpod, etc.)
+
+- **Bloc** for multi-step or event-heavy flows; **Cubit** for simple state toggles.
+- States and events are **immutable**; extend **Equatable** with correct `props`.
+- Model explicit phases: **initial, loading, success, error** (or sealed unions if the project uses them).
+- **No business logic in `build`**: dispatch events / call cubit methods from callbacks.
+- Prefer **`context.read<T>()`** for one-shot actions and **`BlocBuilder` / `BlocSelector`** for UI that must rebuild; use **`buildWhen`** to limit rebuilds.
+- Side effects (navigation, snackbars, dialogs): **`BlocListener`** (or `listenWhen`).
+- Register blocs/cubits via **GetIt** / `BlocProvider` consistently with the rest of the app.
+
+---
+
+## 5. Dependency injection (GetIt + injectable)
+
+- Register implementations in **`core/di/`**; prefer **constructor injection**.
+- Use **`@injectable`**, **`@singleton`**, **`@lazySingleton`** as appropriate.
+- After changing annotations:  
+  `dart run build_runner build --delete-conflicting-outputs`
+- Do not manually construct long-lived services inside widgets.
+
+---
+
+## 6. Error handling (Dartz + domain Failures)
+
+- Use **`Either<Failure, T>`** across domain boundaries where the project already does.
+- **`Left`** = failure, **`Right`** = success; use **`fold`**, **`map`**, **`flatMap`** for chaining.
+- Map **exceptions** to **Failure** in data layer; avoid leaking raw exceptions to presentation.
+- Surface user-visible errors in a way consistent with the app (e.g. inline error text, dialog); follow existing UX patterns.
+
+**Failure base (illustrative)**
+
+```dart
+abstract class Failure extends Equatable {
+  const Failure(this.message);
+  final String message;
+  @override
+  List<Object> get props => [message];
+}
+```
+
+---
+
+## 7. Data layer
+
+- **Remote**: API clients, Firebase, etc. Return models or throw mapped exceptions.
+- **Local**: SharedPreferences, Drift/Hive, secure storage — same boundary rules.
+- **Repository impl**: orchestrate remote/local, connectivity, caching; return **`Either<Failure, Entity>`**.
+- **DTOs** (`*_model.dart`): **`json_serializable`** with `FieldRename.snake` if APIs use snake_case.
+- **`toDomain()`** on models that map to entities; keep mapping out of widgets.
+
+---
+
+## 8. Domain layer
+
+- **Entities**: immutable, Equatable, no JSON annotations unless the team explicitly allows API-shaped entities (prefer separate DTOs).
+- **Repository interfaces**: `Future<Either<Failure, T>>` (or `Stream` where needed).
+- **Use cases**: single responsibility; accept parameters via a small params class if more than two arguments.
+
+---
+
+## 9. Presentation layer
+
+- **Pages**: composition root for a route; wire Bloc/Cubit and listeners here.
+- **Widgets**: prefer **small private widget classes** over large `_buildX` methods.
+- **Localization**: use generated `AppLocalizations` / `context.l10n` — no hard-coded user-facing strings in production UI.
+- **Theming**: `Theme.of(context).textTheme.*`, `ColorScheme`; avoid magic numbers when design tokens exist.
+- **Images**: `Image.asset` for bundles; **`cached_network_image`** (or project standard) for remote; always **`errorBuilder`** for network images.
+- **Lists**: `ListView.builder` / `SliverList` for large lists.
+
+### UI callbacks (Flutter)
+
+- Pass **inline closures** to callbacks (`onTap: () { ... }`) rather than tear-offs if the team has seen `!_debugLocked` / build-phase issues.
+
+---
+
+## 10. Navigation
+
+- Use the project’s router (**go_router**, **auto_route**, etc.) consistently.
+- **Declarative** routes where possible; handle auth/deep links in one place.
+- Trigger navigation from **listeners** after state changes, not from inside pure map functions.
+
+---
+
+## 11. Enums and API values
+
+- Use **`@JsonValue`** when JSON does not match Dart enum names.
+- Provide **`fromValue`** (extension or static helper) with **null-safe** parsing and a **documented default** for unknown values.
+
+---
+
+## 12. Performance
+
+- **`const`** widgets where possible.
+- Avoid **heavy work on UI isolate**: `compute()` or isolates for large image/JSON processing when profiling shows need.
+- **Debounce** search and rapid input; dispose **controllers** and **subscriptions** in `dispose`.
+
+---
+
+## 13. Testing and quality gates (recommended)
+
+- **Unit tests**: use cases, repositories (with fakes/mocks), pure utilities.
+- **Widget tests**: golden or smoke tests for critical screens if the team uses them.
+- **`flutter analyze`** must be clean for CI parity.
+- Do not commit **generated files** policy: follow `.gitignore` and team convention (`*.g.dart`, `*.config.dart`).
+
+---
+
+## 14. Security and privacy
+
+- No secrets in source; use **--dart-define**, env-specific config, or CI secrets.
+- Use **flutter_secure_storage** (or equivalent) for tokens; avoid logging PII.
+
+---
+
+## 15. Flavors, crash reporting, and feature flags (medium baseline)
+
+Production-oriented medium projects should treat these as **standard**, not optional.
+
+### 15.1 Flavors (`dev` / `staging` / `prod`)
+
+- Define **Flutter flavors** (or equivalent entrypoints: `main_dev.dart`, `main_staging.dart`, `main_prod.dart`) with **`--flavor`** and matching **Android productFlavors** / **iOS schemes**.
+- **Separate** bundle IDs / application IDs per environment when the product needs side-by-side installs or distinct backend targets.
+- **API base URLs**, analytics keys, and **feature-flag** SDK keys come from **flavor-specific** config (`--dart-define`, `.env` processed at build time, or remote config defaults) — not hard-coded in Dart as a single prod URL.
+- Document how developers **run** each flavor locally and how **CI** builds each.
+
+### 15.2 Crash and performance monitoring
+
+- Integrate **crash reporting** (e.g. **Firebase Crashlytics**, **Sentry**) in **non-debug** builds; symbolication (**dSYM** / **ProGuard mapping**) wired for **release** builds.
+- Add **performance** telemetry appropriate to the stack (e.g. **Firebase Performance**, **Sentry performance**, or **custom traces**) for **startup**, **critical navigation**, and **high-traffic** screens.
+- Define a **minimum** bar: e.g. **watch** crash-free sessions and **p95** startup on **staging** before promoting to **prod**; fix regressions before release when feasible.
+
+### 15.3 Feature flags and remote config
+
+- Use **feature flags** (Firebase Remote Config, LaunchDarkly, Unleash, custom API, etc.) for **risky** or **incremental** rollouts; **document** flag names, owners, and **default** values per environment.
+- **Remote config** for tunable values (timeouts, copy experiments) should follow the same **environment** rules as APIs (dev/staging/prod).
+- Avoid long-lived **dead** flags: plan **cleanup** after full rollout.
+
+---
+
+## 16. Code generation commands (reference)
+
+```bash
+dart run build_runner build --delete-conflicting-outputs
+flutter gen-l10n   # if configured in l10n.yaml
+```
+
+---
+
+## 17. Checklist before opening a PR
+
+- [ ] Layer imports respect dependency rule (no domain → data / presentation).
+- [ ] New UI reuses **`lib/widgets`** where possible.
+- [ ] Strings localized; no new hard-coded copy in user-facing paths.
+- [ ] Errors handled with **Either** / typed failures consistent with the feature.
+- [ ] `flutter analyze` passes; format matches `dart format`.
+- [ ] **Flavors**: changes that affect env-specific behavior tested on the right flavor (dev/staging/prod as applicable).
+- [ ] **Crash/performance**: no new PII in logs; regressions to startup or critical flows called out in PR if known.
+- [ ] **Feature flags**: new flags documented (name, default, owner, removal plan if temporary).
+
+---
+
+## 18. Official references
+
+- [Flutter architecture](https://docs.flutter.dev/app-architecture)
+- [flutter_bloc](https://bloclibrary.dev/)
+- [injectable](https://pub.dev/packages/injectable)
+- [go_router](https://pub.dev/packages/go_router)
+
+---
+
+## Tier: Big project
+
+Use for **enterprise**, regulated industries, large teams, or long-lived apps with **strict ownership**, **compliance**, and **scale** needs.
+
+### B1. Architecture and boundaries
+
+- **Feature-first** is mandatory; **no** imports from another feature’s `data/` or `presentation/`. Share only via **`core/`** contracts or published **internal packages** (monorepo) with explicit APIs.
+- Consider **splitting** `data` / `domain` / `presentation` into **separate Dart packages** per feature when build times or team parallelism require it.
+- Document **public API** of each feature module (what other features may call).
+
+### B2. Quality gates
+
+- **CI**: `flutter analyze` **zero warnings** policy (or explicitly waived rules in `analysis_options.yaml` with rationale).
+- **Tests**: unit tests for **use cases and repositories**; **widget** tests for critical UI; **integration_test** for **release candidates** on representative devices.
+- **Coverage** target defined by team (e.g. domain ≥ X%); block merges on agreed paths.
+- **Golden tests** for design-system components where brand consistency is contractual.
+
+### B3. Security, privacy, compliance
+
+- **Threat modeling** for auth, payments, and PII flows; no logging of tokens or PII in production.
+- **App attestation** / **Play Integrity** / **certificate pinning** where product security requires it (document exceptions).
+- Support **data export/deletion** flows if GDPR or similar applies.
+
+### B4. Operations and release
+
+- **Builds on medium baseline** (§15): flavors, crash/performance tooling, and feature flags are already in place; at **Big** tier tighten **release health** (e.g. **mandatory** crash-free / performance budgets to pass **promotion**), **on-call** ownership of dashboards, and **staging** parity with prod observability.
+- **Rollback** and **hotfix** process documented; **migrations** for local DB versioned and tested.
+
+### B5. Performance and UX at scale
+
+- **Deferred loading** for heavy routes; **image** and **list** performance budgets; profiling before major releases.
+- **Accessibility**: meet agreed standard (e.g. WCAG-oriented) for customer-facing apps.
+
+### B6. Governance
+
+- **CODEOWNERS** or equivalent per feature area.
+- **ADR** (Architecture Decision Records) for major stack or boundary changes.
+
+### B7. Big-project checklist
+
+- [ ] Feature boundaries enforced (lint or custom checks where possible).
+- [ ] Integration test suite green on release branch.
+- [ ] Observability dashboards/alerts defined for critical flows.
+- [ ] Security review completed for auth and sensitive data paths.
+
+---
+
+_End of template — pick **one** tier (Small, Medium, Big), copy to `project-rule.mdc`, set `alwaysApply: true`, remove unused tiers, and trim sections that do not apply to your stack._

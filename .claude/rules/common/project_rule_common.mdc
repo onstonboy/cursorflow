@@ -48,9 +48,18 @@ Fill in for **tech-specific** rules or internal docs when useful:
 - Use appropriate linting and formatting tools for the language/framework
 
 ## Research and Library Selection for New Features
-- For any new feature required by user prompt, in the **research step**, prioritize supported libraries first
-- Prefer libraries that are **maintainable**, have **continuous support from the author**, and are **best suited to the solution**
-- If no suitable library meets these criteria, write the corresponding code instead of adopting an unmaintained or poorly suited dependency
+
+**Priority (mandatory for every new feature or non-trivial function):** after project-common building blocks (above), **do not jump to hand-written code first**.
+
+1. **Find a fit first** — In research/planning, actively search for a **suitable third-party library** (or official/SDK package for the stack) that already solves the feature or function. The first question is: *is there a maintained library that fits?*
+2. **Prefer the library** — If a match exists and fits the stack, architecture, and license constraints, **use that library** instead of reimplementing the same capability.
+3. **Hand-write only when no match** — If no library is suitable (no fit, unmaintained, poorly suited, security/license risk, or conflicts with project standards), **then** implement the code manually.
+
+Selection criteria when comparing libraries:
+
+- Prefer packages that are **maintainable**, have **continuous support from the author/community**, and are **best suited** to the solution (API shape, platform support, performance, size)
+- Prefer libraries already used in the repo when they cover the need
+- Do **not** adopt unmaintained or poorly suited dependencies just to avoid writing code; fall back to a clear manual implementation instead
 
 ## Language/Framework Standards
 - Use immutable data structures where possible
@@ -707,6 +716,7 @@ Refer to official documentation for the chosen language/framework for more detai
 
 - Respect **Presentation / Domain / Data** boundaries and **feature isolation**.
 - **Prefer project-common building blocks first** (see subsection under **For AI assistants**), including **shared views** (widgets, sheets, banners, etc.); extend shared code when missing; only override when the user explicitly asks.
+- **Library before custom code:** for any new feature/function, **first** find a suitable third-party (or official) library; use it when it fits; **only** write the implementation manually when no suitable library exists (see **Research and Library Selection for New Features**).
 - Apply the stack’s **state management**, **async**, **error**, and **serialization** patterns from the **tech-specific** project rule when one exists.
 - Keep **naming**, **formatting**, and **structure** consistent with surrounding code.
 - Keep all **user-facing localization** smooth, easy to understand, and friendly (see **Localization (l10n / i18n)**).

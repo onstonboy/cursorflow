@@ -1,0 +1,187 @@
+---
+description: Copy to project-rule.mdc; pick ONE tier. Node.js + TypeScript (APIs, workers, BFFs).
+alwaysApply: false
+---
+# Node.js / TypeScript project-rule (template)
+
+Replace `{{APP_NAME}}`, `package` name, and runtime (**Node 20+ LTS** recommended). **Keep only one tier** in the active rule.
+
+---
+
+## How to choose a tier
+
+| Tier | When to use |
+|------|-------------|
+| **Small** | Script-style service, MVP API, internal tool |
+| **Medium** | Production SaaS API, standard team |
+| **Big** | High-scale, many teams, compliance, event-driven platform |
+
+---
+
+## Tier: Small project
+
+### S1. Scope
+
+- **Single process**; **Express** or **Fastify** (pick one); **TypeScript** **`strict: true`** in `tsconfig.json`.
+- **Flat or shallow** `src/`:
+
+```
+src/
+├── index.ts              # bootstrap
+├── routes/
+├── services/
+├── lib/
+└── types/
+```
+
+### S2. Validation and errors
+
+- **Zod** (or **Valibot**) for **runtime validation** on request bodies and query params.
+- **Consistent error JSON** `{ error: { code, message } }` with correct **HTTP status**.
+
+### S3. Data access
+
+- **Prisma**, **Drizzle**, **Knex**, or **pg** — one stack; **migrations** checked in.
+
+### S4. Config
+
+- **`dotenv`** for local only; **production** uses **env vars** / **secret manager**. Never commit `.env` with secrets.
+
+### S5. Scripts
+
+- **`npm run build`**, **`npm run start`**, **`npm run lint`**, **`npm test`** (even minimal).
+
+### S6. Checklist (small)
+
+- [ ] `engines` in `package.json` matches deploy runtime.
+- [ ] Graceful shutdown on **SIGTERM** (close server + DB pool).
+- [ ] Dependencies pinned or lockfile committed.
+
+---
+
+## Tier: Medium project
+
+### M1. Architecture
+
+- **Layered** `src/`:
+
+```
+src/
+├── config/
+├── routes/ or http/
+├── controllers/        # optional thin handlers
+├── services/
+├── repositories/
+├── domain/               # entities, domain errors (optional)
+├── middleware/
+├── jobs/                 # optional workers
+└── utils/
+```
+
+- **Dependency rule**: routes → services → repositories; **no** DB calls from route files.
+
+### M2. TypeScript discipline
+
+- **`strict`**, **`noImplicitAny`**, **`noUncheckedIndexedAccess`** if team agrees.
+- **ESLint** + **`@typescript-eslint`**; **Prettier**; run in **CI**.
+- **Barrel files** (`index.ts`) only where they aid clarity, not deep re-export trees.
+
+### M3. HTTP and API
+
+- **OpenAPI** spec generated from code (**tsoa**, **zod-to-openapi**, or hand-maintained) and published.
+- **Pagination**, **filtering**, and **sorting** conventions documented.
+- **Content-Type** and **charset** explicit; **compression** where appropriate.
+
+### M4. Auth
+
+- **JWT** validation middleware or **OAuth2** token introspection; **RBAC** helpers centralized.
+- **Rate limiting** (`express-rate-limit`, Redis-backed for multi-instance).
+
+### M5. Async and reliability
+
+- **p-retry** or policy for transient outbound failures; **timeouts** on all external HTTP.
+- **Background jobs**: **BullMQ** / **pg-boss** with **idempotent** handlers.
+
+### M6. Observability
+
+- **Pino** or **Winston** with **JSON** in prod; **request ID** middleware.
+- **OpenTelemetry** traces to vendor (Honeycomb, Datadog, etc.) if agreed.
+
+### M7. Testing
+
+- **Vitest** or **Jest** for unit tests; **supertest** (or **fastify.inject**) for HTTP.
+- **Test DB** or **containers** for integration tests; **seed** data minimal.
+
+### M8. Security
+
+- **Helmet** (Express) or Fastify security plugins; **CORS** allowlist.
+- **`npm audit`** in CI; **Dependabot** or Renovate.
+
+### M9. Environments, error tracking, and feature flags (medium baseline)
+
+Production-oriented medium services treat these as **standard**.
+
+- **Environments (`dev` / `staging` / `prod`)**: **`NODE_ENV`** plus explicit **`APP_ENV`** or **`DEPLOY_ENV`** (do not overload `NODE_ENV` alone for business config). **Config module** loads **secrets** from env / Doppler / Vault; **per-env** API URLs, DB names, queue names. Document **local** `.env.example` vs **CI/CD** variables; **no** prod credentials in repo.
+- **Crash and performance**: **Sentry** (or similar) with **release** from **git SHA** / package version; **OpenTelemetry** traces and **RED** metrics exported to your APM. **Health** + **readiness** probes reflect DB/cache; watch **error rate** and **latency** on **staging** before production promotion.
+- **Feature flags**: **LaunchDarkly**, **Unleash**, **Flagsmith**, or **PostHog** feature flags — evaluate in **service** layer; **document** keys, defaults per environment, owners, and **fallback** when provider is unavailable.
+
+### M10. Checklist (medium)
+
+- [ ] All inputs validated at boundary.
+- [ ] Health and readiness routes for orchestrator.
+- [ ] Logs structured; no secrets or full PII in log lines.
+- [ ] CI: lint, test, typecheck, build.
+- [ ] **Environments**: feature tested with correct **dev / staging** config.
+- [ ] **Observability**: errors and slow traces visible per release.
+- [ ] **Feature flags**: new flags documented; safe defaults documented.
+
+---
+
+## Tier: Big project
+
+### B1. Structure and platforms
+
+- **Monorepo** (**pnpm** workspaces / **Nx**) optional: `apps/api`, `packages/shared`, `packages/contracts`.
+- **Separate** **API**, **worker**, and **BFF** deployables when scale requires; **shared** types package versioned.
+
+### B2. Domain and integration
+
+- **DDD**-style **modules** or **NestJS** modules with **explicit** public facades.
+- **Event-driven**: **schema registry** for Avro/JSON Schema; **outbox** or **transactional** publish.
+- **Sagas** / **process managers** only with **idempotency** and **compensation** documented.
+
+### B3. Scale
+
+- **Horizontal** scaling **stateless**; **sticky** sessions avoided; **Redis** / **Valkey** for shared state when needed.
+- **Connection pool** sizing documented; **backpressure** on queues.
+
+### B4. Security and compliance
+
+- **OWASP API Security** checklist; **WAF** / **API gateway** policies.
+- **Audit trail** for admin actions; **encryption** for sensitive fields at rest.
+- **SOC2**-style controls if required (access reviews, change logs).
+
+### B5. Quality gates
+
+- **Mutation testing** or **high coverage** on **payment/auth** modules if policy requires.
+- **Load testing** (k6, Artillery) in pipeline or scheduled.
+- **Builds on medium baseline** (§M9): **mandatory** promotion checks on error/latency budgets tied to **flag** rollouts.
+
+### B6. Checklist (big)
+
+- [ ] SLOs and alerting for latency, errors, queue depth.
+- [ ] DR strategy for DB and queues.
+- [ ] On-call runbooks for partial failures.
+- [ ] ADRs for cross-service contracts.
+
+---
+
+## References
+
+- [Node.js best practices](https://github.com/goldbergyoni/nodebestpractices)
+- [TypeScript handbook](https://www.typescriptlang.org/docs/handbook/intro.html)
+- [OWASP API Security](https://owasp.org/www-project-api-security/)
+
+---
+
+_End — retain one tier only in your real `project-rule.mdc`._

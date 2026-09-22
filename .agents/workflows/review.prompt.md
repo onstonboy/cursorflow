@@ -17,7 +17,7 @@ This document provides a structured approach for AI to review code changes, iden
 **⚠️ AI MUST FOLLOW THESE RULES:**
 
 1. Execute ALL steps in order
-2. **READ PROJECT RULES FIRST** - Check `.agents/rules/` and `.agentsrules` for project-specific standards
+2. **READ PROJECT RULES FIRST** - Check `.agents/rules/` and `AGENTS.md` for project-specific standards
 3. Generate detailed issue reports with severity levels
 4. Provide actionable solutions for each issue
 5. **WAIT FOR USER APPROVAL** before implementing any fix
@@ -43,7 +43,7 @@ This document provides a structured approach for AI to review code changes, iden
 **Action Required:**
 1. **Check for project rules** in the following locations (in order of priority):
    - `.agents/rules/` directory (all `.mdc` and `.md` files)
-   - `.agentsrules` file in project root
+   - `AGENTS.md` file in project root
    - `.agents/rules/common/project_rule_common.mdc` (canonical project rules)
    - `project_rules_common.prompt.md` in `.agents/workflows/common/`
    - Any `CONTRIBUTING.md`, `CODING_STANDARDS.md`, or similar files
@@ -64,7 +64,7 @@ This document provides a structured approach for AI to review code changes, iden
 
 **Project Configuration Found:**
 - [ ] `.agents/rules/` directory
-- [ ] `.agentsrules` file
+- [ ] `AGENTS.md` file
 - [ ] Other project standards files
 
 **Architecture Style:**
@@ -1119,7 +1119,7 @@ Structured markdown report with issues, solutions, project rules compliance stat
 
 **When performing a code review, you MUST:**
 
-✅ **Step 0:** Load project rules from `.agents/rules/`, `.agentsrules`, and project config files (FIRST!)
+✅ **Step 0:** Load project rules from `.agents/rules/`, `AGENTS.md`, and project config files (FIRST!)
 ✅ **Step 1:** Identify git changes **and** related/impacted files (full review scope)
 ✅ **Step 2:** Run **three full review passes** (correctness → bugs/edge cases/crashes → risk/features); one Pass Report per pass
 ✅ **Step 3:** Consolidate pass findings into detailed issue report with Triple-Pass Summary and severity levels
@@ -1144,7 +1144,7 @@ Structured markdown report with issues, solutions, project rules compliance stat
 
 **Project Rules Priority:**
 1. Load rules from `.agents/rules/` directory (highest priority)
-2. Load rules from `.agentsrules` file
+2. Load rules from `AGENTS.md` file
 3. Check for architecture rules (Clean Architecture, layers, dependencies)
 4. Check for coding standards (naming, immutability, error handling)
 5. Check for state management patterns
